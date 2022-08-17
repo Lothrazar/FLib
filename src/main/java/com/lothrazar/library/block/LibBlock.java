@@ -15,25 +15,35 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class BlockSettings extends BaseEntityBlock {
+public class LibBlock extends BaseEntityBlock {
 
-  public static class CustomBlockProperties {
+  public static class Settings {
 
-    public boolean tooltip = true;
-    boolean hasGui = false; // TOOD: BlockCyclic up in here
-    boolean hasFluidInteract = false;
-    RenderShape rendershape = RenderShape.MODEL; // try INVISIBLE for some tile entities
+    private boolean tooltip = true;
+    //boolean hasGui = false; // TOOD: BlockCyclic up in here
+    //boolean hasFluidInteract = false;
+    private RenderShape rendershape = RenderShape.MODEL; // try INVISIBLE for some tile entities
+
+    public Settings tooltip() {
+      this.tooltip = true;
+      return this;
+    }
+
+    public Settings noTooltip() {
+      this.tooltip = false;
+      return this;
+    }
   }
 
-  private CustomBlockProperties custom;
+  private Settings me;
 
-  public BlockSettings(Properties prop, CustomBlockProperties custom) {
+  public LibBlock(Properties prop, Settings custom) {
     super(prop);
-    this.custom = custom;
+    this.me = custom;
   }
 
-  public BlockSettings(Properties prop) {
-    this(prop, new CustomBlockProperties());
+  public LibBlock(Properties prop) {
+    this(prop, new Settings());
   }
 
   @Override
@@ -44,13 +54,13 @@ public class BlockSettings extends BaseEntityBlock {
 
   @Override
   public RenderShape getRenderShape(BlockState bs) {
-    return custom.rendershape;
+    return me.rendershape;
   }
 
   @Override
   @OnlyIn(Dist.CLIENT)
   public void appendHoverText(ItemStack stack, BlockGetter worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-    if (custom.tooltip) {
+    if (me.tooltip) {
       tooltip.add(new TranslatableComponent(getDescriptionId() + ".tooltip").withStyle(ChatFormatting.GRAY));
     }
   }
