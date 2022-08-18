@@ -2,6 +2,7 @@ package com.lothrazar.library;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -15,15 +16,19 @@ public class FutureLibMod {
 
   public FutureLibMod() {
     ConfigManager.setup();
+    MinecraftForge.EVENT_BUS.register(new CommandRegistry());
     FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
     FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupClient);
   }
+  //TODO: add command!!
+  // mostly for testing
+  //1: tpdim (teleport dim) to test dimension transit
 
   private void setup(final FMLCommonSetupEvent event) {
-    //    MinecraftForge.EVENT_BUS.register(new WhateverEvents()); 
+    //   placeholder
   }
 
   private void setupClient(final FMLClientSetupEvent event) {
-    //for client side only setup
+    //   placeholder
   }
 }
