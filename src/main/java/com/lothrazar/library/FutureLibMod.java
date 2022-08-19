@@ -22,10 +22,17 @@ public class FutureLibMod {
     FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
     FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupClient);
   }
+
   //TODO: add command!!
   // mostly for testing
-  //1: tpdim (teleport dim) to test dimension transit
-
+  //1:  /flib tpx <dim> @p x y z
+  //    /flib tpxsave <dim> @p x y z
+  //    /flib tpxback @p(teleport dim) to test dimension transit
+  //     make it save. aka TP save
+  //then add a tp/back . goes back to previous spot and also clears it
+  // gamerule mixin
+  //elementary ores
+  //
   private void setup(final FMLCommonSetupEvent event) {
     //   placeholder
   }

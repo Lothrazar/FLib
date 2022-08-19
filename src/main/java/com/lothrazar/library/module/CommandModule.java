@@ -52,6 +52,10 @@ public class CommandModule {
 
   @SubscribeEvent
   public void onRegisterCommandsEvent(RegisterCommandsEvent event) {
+    if (!ConfigModule.ENABLE_COMMANDS.get()) {
+      FutureLibMod.LOGGER.info("Disabling command /flib");
+      return;
+    }
     CommandDispatcher<CommandSourceStack> r = event.getDispatcher();
     r.register(LiteralArgumentBuilder.<CommandSourceStack> literal(FutureLibMod.MODID)
         // cyclic home teleport @p
@@ -65,7 +69,7 @@ public class CommandModule {
             //            .then(Commands.literal(FORK_TP)
             //                .then(Commands.argument(ARG_PLAYER, EntityArgument.players())
             .executes(x -> {
-              System.out.println("flib test " + x.getSource());
+              FutureLibMod.LOGGER.info("flib test " + x.getSource());
               return 0; // CommandHome.executeTp(x, EntityArgument.getPlayers(x, ARG_PLAYER));
             })
         //                ) // end of fork
