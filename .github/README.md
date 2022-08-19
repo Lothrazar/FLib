@@ -15,4 +15,34 @@ A Library/core mod built on the Minecraft Forge API [https://files.minecraftforg
 [![Twitter Badge](https://img.shields.io/badge/contact-twitter-blue.svg)](https://twitter.com/lothrazar)
 [![links](https://img.shields.io/badge/more-links-ff69b4.svg)](https://allmylinks.com/lothrazar)
 
+# Currently used by
+
+- https://github.com/Lothrazar/ForgeTemplate
+- https://github.com/Lothrazar/Scraps
+
+## Adding as a dependency
+Use the libs folder in the repositories section of your build scripts as follows
+```
+  flatDir {
+      dir 'libs'
+  }
+```
+And then use the blank keyword to add the version as a dependency
+```
+    implementation fg.deobf("blank:flib-${mc_version}:${flib_version}")
+```
+And then your gradle.properties file will get the version number set that you are using
+```
+flib_version=0.0.1
+```
+If you want to rely on a remote maven server instead of your local libs directory, then with the repository
+```
+  maven { url = 'https://www.cursemaven.com'  }
+```
+You just need to replace the latest file id (from the url of the curseforge file) in the right hand side in the dependencies section
+```
+    implementation fg.deobf("curse.maven:cyclic-239286:3249448")
+```
+
+For examples of these setups, see this setup https://github.com/Lothrazar/ForgeTemplate/blob/trunk/1.18/build.gradle#L113
 
