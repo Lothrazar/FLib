@@ -1,4 +1,4 @@
-package com.lothrazar.library.world;
+package com.lothrazar.library.dim;
 
 import java.util.function.Function;
 import com.lothrazar.library.core.BlockPosDim;

@@ -1,33 +1,33 @@
-package com.lothrazar.library;
+package com.lothrazar.library.module;
 
 import java.util.Random;
+import com.lothrazar.library.FutureLibMod;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-public class CommandRegistry {
+public class CommandModule {
 
   public static final Random RAND = new Random();
-  private static final String FORK_RESET = "reset";
-  private static final String FORK_FACTOR = "factor";
-  private static final String FORK_ADD = "add";
-  private static final String FORK_TP = "teleport"; //so far only home
-  private static final String FORK_SAVE = "save"; //new SAVE: like set but its save-current. ie players current position
-  private static final String FORK_SET = "set";
-  private static final String FORK_TOGGLE = "toggle";
-  private static final String FORK_RANDOM = "random";
-  private static final String ARG_OBJECTIVE = "objective";
-  private static final String ARG_TARGETS = "targets";
-  private static final String ARG_ATTR = "attribute";
-  private static final String ARG_MIN = "min";
-  private static final String ARG_MAX = "max";
-  private static final String ARG_VALUE = "value";
-  private static final String ARG_PLAYER = "player";
+  //  private static final String FORK_RESET = "reset";
+  //  private static final String FORK_FACTOR = "factor";
+  //  private static final String FORK_ADD = "add";
+  //  private static final String FORK_TP = "teleport"; //so far only home
+  //  private static final String FORK_SAVE = "save"; //new SAVE: like set but its save-current. ie players current position
+  //  private static final String FORK_SET = "set";
+  //  private static final String FORK_TOGGLE = "toggle";
+  //  private static final String FORK_RANDOM = "random";
+  //  private static final String ARG_OBJECTIVE = "objective";
+  //  private static final String ARG_TARGETS = "targets";
+  //  private static final String ARG_ATTR = "attribute";
+  //  private static final String ARG_MIN = "min";
+  //  private static final String ARG_MAX = "max";
+  //  private static final String ARG_VALUE = "value";
+  //  private static final String ARG_PLAYER = "player";
   private static final int PERM_EVERYONE = 0; // no restrictions
   private static final int PERM_ELEVATED = 2; // player with perms/creative OR function OR command block
 
@@ -62,12 +62,13 @@ public class CommandRegistry {
             .requires((p) -> {
               return p.hasPermission(PERM_ELEVATED);
             })
-            .then(Commands.literal(FORK_TP)
-                .then(Commands.argument(ARG_PLAYER, EntityArgument.players())
-                    .executes(x -> {
-                      System.out.println("test");
-                      return 0; // CommandHome.executeTp(x, EntityArgument.getPlayers(x, ARG_PLAYER));
-                    })))
+            //            .then(Commands.literal(FORK_TP)
+            //                .then(Commands.argument(ARG_PLAYER, EntityArgument.players())
+            .executes(x -> {
+              System.out.println("flib test " + x.getSource());
+              return 0; // CommandHome.executeTp(x, EntityArgument.getPlayers(x, ARG_PLAYER));
+            })
+        //                ) // end of fork
         //
         )
     //            .then(Commands.literal(FORK_RESET)

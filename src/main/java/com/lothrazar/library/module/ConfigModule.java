@@ -1,11 +1,12 @@
-package com.lothrazar.library;
+package com.lothrazar.library.module;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
+import com.lothrazar.library.FutureLibMod;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.loading.FMLPaths;
 
-public class ConfigManager {
+public class ConfigModule {
 
   private static final ForgeConfigSpec.Builder CFG = new ForgeConfigSpec.Builder();
   private static ForgeConfigSpec COMMON_CONFIG;

@@ -2,6 +2,8 @@ package com.lothrazar.library;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import com.lothrazar.library.module.CommandModule;
+import com.lothrazar.library.module.ConfigModule;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -15,8 +17,8 @@ public class FutureLibMod {
   public static final Logger LOGGER = LogManager.getLogger();
 
   public FutureLibMod() {
-    ConfigManager.setup();
-    MinecraftForge.EVENT_BUS.register(new CommandRegistry());
+    ConfigModule.setup();
+    MinecraftForge.EVENT_BUS.register(new CommandModule());
     FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
     FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupClient);
   }

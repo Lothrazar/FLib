@@ -7,41 +7,23 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class LibBlock extends Block {
+public abstract class LibEntityBlock extends BaseEntityBlock {
 
-  public static class Settings {
+  private LibBlock.Settings me;
 
-    boolean tooltip = true;
-    //boolean hasGui = false; // TOOD: BlockCyclic up in here
-    //boolean hasFluidInteract = false;
-    RenderShape rendershape = RenderShape.MODEL; // try INVISIBLE for some tile entities
-
-    public Settings tooltip() {
-      this.tooltip = true;
-      return this;
-    }
-
-    public Settings noTooltip() {
-      this.tooltip = false;
-      return this;
-    }
-  }
-
-  private Settings me;
-
-  public LibBlock(Properties prop, Settings custom) {
+  public LibEntityBlock(Properties prop, LibBlock.Settings custom) {
     super(prop);
     this.me = custom;
   }
 
-  public LibBlock(Properties prop) {
-    this(prop, new Settings());
+  public LibEntityBlock(Properties prop) {
+    this(prop, new LibBlock.Settings());
   }
 
   @Override
