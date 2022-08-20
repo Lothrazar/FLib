@@ -12,12 +12,12 @@ buildscript {
 plugins {
     id 'eclipse'
     id 'maven-publish'
+    id 'checkstyle'
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 import net.minecraftforge.gradle.common.tasks.SignJar
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-
 
 version = "${mc_version}-${mod_version}"
 group = 'com.lothrazar.library' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
@@ -156,7 +156,13 @@ publishing {
         }
     }
 }
-
+tasks.withType(Checkstyle) {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+ 
 task signJar(type: SignJar, dependsOn: jar) {
 
     keyStore = project.findProperty('keyStore')
@@ -174,4 +180,20 @@ task copyJar(type: Copy) {
 
 task cleanJar {
   delete 'build/libs'
+}
+
+checkstyle {
+    toolVersion '8.40'
+    showViolations true
+    ignoreFailures false
+    configFile file(".github/checkstyle.xml")
+}
+checkstyleMain {
+    source ='src/main/java'
+}
+task Checkstyle(type: Checkstyle) {
+    source 'src/main/java'
+    include '**/*.java'
+    // empty classpath
+    classpath = rootProject.files()
 }

@@ -13,7 +13,9 @@ import net.minecraftforge.common.util.LazyOptional;
 
 public class PlayerCapProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
 
-  public static Capability<PlayerCapabilityStorage> CYCLIC_PLAYER = CapabilityManager.get(new CapabilityToken<>() {});
+  public static Capability<PlayerCapabilityStorage> CYCLIC_PLAYER = CapabilityManager.get(new CapabilityToken<>() {
+    //empty by design
+  });
   private PlayerCapabilityStorage playerMana = null;
   private final LazyOptional<PlayerCapabilityStorage> opt = LazyOptional.of(this::createMe);
 
