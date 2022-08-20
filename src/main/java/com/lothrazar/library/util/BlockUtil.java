@@ -11,7 +11,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.DirectionalPlaceContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.Rotation;
@@ -25,7 +24,7 @@ public class BlockUtil {
     if (clicked.getBlock() == null) {
       return false;
     }
-    Block clickedBlock = clicked.getBlock();
+    //    Block clickedBlock = clicked.getBlock();
     BlockState newState = null;
     if (clicked.is(BlockTags.SLABS)) {
       final String key = "type"; //top or bottom

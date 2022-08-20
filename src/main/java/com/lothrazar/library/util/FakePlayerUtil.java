@@ -26,14 +26,24 @@ package com.lothrazar.library.util;
 import java.lang.ref.WeakReference;
 import java.util.UUID;
 import com.mojang.authlib.GameProfile;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 
 public class FakePlayerUtil {
 
@@ -60,5 +70,55 @@ public class FakePlayerUtil {
     };
     fakePlayer.get().setSilent(true);
     return fakePlayer;
+  }
+
+  public static void tryEquipItem(LazyOptional<IItemHandler> i, WeakReference<FakePlayer> fp, int slot, InteractionHand hand) {
+    if (fp == null) {
+      return;
+    }
+    i.ifPresent(inv -> {
+      ItemStack maybeTool = inv.getStackInSlot(0);
+      if (!maybeTool.isEmpty()) {
+        if (maybeTool.getCount() <= 0) {
+          maybeTool = ItemStack.EMPTY;
+        }
+      }
+      if (!maybeTool.equals(fp.get().getItemInHand(hand))) {
+        fp.get().setItemInHand(hand, maybeTool);
+      }
+    });
+  }
+
+  public static InteractionResult interactUseOnBlock(WeakReference<FakePlayer> fakePlayer,
+      Level world, BlockPos targetPos, InteractionHand hand, Direction facing) throws Exception {
+    if (fakePlayer == null) {
+      return InteractionResult.FAIL;
+    }
+    Direction placementOn = (facing == null) ? fakePlayer.get().getMotionDirection() : facing;
+    BlockHitResult blockraytraceresult = new BlockHitResult(
+        fakePlayer.get().getLookAngle(), placementOn,
+        targetPos, true);
+    //processRightClick
+    ItemStack itemInHand = fakePlayer.get().getItemInHand(hand);
+    InteractionResult result = fakePlayer.get().gameMode.useItemOn(fakePlayer.get(), world, itemInHand, hand, blockraytraceresult);
+    // ModCyclic.LOGGER.info(targetPos + " gameMode.useItemOn() result = " + result + "  itemInHand = " + itemInHand);
+    //it becomes CONSUME result 1 bucket. then later i guess it doesnt save, and then its water_bucket again
+    return result;
+  }
+
+  public static void syncEquippedItem(ItemStackHandler inv, WeakReference<FakePlayer> fp, int slot, InteractionHand hand) {
+    if (fp == null) {
+      return;
+    }
+    inv.setStackInSlot(slot, ItemStack.EMPTY);
+    //    inv.extractItem(slot, 64, false); //delete and overwrite
+    inv.insertItem(slot, fp.get().getItemInHand(hand), false);
+  }
+
+  public static void tryEquipItem(ItemStack item, WeakReference<FakePlayer> fp, InteractionHand hand) {
+    if (fp == null) {
+      return;
+    }
+    fp.get().setItemInHand(hand, item);
   }
 }
