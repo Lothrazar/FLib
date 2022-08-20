@@ -4,7 +4,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.lothrazar.library.module.CommandModule;
 import com.lothrazar.library.module.ConfigModule;
+import com.lothrazar.library.module.PacketRegistry;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -30,11 +32,15 @@ public class FutureLibMod {
   //    /flib tpxback @p(teleport dim) to test dimension transit
   //     make it save. aka TP save
   //then add a tp/back . goes back to previous spot and also clears it
+  // IMC . any other mod TO flib 
   // gamerule mixin
   //elementary ores
   //
   private void setup(final FMLCommonSetupEvent event) {
-    //   placeholder
+    PacketRegistry.setup();
+    InterModComms.getMessages(MODID).forEach(x -> {
+      LOGGER.info("registration from " + x.senderModId() + " | " + x.messageSupplier().get());
+    });
   }
 
   private void setupClient(final FMLClientSetupEvent event) {

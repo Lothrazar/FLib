@@ -1,10 +1,12 @@
 package com.lothrazar.library.core;
 
 import java.util.Objects;
+import com.lothrazar.library.util.LevelWorldUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -22,6 +24,10 @@ public class BlockPosDim {
   private Vec3 hitVec = Vec3.ZERO;
   private Direction side;
   private Direction sidePlayerFacing;
+
+  public BlockPosDim(BlockPos pos, Level dimension) {
+    this(pos, LevelWorldUtil.dimensionToString(dimension), null);
+  }
 
   public BlockPosDim(BlockPos pos, String dimension, CompoundTag stackTag) {
     setX(pos.getX());
