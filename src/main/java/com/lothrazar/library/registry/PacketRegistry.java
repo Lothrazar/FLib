@@ -1,4 +1,4 @@
-package com.lothrazar.library.module;
+package com.lothrazar.library.registry;
 
 import com.lothrazar.library.FutureLibMod;
 import com.lothrazar.library.packet.PacketPlayerFalldamage;

@@ -2,9 +2,10 @@ package com.lothrazar.library;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import com.lothrazar.library.api.FlibCoreFeatures;
 import com.lothrazar.library.module.CommandModule;
 import com.lothrazar.library.module.ConfigModule;
-import com.lothrazar.library.module.PacketRegistry;
+import com.lothrazar.library.registry.PacketRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
@@ -41,6 +42,8 @@ public class FutureLibMod {
     InterModComms.getMessages(MODID).forEach(x -> {
       LOGGER.info("registration from " + x.senderModId() + " | " + x.messageSupplier().get());
     });
+    //set features hooked to config
+    FlibCoreFeatures.INSTANCE.put(FlibCoreFeatures.COMMANDS, () -> ConfigModule.ENABLE_COMMANDS.get());
   }
 
   private void setupClient(final FMLClientSetupEvent event) {

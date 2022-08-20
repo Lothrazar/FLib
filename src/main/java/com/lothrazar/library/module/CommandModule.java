@@ -3,11 +3,13 @@ package com.lothrazar.library.module;
 import java.util.Collection;
 import java.util.Random;
 import com.lothrazar.library.FutureLibMod;
+import com.lothrazar.library.api.FlibCoreFeatures;
 import com.lothrazar.library.core.BlockPosDim;
 import com.lothrazar.library.util.AttributesUtil;
 import com.lothrazar.library.util.ChatUtil;
 import com.lothrazar.library.util.EntityUtil;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -53,7 +55,7 @@ public class CommandModule {
 
   public enum SubCommands {
 
-    TPX, HEALTH, HUNGER, HEARTS, GAMEMODE, SCOREBOARD, ATTRIBUTE;
+    TPX, HEALTH, HUNGER, HEARTS, GAMEMODE, SCOREBOARD, ATTRIBUTE, OVERRIDE;
 
     @Override
     public String toString() {
@@ -63,12 +65,24 @@ public class CommandModule {
 
   @SubscribeEvent
   public void onRegisterCommandsEvent(RegisterCommandsEvent event) {
-    if (!ConfigModule.ENABLE_COMMANDS.get()) {
-      FutureLibMod.LOGGER.info("Disabling command /flib");
+    if (!FlibCoreFeatures.INSTANCE.get(FlibCoreFeatures.COMMANDS).get()) {
+      FutureLibMod.LOGGER.info("Disabling command /flib from feature instance");
       return;
     }
     CommandDispatcher<CommandSourceStack> r = event.getDispatcher();
     r.register(LiteralArgumentBuilder.<CommandSourceStack> literal(FutureLibMod.MODID)
+        // cyclic gamemode @p 1
+        .then(Commands.literal(SubCommands.OVERRIDE.toString())
+            .requires((p) -> {
+              return p.hasPermission(1);
+            })
+            .then(Commands.argument("corefeature", StringArgumentType.word())
+                .then(Commands.argument("value", BoolArgumentType.bool())
+                    .executes(x -> {
+                      FutureLibMod.LOGGER.error("/flib override test command in use, mod incompatibilities may occur");
+                      FutureLibMod.LOGGER.error("corefeature list: " + FlibCoreFeatures.values());
+                      return FlibCoreFeatures.executeCommand(x, StringArgumentType.getString(x, "corefeature"), BoolArgumentType.getBool(x, "value"));
+                    }))))
         //                /flib tpx minecraft:the_end 0 99 0 @p
         .then(Commands.literal(SubCommands.TPX.toString())
             .requires((p) -> {
