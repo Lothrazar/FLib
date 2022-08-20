@@ -1,0 +1,16 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "com.lothrazar.library.mixin",
+	"target": "@env(DEFAULT)",
+	"compatibilityLevel": "JAVA_8",
+	"refmap": "flib.refmap.json",
+	"mixins": [
+		"FilledMapItemRefreshMixin"
+	],
+	"client": [
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
