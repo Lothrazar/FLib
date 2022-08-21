@@ -27,8 +27,8 @@ public class ItemFlib extends Item {
 
   public static class Settings {
 
-    private boolean tooltip = true;
-    private int burnTime = 0;
+    boolean tooltip = false;
+    int burnTime = 0;
 
     public Settings tooltip() {
       this.tooltip = true;
@@ -72,6 +72,7 @@ public class ItemFlib extends Item {
     if (me.tooltip) {
       me.tooltipApply(this, tooltip);
     }
+    super.appendHoverText(stack, worldIn, tooltip, flagIn);
   }
 
   public void tryRepairWith(ItemStack stackToRepair, Player player, Item target) {

@@ -5,8 +5,8 @@ A Library/core mod built on the Minecraft Forge API [https://files.minecraftforg
 
 
 
-[![](http://cf.way2muchnoise.eu/0.svg)](https://www.curseforge.com/minecraft/mc-mods/flib) 
-[![](http://cf.way2muchnoise.eu/versions/0.svg)](https://www.curseforge.com/minecraft/mc-mods/flib)
+[![](http://cf.way2muchnoise.eu/661261.svg)](https://www.curseforge.com/minecraft/mc-mods/flib) 
+[![](http://cf.way2muchnoise.eu/versions/661261.svg)](https://www.curseforge.com/minecraft/mc-mods/flib)
 
 [![Build](https://github.com/Lothrazar/FLib/actions/workflows/build.yml/badge.svg)](https://github.com/Lothrazar/FLib/actions/workflows/build.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
@@ -19,6 +19,7 @@ A Library/core mod built on the Minecraft Forge API [https://files.minecraftforg
 
 - https://github.com/Lothrazar/ForgeTemplate
 - https://github.com/Lothrazar/Scraps
+- https://github.com/Lothrazar/ElementaryOres/
 
 ## Adding as a dependency
 Use the libs folder in the repositories section of your build scripts as follows
@@ -27,7 +28,7 @@ Use the libs folder in the repositories section of your build scripts as follows
       dir 'libs'
   }
 ```
-And then use the blank keyword to add the version as a dependency
+And then use the blank keyword to add the version inside your dependencies block
 ```
     implementation fg.deobf("blank:flib-${mc_version}:${flib_version}")
 ```
@@ -35,14 +36,25 @@ And then your gradle.properties file will get the version number set that you ar
 ```
 flib_version=0.0.1
 ```
+Inside your minecraft - runs - client block in build.gradle, you will need this to avoid mixin errors
+```
+ property 'mixin.env.disableRefMap', 'true'
+```
+
 If you want to rely on a remote maven server instead of your local libs directory, then with the repository
 ```
   maven { url = 'https://www.cursemaven.com'  }
 ```
-You just need to replace the latest file id (from the url of the curseforge file) in the right hand side in the dependencies section
+You need to replace the latest file id (from the url of the curseforge file) in the right hand side in the dependencies section
 ```
-    implementation fg.deobf("curse.maven:cyclic-239286:3249448")
+    implementation fg.deobf("curse.maven:flib-661261:0000000")
 ```
-
-For examples of these setups, see this setup https://github.com/Lothrazar/ForgeTemplate/blob/trunk/1.18/build.gradle#L113
-
+And then add a dependency at the bottom of your META-INF/mods.toml page
+```
+[[dependencies.examplemod]]
+    modId="flib"
+    mandatory=true
+    versionRange="[0.0.0,)"
+    ordering="NONE"
+    side="BOTH"
+```

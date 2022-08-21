@@ -15,7 +15,7 @@ public class BlockFlib extends Block {
 
   public static class Settings {
 
-    boolean tooltip = true;
+    boolean tooltip = false;
     //boolean hasGui = false; // TOOD: BlockCyclic up in here
     //boolean hasFluidInteract = false;
 
@@ -51,5 +51,6 @@ public class BlockFlib extends Block {
     if (me.tooltip) {
       me.tooltipApply(this, tooltip);
     }
+    super.appendHoverText(stack, worldIn, tooltip, flagIn);
   }
 }
