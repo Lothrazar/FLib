@@ -1,6 +1,7 @@
 package com.lothrazar.library.entity;
 
 import java.lang.ref.WeakReference;
+import com.lothrazar.library.block.BlockFlib;
 import com.lothrazar.library.util.EntityUtil;
 import com.lothrazar.library.util.FakePlayerUtil;
 import net.minecraft.core.BlockPos;
@@ -39,6 +40,16 @@ public abstract class BlockEntityFlib extends BlockEntity {
   public abstract void setField(int field, int value);
 
   public abstract int getField(int field);
+
+  public void setLitProperty(boolean lit) {
+    BlockState st = this.getBlockState();
+    if (st.hasProperty(BlockFlib.LIT)) {
+      boolean previous = st.getValue(BlockFlib.LIT);
+      if (previous != lit) {
+        this.level.setBlockAndUpdate(worldPosition, st.setValue(BlockFlib.LIT, lit));
+      }
+    }
+  }
 
   @Override
   public CompoundTag getUpdateTag() {

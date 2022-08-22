@@ -4,14 +4,20 @@ import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class BlockFlib extends Block {
+
+  public static final EnumProperty<DyeColor> COLOUR = EnumProperty.create("colour", DyeColor.class);
+  public static final BooleanProperty LIT = BooleanProperty.create("lit");
 
   public static class Settings {
 
@@ -34,7 +40,7 @@ public class BlockFlib extends Block {
     }
   }
 
-  private Settings me;
+  Settings me;
 
   public BlockFlib(Properties prop, Settings custom) {
     super(prop);
