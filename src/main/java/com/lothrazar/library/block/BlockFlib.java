@@ -1,17 +1,23 @@
 package com.lothrazar.library.block;
 
 import java.util.List;
+import java.util.Random;
+import javax.annotation.Nullable;
 import com.lothrazar.library.util.ItemStackUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -19,6 +25,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
@@ -35,9 +42,10 @@ public class BlockFlib extends Block {
     boolean tooltip = false;
     boolean rotateColour = false;
     boolean rotateColourConsume = false;
-    boolean poweredByState = false;
+    //    boolean poweredByState = false;
     //boolean hasGui = false; // TOOD: BlockCyclic up in here
     //boolean hasFluidInteract = false;
+    boolean litWhenPowered;
 
     public Settings rotateColour(boolean consume) {
       this.rotateColour = true;
@@ -45,10 +53,14 @@ public class BlockFlib extends Block {
       return this;
     }
 
-    public Settings powered() {
-      this.poweredByState = true;
+    public Settings litWhenPowered() {
+      this.litWhenPowered = true;
       return this;
     }
+    //    public Settings powered() {
+    //      this.poweredByState = true;
+    //      return this;
+    //    }
 
     public Settings tooltip() {
       this.tooltip = true;
@@ -70,31 +82,65 @@ public class BlockFlib extends Block {
   public BlockFlib(Properties prop, Settings custom) {
     super(prop);
     this.me = custom;
+    BlockState def = defaultBlockState();
     if (me.rotateColour) {
-      registerDefaultState(defaultBlockState().setValue(COLOUR, DyeColor.WHITE));
+      def = def.setValue(COLOUR, DyeColor.WHITE);
+    }
+    if (me.litWhenPowered) {
+      def = def.setValue(LIT, Boolean.valueOf(false));
+    }
+    this.registerDefaultState(def);
+  }
+
+  @Override
+  @Nullable
+  public BlockState getStateForPlacement(BlockPlaceContext ctx) {
+    if (me.litWhenPowered) {
+      return this.defaultBlockState().setValue(LIT, Boolean.valueOf(ctx.getLevel().hasNeighborSignal(ctx.getClickedPos())));
+    }
+    return this.defaultBlockState();
+  }
+
+  @Override
+  public void neighborChanged(BlockState state, Level level, BlockPos pos, Block blockIn, BlockPos posOther, boolean flagIn) {
+    if (me.litWhenPowered && !level.isClientSide) {
+      boolean flag = state.getValue(LIT);
+      if (flag != level.hasNeighborSignal(pos)) {
+        if (flag) {
+          level.scheduleTick(pos, this, 4);
+        }
+        else {
+          level.setBlock(pos, state.cycle(LIT), 2);
+        }
+      }
+    }
+  }
+
+  @Override
+  public void tick(BlockState state, ServerLevel world, BlockPos pos, Random rand) {
+    if (me.litWhenPowered && state.getValue(LIT) && !world.hasNeighborSignal(pos)) {
+      world.setBlock(pos, state.cycle(LIT), 2);
     }
   }
 
   @Override
   public int getDirectSignal(BlockState blockState, BlockGetter blockAccess, BlockPos pos, Direction side) {
-    if (me.poweredByState) {
-      return blockState.getValue(POWERED) ? 15 : 0;
-    }
+    //      if (me.poweredByState) {
+    //        return blockState.getValue(POWERED) ? 15 : 0;
+    //      }
+    //TODO: redstone stuff later
     return super.getDirectSignal(blockState, blockAccess, pos, side);
   }
 
   public BlockFlib(Properties prop) {
     this(prop, new Settings());
   }
-  //  @Override
-  //  public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-  //    ItemStack heldStack = player.getItemInHand(hand);
-  //    if (me.rotateColour && state.hasProperty(COLOUR) && heldStack.getItem() instanceof DyeItem dye) {
-  //      rotateDye(state, world, pos, player, heldStack, dye.getDyeColor(), false);
-  //      return InteractionResult.SUCCESS;
-  //    }
-  //    return super.use(state, world, pos, player, hand, hit);
-  //  }
+
+  @Override
+  public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    ItemStack heldStack = player.getItemInHand(hand);
+    return super.use(state, world, pos, player, hand, hit);
+  }
 
   public void onRightClickBlock(RightClickBlock event, BlockState state) {
     if (me.rotateColour &&
