@@ -16,6 +16,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraftforge.api.distmarker.Dist;
@@ -25,20 +26,27 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBloc
 public class BlockFlib extends Block {
 
   private static final int MAX_CONNECTED_UPDATE = 18;
-  public static final EnumProperty<DyeColor> COLOUR = EnumProperty.create("colour", DyeColor.class);
+  public static final EnumProperty<DyeColor> COLOUR = EnumProperty.create("color", DyeColor.class);
   public static final BooleanProperty LIT = BooleanProperty.create("lit");
+  public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 
   public static class Settings {
 
     boolean tooltip = false;
     boolean rotateColour = false;
     boolean rotateColourConsume = false;
+    boolean poweredByState = false;
     //boolean hasGui = false; // TOOD: BlockCyclic up in here
     //boolean hasFluidInteract = false;
 
     public Settings rotateColour(boolean consume) {
       this.rotateColour = true;
       this.rotateColourConsume = consume;
+      return this;
+    }
+
+    public Settings powered() {
+      this.poweredByState = true;
       return this;
     }
 
@@ -62,6 +70,17 @@ public class BlockFlib extends Block {
   public BlockFlib(Properties prop, Settings custom) {
     super(prop);
     this.me = custom;
+    if (me.rotateColour) {
+      registerDefaultState(defaultBlockState().setValue(COLOUR, DyeColor.WHITE));
+    }
+  }
+
+  @Override
+  public int getDirectSignal(BlockState blockState, BlockGetter blockAccess, BlockPos pos, Direction side) {
+    if (me.poweredByState) {
+      return blockState.getValue(POWERED) ? 15 : 0;
+    }
+    return super.getDirectSignal(blockState, blockAccess, pos, side);
   }
 
   public BlockFlib(Properties prop) {
