@@ -3,6 +3,7 @@ package com.lothrazar.library;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.lothrazar.library.api.FlibCoreFeatures;
+import com.lothrazar.library.events.FlibBlockEvents;
 import com.lothrazar.library.module.CommandModule;
 import com.lothrazar.library.module.ConfigModule;
 import com.lothrazar.library.registry.PacketRegistry;
@@ -22,6 +23,7 @@ public class FutureLibMod {
   public FutureLibMod() {
     ConfigModule.setup();
     MinecraftForge.EVENT_BUS.register(new CommandModule());
+    MinecraftForge.EVENT_BUS.register(new FlibBlockEvents());
     FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
     FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupClient);
   }
