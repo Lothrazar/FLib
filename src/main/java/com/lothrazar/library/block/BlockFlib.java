@@ -20,7 +20,10 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -42,10 +45,8 @@ public class BlockFlib extends Block {
     boolean tooltip = false;
     boolean rotateColour = false;
     boolean rotateColourConsume = false;
-    //    boolean poweredByState = false;
-    //boolean hasGui = false; // TOOD: BlockCyclic up in here
-    //boolean hasFluidInteract = false;
     boolean litWhenPowered;
+    private boolean facingAttachment;
 
     public Settings rotateColour(boolean consume) {
       this.rotateColour = true;
@@ -57,10 +58,11 @@ public class BlockFlib extends Block {
       this.litWhenPowered = true;
       return this;
     }
-    //    public Settings powered() {
-    //      this.poweredByState = true;
-    //      return this;
-    //    }
+
+    public Settings facingAttachment() {
+      this.facingAttachment = true;
+      return this;
+    }
 
     public Settings tooltip() {
       this.tooltip = true;
@@ -90,6 +92,22 @@ public class BlockFlib extends Block {
       def = def.setValue(LIT, Boolean.valueOf(false));
     }
     this.registerDefaultState(def);
+  }
+
+  @Override
+  public boolean canSurvive(BlockState bs, LevelReader level, BlockPos pos) {
+    if (me.facingAttachment) {
+      return canSupportRigidBlock(level, pos.relative(bs.getValue(BlockStateProperties.FACING)));
+    }
+    return this.canSurvive(bs, level, pos);
+  }
+
+  @Override
+  public BlockState updateShape(BlockState bs, Direction face, BlockState bsOp, LevelAccessor level, BlockPos pos, BlockPos posOther) {
+    if (me.facingAttachment) {
+      return !bs.canSurvive(level, pos) ? Blocks.AIR.defaultBlockState() : super.updateShape(bs, face, bsOp, level, pos, posOther);
+    }
+    return super.updateShape(bs, face, bsOp, level, pos, posOther);
   }
 
   @Override
