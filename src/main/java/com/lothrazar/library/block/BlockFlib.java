@@ -12,6 +12,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
@@ -81,6 +82,10 @@ public class BlockFlib extends Block {
 
   Settings me;
 
+  public BlockFlib(Properties prop) {
+    this(prop, new Settings());
+  }
+
   public BlockFlib(Properties prop, Settings custom) {
     super(prop);
     this.me = custom;
@@ -94,12 +99,20 @@ public class BlockFlib extends Block {
     this.registerDefaultState(def);
   }
 
+  public static Boolean never(BlockState s, BlockGetter w, BlockPos pos, EntityType<?> t) {
+    return (boolean) false;
+  }
+
+  public static boolean never(BlockState s, BlockGetter w, BlockPos pos) {
+    return false;
+  }
+
   @Override
   public boolean canSurvive(BlockState bs, LevelReader level, BlockPos pos) {
     if (me.facingAttachment) {
       return canSupportRigidBlock(level, pos.relative(bs.getValue(BlockStateProperties.FACING)));
     }
-    return this.canSurvive(bs, level, pos);
+    return super.canSurvive(bs, level, pos);
   }
 
   @Override
@@ -148,10 +161,6 @@ public class BlockFlib extends Block {
     //      }
     //TODO: redstone stuff later
     return super.getDirectSignal(blockState, blockAccess, pos, side);
-  }
-
-  public BlockFlib(Properties prop) {
-    this(prop, new Settings());
   }
 
   @Override

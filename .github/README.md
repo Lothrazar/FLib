@@ -1,8 +1,6 @@
 # Library
 
-A Library/core mod built on the Minecraft Forge API [https://files.minecraftforge.net/](https://files.minecraftforge.net)
-
-
+A Library/core mod built on the Minecraft & the Forge API [https://files.minecraftforge.net/](https://files.minecraftforge.net)
 
 
 [![](http://cf.way2muchnoise.eu/661261.svg)](https://www.curseforge.com/minecraft/mc-mods/flib) 
@@ -19,7 +17,11 @@ A Library/core mod built on the Minecraft Forge API [https://files.minecraftforg
 
 - https://github.com/Lothrazar/ForgeTemplate
 - https://github.com/Lothrazar/Scraps
-- https://github.com/Lothrazar/ElementaryOres/
+- https://github.com/Lothrazar/TinyLightBulbs
+- https://github.com/Lothrazar/ElementaryOres
+- https://github.com/Lothrazar/SaplingGrowthControl
+- https://github.com/Lothrazar/CustomGameRules
+- https://github.com/Lothrazar/BlockyDoors
 
 ## Adding as a dependency
 Use the libs folder in the repositories section of your build scripts as follows
