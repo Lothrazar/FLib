@@ -110,7 +110,9 @@ public class BlockFlib extends Block {
   @Override
   public boolean canSurvive(BlockState bs, LevelReader level, BlockPos pos) {
     if (me.facingAttachment) {
-      return canSupportRigidBlock(level, pos.relative(bs.getValue(BlockStateProperties.FACING)));
+      Direction dir = bs.getValue(BlockStateProperties.FACING);
+      return Block.canSupportCenter(level, pos.relative(dir), dir.getOpposite());
+      //          : FaceAttachedHorizontalDirectionalBlock.canAttach(level, pos, dir);
     }
     return super.canSurvive(bs, level, pos);
   }
