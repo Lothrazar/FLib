@@ -3,7 +3,6 @@ package com.lothrazar.library.module;
 import java.util.Collection;
 import java.util.Random;
 import com.lothrazar.library.FutureLibMod;
-import com.lothrazar.library.api.FlibCoreFeatures;
 import com.lothrazar.library.core.BlockPosDim;
 import com.lothrazar.library.util.AttributesUtil;
 import com.lothrazar.library.util.ChatUtil;
@@ -65,7 +64,7 @@ public class CommandModule {
 
   @SubscribeEvent
   public void onRegisterCommandsEvent(RegisterCommandsEvent event) {
-    if (!FlibCoreFeatures.INSTANCE.get(FlibCoreFeatures.COMMANDS).get()) {
+    if (!ConfigModule.ENABLE_COMMANDS.get()) {
       FutureLibMod.LOGGER.info("Disabling command /flib from feature instance");
       return;
     }
@@ -79,9 +78,9 @@ public class CommandModule {
             .then(Commands.argument("corefeature", StringArgumentType.word())
                 .then(Commands.argument("value", BoolArgumentType.bool())
                     .executes(x -> {
-                      FutureLibMod.LOGGER.error("/flib override test command in use, mod incompatibilities may occur");
-                      FutureLibMod.LOGGER.error("corefeature list: " + FlibCoreFeatures.values());
-                      return FlibCoreFeatures.executeCommand(x, StringArgumentType.getString(x, "corefeature"), BoolArgumentType.getBool(x, "value"));
+                      FutureLibMod.LOGGER.error("/flib override test command ");
+                      //                      FutureLibMod.LOGGER.error("corefeature list: " + FlibCoreFeatures.values());
+                      return 0; // FlibCoreFeatures.executeCommand(x, StringArgumentType.getString(x, "corefeature"), BoolArgumentType.getBool(x, "value"));
                     }))))
         //                /flib tpx minecraft:the_end 0 99 0 @p
         .then(Commands.literal(SubCommands.TPX.toString())

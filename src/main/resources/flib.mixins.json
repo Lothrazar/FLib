@@ -6,12 +6,10 @@
 	"compatibilityLevel": "JAVA_8",
 	"refmap": "flib.refmap.json",
 	"mixins": [
-		"FilledMapItemRefreshMixin",
-		"BiomeAntiFreezeMixin"
 	],
 	"client": [
 	],
 	"injectors": {
-		"defaultRequire": 1
+		"defaultRequire": 0
 	}
 }

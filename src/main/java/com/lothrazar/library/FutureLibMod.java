@@ -2,7 +2,6 @@ package com.lothrazar.library;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import com.lothrazar.library.api.FlibCoreFeatures;
 import com.lothrazar.library.events.FlibBlockEvents;
 import com.lothrazar.library.module.CommandModule;
 import com.lothrazar.library.module.ConfigModule;
@@ -45,7 +44,9 @@ public class FutureLibMod {
       LOGGER.info("registration from " + x.senderModId() + " | " + x.messageSupplier().get());
     });
     //set features hooked to config
-    FlibCoreFeatures.INSTANCE.put(FlibCoreFeatures.COMMANDS, () -> ConfigModule.ENABLE_COMMANDS.get());
+    //    FlibCoreFeatures.INSTANCE.put(FlibCoreFeatures.COMMANDS, () -> ConfigModule.ENABLE_COMMANDS.get());
+    //   LOGGER.info("FlibCoreFeatures loaded : " + FlibCoreFeatures.values());
+    //    var ruleTypeBoolean2 = GameRules.BooleanValue.create(true); // this works if AT works
   }
 
   private void setupClient(final FMLClientSetupEvent event) {

@@ -2,7 +2,6 @@ package com.lothrazar.library.block;
 
 import java.util.List;
 import java.util.Random;
-import javax.annotation.Nullable;
 import com.lothrazar.library.util.ItemStackUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -107,6 +106,7 @@ public class BlockFlib extends Block {
     return false;
   }
 
+  @SuppressWarnings("deprecation")
   @Override
   public boolean canSurvive(BlockState bs, LevelReader level, BlockPos pos) {
     if (me.facingAttachment) {
@@ -117,6 +117,7 @@ public class BlockFlib extends Block {
     return super.canSurvive(bs, level, pos);
   }
 
+  @SuppressWarnings("deprecation")
   @Override
   public BlockState updateShape(BlockState bs, Direction face, BlockState bsOp, LevelAccessor level, BlockPos pos, BlockPos posOther) {
     if (me.facingAttachment) {
@@ -126,7 +127,6 @@ public class BlockFlib extends Block {
   }
 
   @Override
-  @Nullable
   public BlockState getStateForPlacement(BlockPlaceContext ctx) {
     if (me.litWhenPowered) {
       return this.defaultBlockState().setValue(LIT, Boolean.valueOf(ctx.getLevel().hasNeighborSignal(ctx.getClickedPos())));
@@ -156,6 +156,7 @@ public class BlockFlib extends Block {
     }
   }
 
+  @SuppressWarnings("deprecation")
   @Override
   public int getDirectSignal(BlockState blockState, BlockGetter blockAccess, BlockPos pos, Direction side) {
     //      if (me.poweredByState) {
@@ -165,9 +166,10 @@ public class BlockFlib extends Block {
     return super.getDirectSignal(blockState, blockAccess, pos, side);
   }
 
+  @SuppressWarnings("deprecation")
   @Override
   public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-    ItemStack heldStack = player.getItemInHand(hand);
+    //    ItemStack heldStack = player.getItemInHand(hand);
     return super.use(state, world, pos, player, hand, hit);
   }
 

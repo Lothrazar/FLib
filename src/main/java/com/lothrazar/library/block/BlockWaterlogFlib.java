@@ -26,6 +26,7 @@ public abstract class BlockWaterlogFlib extends BlockFlib implements SimpleWater
     builder.add(BlockStateProperties.WATERLOGGED);
   }
 
+  @SuppressWarnings("deprecation")
   @Override
   public FluidState getFluidState(BlockState state) {
     return state.getValue(BlockStateProperties.WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
