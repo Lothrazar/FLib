@@ -1,10 +1,10 @@
 {
   "homepage": "https://www.curseforge.com/minecraft/mc-mods/flib",
   "promos": {
-    "1.18.2-latest": "1.0.0"
+    "1.18.2-latest": "0.0.2"
   },
   "1.18.2": {
     "0.0.1": "First",
-    "0.0.2": ""
+    "0.0.2": "Added gamerule support. Remove unused mixins. update facingAttachment block-setting to allow on fences/ironbars/etc.  subcommand /flib override disabled (unused)"
   }
 }

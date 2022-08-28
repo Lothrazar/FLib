@@ -86,15 +86,24 @@ dependencies {
 	
   	implementation group: 'io.karma.sliced', name: 'sliced', version: '1.2.0.19'
   	if(project.mixin.toBoolean()) annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
-  	
   //  implementation fg.deobf("curse.maven:flib-661261:0000000")
+  	
+  	
+    //https://www.curseforge.com/minecraft/mc-mods/enchantment-descriptions
+	//https://www.curseforge.com/minecraft/mc-mods/just-enough-effect-descriptions-jeed
+  //  implementation fg.deobf("curse.maven:bookshelf-228525:3900932")
+  //  implementation fg.deobf("curse.maven:enchantment-descriptions-250419:3941718")
+  //  implementation fg.deobf("curse.maven:just-enough-effect-descriptions-jeed-532286:3820697")
+  	
+  	
+  //  implementation fg.deobf("curse.maven:simple-storage-network-268495:3257204")
+  //  implementation fg.deobf("curse.maven:cyclic-239286:3249448")
+	
 
   //  implementation fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
   //  compileOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}:api")
   //  runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
 
-  //  implementation fg.deobf("curse.maven:simple-storage-network-268495:3257204")
-  //  implementation fg.deobf("curse.maven:cyclic-239286:3249448")
     
     // For more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html

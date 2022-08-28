@@ -5,15 +5,14 @@ import org.apache.logging.log4j.Logger;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameRules.BooleanValue;
 import net.minecraft.world.level.GameRules.Category;
-import net.minecraft.world.level.GameRules.Key;
 
 public class RuleFactory {
 
   public static final Logger LOGGER = LogManager.getLogger();
 
-  public static Key<BooleanValue> createBoolean(String id, boolean defaultVal, Category cat) {
-    LOGGER.info("attempting to register a new gamerule : " + id);
-    var ruleTypeBoolean = GameRules.BooleanValue.create(true); // this works if AT works
+  public static GameRules.Key<BooleanValue> createBoolean(String id, boolean defaultVal, Category cat) {
+    LOGGER.info("Attempting to register a new gamerule : " + id);
+    var ruleTypeBoolean = GameRules.BooleanValue.create(defaultVal); // this works if AT works
     return GameRules.register(id, cat, ruleTypeBoolean);
     //accesstransformer started working, it was this before
     //    try {
