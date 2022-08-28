@@ -14,7 +14,7 @@ import net.minecraft.commands.CommandSourceStack;
  */
 public enum FlibCoreFeatures {
 
-  MAP, COMMANDS;
+  MAP, COMMANDS, ICEFREEZE;
 
   @Override
   public String toString() {

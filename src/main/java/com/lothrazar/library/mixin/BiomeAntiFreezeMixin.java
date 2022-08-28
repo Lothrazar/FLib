@@ -22,14 +22,15 @@ public class BiomeAntiFreezeMixin {
   public void shouldFreeze(LevelReader worldIn, BlockPos pos, boolean mustBeAtEdge, CallbackInfoReturnable<Boolean> info) {
     //    Biome x;
     //    IceBlock yz;
-    FutureLibMod.LOGGER.info("shouldFreeze ENABLED");
     Biome me = (Biome) (Object) this;
-    if (!FlibCoreFeatures.MAP.currentlyEnabled()) {
+    if (!FlibCoreFeatures.ICEFREEZE.currentlyEnabled()) {
+      FutureLibMod.LOGGER.info("shouldFreeze mixin is turned off");
       return;
     }
     //if disable == true, then  
     //    if (worldIn instanceof World &&
     //        RuleRegistry.isEnabled((World) worldIn, RuleRegistry.disableBiomeFreezeIce)) {
+    FutureLibMod.LOGGER.info("shouldFreeze ENABLED " + me);
     info.setReturnValue(false);
     //      GameRuleMod.info("BiomeAntiFreezeMixin mixin success and disableBiomeFreezeIce=true");
     //    }
