@@ -22,7 +22,7 @@ public class FlibBlockEvents {
     if (event.getItemStack().isEmpty()) {
       return;
     }
-    BlockState stateHit = event.getWorld().getBlockState(event.getPos());
+    BlockState stateHit = event.getLevel().getBlockState(event.getPos());
     if (stateHit.getBlock() instanceof BlockFlib block) {
       block.onRightClickBlock(event, stateHit);
     }

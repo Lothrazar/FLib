@@ -2,7 +2,6 @@ package com.lothrazar.library.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import com.lothrazar.library.core.BlockPosDim;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -11,6 +10,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -28,7 +28,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
  */
 public class LevelWorldUtil {
 
-  public static Direction getRandomDirection(Random rand) {
+  public static Direction getRandomDirection(RandomSource rand) {
     int index = Mth.nextInt(rand, 0, Direction.values().length - 1);
     return Direction.values()[index];
   }

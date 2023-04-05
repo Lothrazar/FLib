@@ -1,12 +1,12 @@
 package com.lothrazar.library.item;
 
 import java.util.List;
+import com.lothrazar.library.util.ChatUtil;
 import com.lothrazar.library.util.ItemStackUtil;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.BowItem;
@@ -46,7 +46,7 @@ public class ItemFlib extends Item {
     }
 
     public void tooltipApply(Item block, List<Component> tooltipList) {
-      tooltipList.add(new TranslatableComponent(block.getDescriptionId() + ".tooltip").withStyle(ChatFormatting.GRAY));
+      tooltipList.add(ChatUtil.ilang(block.getDescriptionId() + ".tooltip").withStyle(ChatFormatting.GRAY));
     }
   }
 

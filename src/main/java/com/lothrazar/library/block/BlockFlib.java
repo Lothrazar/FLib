@@ -1,14 +1,14 @@
 package com.lothrazar.library.block;
 
 import java.util.List;
-import java.util.Random;
+import com.lothrazar.library.util.ChatUtil;
 import com.lothrazar.library.util.ItemStackUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
@@ -75,7 +75,7 @@ public class BlockFlib extends Block {
     }
 
     public void tooltipApply(Block block, List<Component> tooltipList) {
-      tooltipList.add(new TranslatableComponent(block.getDescriptionId() + ".tooltip").withStyle(ChatFormatting.GRAY));
+      tooltipList.add(ChatUtil.ilang(block.getDescriptionId() + ".tooltip").withStyle(ChatFormatting.GRAY));
     }
   }
 
@@ -150,7 +150,7 @@ public class BlockFlib extends Block {
   }
 
   @Override
-  public void tick(BlockState state, ServerLevel world, BlockPos pos, Random rand) {
+  public void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource rand) {
     if (me.litWhenPowered && state.getValue(LIT) && !world.hasNeighborSignal(pos)) {
       world.setBlock(pos, state.cycle(LIT), 2);
     }
@@ -176,8 +176,8 @@ public class BlockFlib extends Block {
   public void onRightClickBlock(RightClickBlock event, BlockState state) {
     if (me.rotateColour &&
         event.getItemStack().getItem() instanceof DyeItem newColor) {
-      boolean doConnected = event.getPlayer().isCrouching();
-      rotateDye(state, event.getWorld(), event.getPos(), event.getPlayer(), event.getItemStack(), newColor.getDyeColor(), doConnected);
+      boolean doConnected = event.getEntity().isCrouching();
+      rotateDye(state, event.getLevel(), event.getPos(), event.getEntity(), event.getItemStack(), newColor.getDyeColor(), doConnected);
     }
   }
 

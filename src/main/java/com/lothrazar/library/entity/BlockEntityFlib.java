@@ -94,7 +94,7 @@ public abstract class BlockEntityFlib extends BlockEntity {
       return InteractionResult.FAIL;
     }
     try {
-      fakePlayer.get().gameMode.handleBlockBreakAction(targetPos, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, facing, world.getMaxBuildHeight());
+      fakePlayer.get().gameMode.handleBlockBreakAction(targetPos, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, facing, world.getMaxBuildHeight(), 0);
       return InteractionResult.SUCCESS;
     }
     catch (Exception e) {

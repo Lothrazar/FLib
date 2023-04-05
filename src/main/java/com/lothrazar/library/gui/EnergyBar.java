@@ -3,12 +3,12 @@ package com.lothrazar.library.gui;
 import java.util.ArrayList;
 import java.util.List;
 import com.lothrazar.library.FutureLibMod;
+import com.lothrazar.library.util.ChatUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 
 public class EnergyBar {
@@ -54,7 +54,7 @@ public class EnergyBar {
     if (visible && this.isMouseover(mouseX, mouseY)) {
       String tt = energ + "/" + this.capacity;
       List<Component> list = new ArrayList<>();
-      list.add(new TranslatableComponent(tt));
+      list.add(ChatUtil.ilang(tt));
       parent.renderComponentTooltip(ms, list, mouseX, mouseY);
     }
   }

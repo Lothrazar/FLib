@@ -1,23 +1,15 @@
-buildscript {
-    repositories {
-        maven { url = 'https://maven.minecraftforge.net/' }
-		maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-		classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
-    }
-}
 plugins {
     id 'eclipse'
     id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '5.1.+'
     id 'checkstyle'
 }
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'org.spongepowered.mixin'
+
+
 import net.minecraftforge.gradle.common.tasks.SignJar
+
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 
 version = "${mc_version}-${mod_version}"
@@ -26,7 +18,7 @@ archivesBaseName = 'flib'
 
 minecraft {
 
-    mappings channel: 'official', version: '1.18.2'
+    mappings channel: 'official', version: '1.19.2'
  
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -43,7 +35,7 @@ minecraft {
             //  property 'mixin.env.disableRefMap', 'true'
             
             // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.markers', 'REGISTRIES'
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
@@ -82,9 +74,9 @@ dependencies {
 
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
-    implementation fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
+  //  implementation fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
 	
-  	implementation group: 'io.karma.sliced', name: 'sliced', version: '1.2.0.19'
+  //	implementation group: 'io.karma.sliced', name: 'sliced', version: '1.2.0.19'
   	if(project.mixin.toBoolean()) annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
   //  implementation fg.deobf("curse.maven:flib-661261:0000000")
   	
@@ -111,11 +103,6 @@ dependencies {
     
 }
 
-mixin {
-    if(project.mixin.toBoolean()) add sourceSets.main, "flib.refmap.json"
-    
-   disableTargetValidator = false
-}
 
 repositories {
   maven {
@@ -175,6 +162,11 @@ publishing {
         }
     }
 }
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
 tasks.withType(Checkstyle) {
     reports {
         xml.required = true
