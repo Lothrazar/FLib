@@ -5,11 +5,8 @@ plugins {
     id 'checkstyle'
 }
 
-
 import net.minecraftforge.gradle.common.tasks.SignJar
-
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 
 version = "${mc_version}-${mod_version}"
@@ -18,7 +15,7 @@ archivesBaseName = 'flib'
 
 minecraft {
 
-    mappings channel: 'official', version: '1.19.2'
+    mappings channel: 'official', version: "${mc_version}"
  
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -74,7 +71,7 @@ dependencies {
 
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
-  //  implementation fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
+	runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
 	
   //	implementation group: 'io.karma.sliced', name: 'sliced', version: '1.2.0.19'
   	if(project.mixin.toBoolean()) annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
