@@ -100,7 +100,7 @@ public class EntityUtil {
   }
 
   private static void teleportWallSafe(LivingEntity player, Level world, double x, double y, double z) {
-    BlockPos coords = new BlockPos(x, y, z);
+    BlockPos coords = BlockPos.containing(x, y, z);
     world.getChunk(coords).setUnsaved(true);
     player.teleportTo(x, y, z);
     moveEntityWallSafe(player, world);

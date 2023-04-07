@@ -1,10 +1,10 @@
 package com.lothrazar.library.item;
 
 import java.util.List;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import com.lothrazar.library.util.ChatUtil;
 import com.lothrazar.library.util.ItemStackUtil;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -90,12 +90,12 @@ public class ItemFlib extends Item {
     if (world.isClientSide) {
       return;
     }
-    Vec3 vector3d1 = shooter.getUpVector(1.0F);
+    Vec3 vec31 = shooter.getUpVector(1.0F);
+    Quaternionf quaternionf = (new Quaternionf()).setAngleAxis(pitch * ((float) Math.PI / 180F), vec31.x, vec31.y, vec31.z);
     // pitch is degrees so can be -10, +10, etc
-    Quaternion quaternion = new Quaternion(new Vector3f(vector3d1), pitch, true);
-    Vec3 vector3d = shooter.getViewVector(1.0F);
-    Vector3f vector3f = new Vector3f(vector3d);
-    vector3f.transform(quaternion);
+    //    Quaternionf quaternion = new Quaternionf(new Vector3f(vector3d1), pitch, true);
+    Vec3 vec3 = shooter.getViewVector(1.0F);
+    Vector3f vector3f = vec3.toVector3f().rotate(quaternionf);
     ball.shoot(vector3f.x(), vector3f.y(), vector3f.z(), velocityFactor * VELOCITY_MAX, INACCURACY_DEFAULT);
     //    worldIn.playSound(null, player.getPosX(), player.getPosY(), player.getPosZ(),
     //        SoundEvents.ENTITY_ENDER_PEARL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));

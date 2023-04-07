@@ -94,7 +94,7 @@ public class ItemStackUtil {
 
   public static boolean matches(ItemStack current, ItemStack in) {
     //first one fails if size is off
-    return ItemStack.isSameIgnoreDurability(current, in)
+    return ItemStack.isSame(current, in)
         && ItemStack.tagMatches(current, in);
   }
 
