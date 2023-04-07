@@ -37,7 +37,6 @@ minecraft {
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
-			arg project.mixin.toBoolean() ? "-mixin.config=flib.mixins.json" : ""
             mods {
                 flib {
                     source sourceSets.main
@@ -54,7 +53,6 @@ minecraft {
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
-			arg project.mixin.toBoolean() ? "-mixin.config=flib.mixins.json" : ""
             mods {
                 flib {
                     source sourceSets.main
@@ -73,8 +71,8 @@ dependencies {
 
 	runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
 	
-  //	implementation group: 'io.karma.sliced', name: 'sliced', version: '1.2.0.19'
-  	if(project.mixin.toBoolean()) annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
+  // 	implementation group: 'io.karma.sliced', name: 'sliced', version: '1.4.0.21'
+
   //  implementation fg.deobf("curse.maven:flib-661261:0000000")
   	
   	
@@ -89,7 +87,10 @@ dependencies {
   //  implementation fg.deobf("curse.maven:cyclic-239286:3249448")
 	
 
-  //  implementation fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
+  //  implementation fg.deobf("top.theillusivec4.curios:curios-forge:${mc_version}-${curios_version}")
+    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${mc_version}-${curios_version}:api")
+    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${mc_version}-${curios_version}")
+
   //  compileOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}:api")
   //  runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
 
@@ -135,10 +136,7 @@ jar {
             "Implementation-Title": project.name,
             "Implementation-Version": "${version}",
             "Implementation-Vendor" :"flibsareus",
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
-            "MixinConfigs": "flib.mixins.json",
-            "FMLCorePluginContainsFMLMod": "true"
+            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
 }
