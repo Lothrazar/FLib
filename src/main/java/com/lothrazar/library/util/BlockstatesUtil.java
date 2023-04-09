@@ -1,11 +1,14 @@
 package com.lothrazar.library.util;
 
 import java.util.ArrayList;
+import com.lothrazar.library.block.BlockFlib;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class BlockstatesUtil {
 
@@ -49,5 +52,11 @@ public class BlockstatesUtil {
       }
     }
     return found;
+  }
+
+  public static int colFromState(BlockState state) {
+    DyeColor colour = state.getValue(BlockFlib.COLOUR);
+    int col = colour.getMaterialColor().col | 0xFF000000;
+    return col;
   }
 }

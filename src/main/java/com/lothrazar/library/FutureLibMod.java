@@ -52,4 +52,7 @@ public class FutureLibMod {
   private void setupClient(final FMLClientSetupEvent event) {
     //   placeholder
   }
+  //  IItemRenderProperties is IClientBlockExtensions now. 
+  //hasContainerItem() is hasCraftingRemainingItem() 
+  //and getContainerItem() is getCraftingRemainingItem() now
 }
