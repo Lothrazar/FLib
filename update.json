@@ -10,9 +10,10 @@
     "0.0.2": "Added gamerule support. Remove unused mixins. update facingAttachment block-setting to allow on fences/ironbars/etc.  subcommand /flib override disabled (unused)"
   },
   "1.19.2": {
-  
+  	"0.0.3":"First 1.19 port"
   },
   "1.19.4": {
-  
+  	"0.0.3":"First 1.19 port. Added RegistryFactory for creative tabs. ",
+  	"0.0.4":"Added RecipeCompostFactory"
   }
 }
