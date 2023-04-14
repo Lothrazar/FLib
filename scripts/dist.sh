@@ -11,4 +11,6 @@ cp -R build/libs/. ../CustomGameRules/libs
 cp -R build/libs/. ../ForgeTemplate/libs
 cp -R build/libs/. ../Scraps/libs
 cp -R build/libs/. ../SaplingGrowthControl/libs
+cp -R build/libs/. ../cobblestoney/libs
+cp -R build/libs/. ../absentbydesign/libs
 
