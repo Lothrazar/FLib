@@ -11,6 +11,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.DirectionalPlaceContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.Rotation;
@@ -18,6 +19,19 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 
 public class BlockUtil {
+
+  @SuppressWarnings("deprecation")
+  public static Block.Properties wrap(Block.Properties propIn, Block blockIn) {
+    if (blockIn.properties != null
+        && blockIn.properties.materialColor != null) {
+      propIn.materialColor = (state) -> {
+        return blockIn.properties.materialColor.apply(blockIn.defaultBlockState());
+      };
+    }
+    return propIn
+        .sound(blockIn.getSoundType(blockIn.defaultBlockState()))
+        .strength(blockIn.defaultBlockState().destroySpeed);
+  }
 
   public static boolean rotateBlockValidState(Level world, BlockPos pos, Direction side) {
     BlockState clicked = world.getBlockState(pos);

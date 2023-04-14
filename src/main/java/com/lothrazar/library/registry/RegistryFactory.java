@@ -11,12 +11,18 @@ import net.minecraftforge.registries.RegistryObject;
 public class RegistryFactory {
 
   public static void buildTab(CreativeModeTabEvent.Register event, String modid, Item icon, DeferredRegister<Item> items) {
+    buildTab(event, modid, new ItemStack(icon), items);
+  }
+
+  public static void buildTab(CreativeModeTabEvent.Register event, String modid, ItemStack icon, DeferredRegister<Item> items) {
     event.registerCreativeModeTab(new ResourceLocation(modid, "tab"), builder -> builder
         .title(Component.translatable("itemGroup." + modid))
-        .icon(() -> new ItemStack(icon))
+        .icon(() -> icon)
         .displayItems((enabledFlags, populator) -> {
-          for (RegistryObject<Item> b : items.getEntries()) {
-            populator.accept(b.get());
+          if (items != null) {
+            for (RegistryObject<Item> b : items.getEntries()) {
+              populator.accept(b.get());
+            }
           }
         }));
   }

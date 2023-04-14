@@ -3,7 +3,11 @@ package com.lothrazar.library.util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class ParticleUtil {
 
@@ -57,5 +61,16 @@ public class ParticleUtil {
           z + getHorizRandom(world, RANDOM_HORIZ),
           0.0D, 0.0D, 0.0D);
     }
+  }
+
+  @OnlyIn(Dist.CLIENT)
+  public static void spawnBlockParticles(SimpleParticleType partIn, Level worldIn, BlockPos pos, RandomSource rand) {
+    double x = pos.getX() + rand.nextDouble();
+    double y = pos.getY() + rand.nextDouble();
+    double z = pos.getZ() + rand.nextDouble();
+    double xSp = (rand.nextDouble() - 0.5D) * 0.5D;
+    double ySp = (rand.nextDouble() - 0.5D) * 0.5D;
+    double zSp = (rand.nextDouble() - 0.5D) * 0.5D;
+    worldIn.addParticle(partIn, x, y, z, xSp, ySp, zSp);
   }
 }
