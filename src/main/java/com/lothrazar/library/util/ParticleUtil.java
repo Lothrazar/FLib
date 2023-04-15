@@ -3,8 +3,14 @@ package com.lothrazar.library.util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.FireworkRocketEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -72,5 +78,17 @@ public class ParticleUtil {
     double ySp = (rand.nextDouble() - 0.5D) * 0.5D;
     double zSp = (rand.nextDouble() - 0.5D) * 0.5D;
     worldIn.addParticle(partIn, x, y, z, xSp, ySp, zSp);
+  }
+
+  public static void doFireworks(Player player, Level world, double z, double y, double x) {
+    Entity rocket = new FireworkRocketEntity(world, new ItemStack(Items.FIREWORK_ROCKET), player);
+    rocket.setPos(x, y, z);
+    world.addFreshEntity(rocket);
+  }
+
+  public static void doSmoke(Level world, double z, double y, double x) {
+    for (int i = 0; i < 20; i++) {
+      world.addParticle(ParticleTypes.SMOKE, x, y, z, 0.0D, 0.2D, 0.0D);
+    }
   }
 }
