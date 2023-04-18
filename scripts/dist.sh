@@ -14,6 +14,7 @@ cp -R build/libs/. ../SaplingGrowthControl/libs
 cp -R build/libs/. ../cobblestoney/libs
 cp -R build/libs/. ../absentbydesign/libs
 cp -R build/libs/. ../antibonemeal/libs
+cp -R build/libs/. ../BlockLayers/libs
 cp -R build/libs/. ../AutoRun/libs
 
 
