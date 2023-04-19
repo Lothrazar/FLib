@@ -29,7 +29,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class StringParseUtil {
 
-  public static boolean isInList(final List<String> list, ResourceLocation toMatch) {
+  public static boolean isInList(final List<? extends String> list, ResourceLocation toMatch) {
     return isInList(list, toMatch, true);
   }
 
@@ -38,7 +38,7 @@ public class StringParseUtil {
    * <p>
    * If the list has "hc:*_sapling" and input is "hc:whatever_sapling" then match is true
    */
-  public static boolean isInList(final List<String> list, ResourceLocation toMatch, boolean matchWildcard) {
+  public static boolean isInList(final List<? extends String> list, ResourceLocation toMatch, boolean matchWildcard) {
     if (toMatch == null || list == null) {
       return false;
     }
