@@ -37,7 +37,7 @@ public class SoundUtil {
     }
   }
 
-  public static void playSoundFromServer(ServerPlayer entityIn, BlockPos pos, SoundEvent soundIn, float p, float v) {
+  public static void playSoundFromServer(ServerPlayer entityIn, BlockPos pos, SoundEvent soundIn, float vol, float pitch) {
     if (soundIn == null || entityIn == null) {
       return;
     }
@@ -45,10 +45,10 @@ public class SoundUtil {
         Holder.direct(soundIn),
         SoundSource.BLOCKS,
         pos.getX(), pos.getY(), pos.getZ(),
-        p, v, 0));
+        vol, pitch, entityIn.level.getRandom().nextLong()));
   }
 
-  public static void playSoundFromServer(ServerPlayer entityIn, SoundEvent soundIn, float p, float v) {
+  public static void playSoundFromServer(ServerPlayer entityIn, SoundEvent soundIn, float vol, float pitch) {
     if (soundIn == null || entityIn == null) {
       return;
     }
@@ -56,7 +56,7 @@ public class SoundUtil {
         Holder.direct(soundIn),
         SoundSource.BLOCKS,
         entityIn.xOld, entityIn.yOld, entityIn.zOld,
-        p, v, 0));
+        vol, pitch, entityIn.level.getRandom().nextLong()));
   }
 
   public static void playSoundFromServer(ServerLevel world, BlockPos pos, SoundEvent soundIn) {

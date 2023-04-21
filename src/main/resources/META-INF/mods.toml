@@ -51,6 +51,6 @@ Future Library.  Empowers many forge mods.  by Lothrazar
 [[dependencies.flib]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19.2,)"
+    versionRange="[1.19.4,)"
     ordering="NONE"
     side="BOTH"

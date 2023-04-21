@@ -17,5 +17,10 @@ cp -R build/libs/. ../antibonemeal/libs
 cp -R build/libs/. ../BlockLayers/libs
 cp -R build/libs/. ../AutoRun/libs
 cp -R build/libs/. ../FragileTorches/libs
+cp -R build/libs/. ../GardenTools/libs
+cp -R build/libs/. ../Cyclic/libs
+cp -R build/libs/. ../GlassCutter/libs
+cp -R build/libs/. ../FragileTorches/libs
 
+cp -R build/libs/. ../HeartBalance/libs
 
