@@ -2,6 +2,7 @@ package com.lothrazar.library.module;
 
 import java.util.Collection;
 import java.util.Random;
+import java.util.stream.Collectors;
 import com.lothrazar.library.FutureLibMod;
 import com.lothrazar.library.core.BlockPosDim;
 import com.lothrazar.library.util.AttributesUtil;
@@ -15,6 +16,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.DimensionArgument;
@@ -27,7 +29,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Score;
@@ -55,7 +60,7 @@ public class CommandModule {
 
   public enum SubCommands {
 
-    TPX, HEALTH, HUNGER, HEARTS, GAMEMODE, SCOREBOARD, ATTRIBUTE, OVERRIDE;
+    TPX, HEALTH, HUNGER, HEARTS, GAMEMODE, SCOREBOARD, ATTRIBUTE, OVERRIDE, DEBUG;
 
     @Override
     public String toString() {
@@ -84,6 +89,26 @@ public class CommandModule {
                       return 0; // FlibCoreFeatures.executeCommand(x, StringArgumentType.getString(x, "corefeature"), BoolArgumentType.getBool(x, "value"));
                     }))))
         //                /flib tpx minecraft:the_end 0 99 0 @p
+        .then(Commands.literal(SubCommands.DEBUG.toString())
+            .requires((p) -> {
+              return p.hasPermission(PERM_ELEVATED);
+            })
+            .then(Commands.literal("itemheld")
+                .then(Commands.literal("nbt")
+                    .executes(x -> {
+                      return CommandModule.executePrintNbt(x);
+                    }))
+                .then(Commands.literal("tags")
+                    .executes(x -> {
+                      return CommandModule.executePrintTags(x);
+                    })))
+            .then(Commands.literal("player")
+                .then(Commands.argument("p", EntityArgument.players())
+                    .then(Commands.literal("info")
+                        .executes(x -> {
+                          return CommandModule.executePrintPlayerNbt(x, EntityArgument.getPlayers(x, "p"));
+                        })))))
+        //
         .then(Commands.literal(SubCommands.TPX.toString())
             .requires((p) -> {
               return p.hasPermission(PERM_ELEVATED);
@@ -427,5 +452,34 @@ public class CommandModule {
       }
       return 0;
     }
+  }
+
+  public static int executePrintPlayerNbt(CommandContext<CommandSourceStack> ctx, Collection<ServerPlayer> collection) throws CommandSyntaxException {
+    for (ServerPlayer player : collection) {
+      ChatUtil.sendFeedback(ctx, player.getStringUUID()); // + "|" + player.getDisplayName().getString());
+      //      ChatUtil.sendFeedback(ctx, player.getEntityData().toString());
+    }
+    return 0;
+  }
+
+  public static int executePrintNbt(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+    ServerPlayer player = ctx.getSource().getPlayerOrException();
+    ItemStack held = player.getMainHandItem();
+    if (held.hasTag()) {
+      ChatUtil.sendFeedback(ctx, held.getTag().toString());
+    }
+    else {
+      ChatUtil.sendFeedback(ctx, "command.flib.nbtprint.null");
+    }
+    return 0;
+  }
+
+  public static int executePrintTags(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+    ServerPlayer player = ctx.getSource().getPlayerOrException();
+    ItemStack held = player.getMainHandItem();
+    for (TagKey<Item> tag : held.getTags().collect(Collectors.toList())) {
+      ChatUtil.sendFeedback(ctx, tag.toString());
+    }
+    return 0;
   }
 }

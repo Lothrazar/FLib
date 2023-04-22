@@ -24,3 +24,5 @@ cp -R build/libs/. ../FragileTorches/libs
 
 cp -R build/libs/. ../HeartBalance/libs
 
+cp -R build/libs/. ../NoLogPunch/libs
+cp -R build/libs/. ../NoLavaBuild/libs
