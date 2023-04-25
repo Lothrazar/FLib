@@ -1,4 +1,4 @@
-package com.lothrazar.library.reflect;
+package com.lothrazar.library.registry;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
