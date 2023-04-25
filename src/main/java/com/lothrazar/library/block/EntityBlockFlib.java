@@ -11,9 +11,9 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
-public abstract class BaseEntityBlockFlib extends BlockFlib implements EntityBlock {
+public abstract class EntityBlockFlib extends BlockFlib implements EntityBlock {
 
-  public BaseEntityBlockFlib(Properties prop, BlockFlib.Settings custom) {
+  public EntityBlockFlib(Properties prop, BlockFlib.Settings custom) {
     super(prop, custom);
   }
 
@@ -22,7 +22,7 @@ public abstract class BaseEntityBlockFlib extends BlockFlib implements EntityBlo
    * 
    * @param prop
    */
-  public BaseEntityBlockFlib(Properties prop) {
+  public EntityBlockFlib(Properties prop) {
     this(prop, new BlockFlib.Settings().tooltip());
   }
 

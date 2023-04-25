@@ -1,10 +1,11 @@
-package com.lothrazar.library.module;
+package com.lothrazar.library.mod;
 
 import java.util.Collection;
 import java.util.Random;
 import java.util.stream.Collectors;
 import com.lothrazar.library.FutureLibMod;
 import com.lothrazar.library.core.BlockPosDim;
+import com.lothrazar.library.events.EventFlib;
 import com.lothrazar.library.util.AttributesUtil;
 import com.lothrazar.library.util.ChatUtil;
 import com.lothrazar.library.util.EntityUtil;
@@ -40,7 +41,7 @@ import net.minecraft.world.scores.Scoreboard;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-public class CommandModule {
+public class CommandModule extends EventFlib {
 
   public static final Random RAND = new Random();
   private static final String FORK_RESET = "reset";

@@ -5,17 +5,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-/**
- * NOT loaded by default load this into your event bus to pull in
- *
- *
- * Import @MinecraftForge and run
- * 
- * MinecraftForge.EVENT_BUS.register(new CapabilityEvents());
- * 
- * inside of the event @FMLCommonSetupEvent
- */
-public class FlibBlockEvents {
+public class FlibBlockEvents extends EventFlib {
 
   @SubscribeEvent
   public void onRightClickBlock(RightClickBlock event) {

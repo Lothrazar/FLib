@@ -3,10 +3,10 @@ package com.lothrazar.library;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.lothrazar.library.events.FlibBlockEvents;
-import com.lothrazar.library.module.CommandModule;
-import com.lothrazar.library.module.ConfigModule;
-import com.lothrazar.library.registry.PacketRegistry;
-import net.minecraftforge.common.MinecraftForge;
+import com.lothrazar.library.mod.CommandModule;
+import com.lothrazar.library.mod.ConfigModule;
+import com.lothrazar.library.mod.PacketRegistry;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -19,40 +19,26 @@ public class FutureLibMod {
   public static final String MODID = "flib";
   public static final Logger LOGGER = LogManager.getLogger();
 
+  /**
+   * all "content" of the mod such as built in commands are in the 'library.mod' package, to keep it split up from the rest of the library code
+   */
   public FutureLibMod() {
-    ConfigModule.setup();
-    MinecraftForge.EVENT_BUS.register(new CommandModule());
-    MinecraftForge.EVENT_BUS.register(new FlibBlockEvents());
-    FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-    FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupClient);
+    new ConfigModule();
+    new CommandModule();
+    new FlibBlockEvents();
+    IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+    bus.addListener(this::setup);
+    bus.addListener(this::setupClient);
   }
 
-  //TODO: add command!!
-  // mostly for testing
-  //1:  /flib tpx <dim> @p x y z
-  //    /flib tpxsave <dim> @p x y z
-  //    /flib tpxback @p(teleport dim) to test dimension transit
-  //     make it save. aka TP save
-  //then add a tp/back . goes back to previous spot and also clears it
-  // IMC . any other mod TO flib 
-  // gamerule mixin
-  //elementary ores
-  //
+  private void setupClient(final FMLClientSetupEvent event) {
+    //   placeholder/example
+  }
+
   private void setup(final FMLCommonSetupEvent event) {
     PacketRegistry.setup();
     InterModComms.getMessages(MODID).forEach(x -> {
       LOGGER.info("registration from " + x.senderModId() + " | " + x.messageSupplier().get());
     });
-    //set features hooked to config
-    //    FlibCoreFeatures.INSTANCE.put(FlibCoreFeatures.COMMANDS, () -> ConfigModule.ENABLE_COMMANDS.get());
-    //   LOGGER.info("FlibCoreFeatures loaded : " + FlibCoreFeatures.values());
-    //    var ruleTypeBoolean2 = GameRules.BooleanValue.create(true); // this works if AT works
   }
-
-  private void setupClient(final FMLClientSetupEvent event) {
-    //   placeholder
-  }
-  //  IItemRenderProperties is IClientBlockExtensions now. 
-  //hasContainerItem() is hasCraftingRemainingItem() 
-  //and getContainerItem() is getCraftingRemainingItem() now
 }

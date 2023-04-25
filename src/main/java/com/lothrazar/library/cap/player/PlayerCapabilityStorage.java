@@ -12,6 +12,10 @@ public class PlayerCapabilityStorage {
 
   public PlayerCapabilityStorage() {}
 
+  public PlayerCapabilityStorage(CompoundTag tag) {
+    this.read(tag);
+  }
+
   public int getMana() {
     return mana;
   }
@@ -28,11 +32,13 @@ public class PlayerCapabilityStorage {
     mana = source.mana;
   }
 
-  public void saveNBTData(CompoundTag compound) {
+  public CompoundTag write() {
+    CompoundTag compound = new CompoundTag();
     compound.putInt("mana", mana);
+    return compound;
   }
 
-  public void loadNBTData(CompoundTag compound) {
+  public void read(CompoundTag compound) {
     mana = compound.getInt("mana");
   }
 }

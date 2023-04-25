@@ -17,6 +17,9 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public class ItemStackUtil {
 
+  //  IItemRenderProperties is IClientBlockExtensions now. 
+  //hasContainerItem() is hasCraftingRemainingItem() 
+  //and getContainerItem() is getCraftingRemainingItem() now
   public static int countEmptySlots(IItemHandler handler) {
     if (handler == null) {
       return 0;

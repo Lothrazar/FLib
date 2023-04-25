@@ -13,7 +13,7 @@ import net.minecraftforge.common.util.LazyOptional;
 
 public class PlayerCapProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
 
-  public static Capability<PlayerCapabilityStorage> CYCLIC_PLAYER = CapabilityManager.get(new CapabilityToken<>() {
+  public static Capability<PlayerCapabilityStorage> PLAYERCAP = CapabilityManager.get(new CapabilityToken<>() {
     //empty by design
   });
   private PlayerCapabilityStorage playerMana = null;
@@ -30,7 +30,7 @@ public class PlayerCapProvider implements ICapabilityProvider, INBTSerializable<
   @Nonnull
   @Override
   public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap) {
-    if (cap == CYCLIC_PLAYER) {
+    if (cap == PLAYERCAP) {
       return opt.cast();
     }
     return LazyOptional.empty();
@@ -44,13 +44,11 @@ public class PlayerCapProvider implements ICapabilityProvider, INBTSerializable<
 
   @Override
   public CompoundTag serializeNBT() {
-    CompoundTag nbt = new CompoundTag();
-    createMe().saveNBTData(nbt);
-    return nbt;
+    return createMe().write();
   }
 
   @Override
   public void deserializeNBT(CompoundTag nbt) {
-    createMe().loadNBTData(nbt);
+    createMe().read(nbt);
   }
 }

@@ -8,7 +8,7 @@ import net.minecraftforge.network.NetworkEvent;
 /**
  * Used by: Fan block; Launch enchant; Air charm; Climbing Glove; Scaffolding Block
  */
-public class PacketPlayerFalldamage extends PacketBaseFlib {
+public class PacketPlayerFalldamage extends PacketFlib {
 
   public static final int TICKS_FALLDIST_SYNC = 22; //tick every so often
 
