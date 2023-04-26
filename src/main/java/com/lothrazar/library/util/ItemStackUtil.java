@@ -2,7 +2,11 @@ package com.lothrazar.library.util;
 
 import java.util.List;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
@@ -10,6 +14,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.items.IItemHandler;
@@ -17,9 +22,61 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public class ItemStackUtil {
 
+  public static final String NBT_LORE = "Lore";
+  public static final String NBT_DISPLAY = "display";
   //  IItemRenderProperties is IClientBlockExtensions now. 
   //hasContainerItem() is hasCraftingRemainingItem() 
   //and getContainerItem() is getCraftingRemainingItem() now
+
+  /**
+   * example
+   * 
+   * "display": { "Lore": [ "[{\"text\":\"item.enchantingrunes.rune_a\",\"color\":\"gold\"}]" ] },
+   * 
+   * @param crafting
+   * @param lore
+   * @param color
+   */
+  public static void addLoreToStack(ItemStack crafting, String lore, String color) {
+    CompoundTag displayTag = new CompoundTag();
+    ListTag tagList = new ListTag();
+    if (color == null) {
+      color = "gold";
+    }
+    String escaped = "{\"text\":\"" + lore + "\",\"color\":\"" + color + "\"}";
+    tagList.add(StringTag.valueOf(escaped));
+    displayTag.put(NBT_LORE, tagList);
+    crafting.getTag().put(NBT_DISPLAY, displayTag);
+  }
+
+  public static void applyRandomEnch(RandomSource random, ItemStack crafting) {
+    crafting = EnchantmentHelper.enchantItem(random, crafting, 1, false);
+  }
+
+  public static void applyRandomEnch(RandomSource random, ItemStack crafting, int level, boolean allowTreasure) {
+    applyRandomEnch(random, crafting);
+  }
+  //  private void merge(Map<Enchantment, Integer> oldEnch, ItemStack crafting) {
+  //    Map<Enchantment, Integer> newEnch = EnchantmentHelper.getEnchantments(crafting);
+  //    //anything in new thats also in old, merge it over
+  //    for (Entry<Enchantment, Integer> newEntry : newEnch.entrySet()) {
+  //      //
+  //      //if this exists in the old list, merge into new
+  //      if (oldEnch.containsKey(newEntry.getKey())) {
+  //        //take max of each
+  //        newEnch.put(newEntry.getKey(), Math.max(newEntry.getValue(), oldEnch.get(newEntry.getKey())));
+  //      }
+  //    }
+  //    //anything in old thats NOT in new
+  //    for (Entry<Enchantment, Integer> oldEntry : oldEnch.entrySet()) {
+  //      if (!newEnch.containsKey(oldEntry.getKey())) {
+  //        //new list does NOT hvae this thing from old
+  //        newEnch.put(oldEntry.getKey(), oldEntry.getValue());
+  //      }
+  //    }
+  //    EnchantmentHelper.setEnchantments(newEnch, crafting);
+  //  }
+
   public static int countEmptySlots(IItemHandler handler) {
     if (handler == null) {
       return 0;
@@ -59,6 +116,10 @@ public class ItemStackUtil {
   }
 
   public static void damageItem(LivingEntity player, ItemStack stack) {
+    damageItem(player, stack, InteractionHand.MAIN_HAND);
+  }
+
+  public static void damageItem(LivingEntity player, ItemStack stack, InteractionHand hand) {
     if (!stack.isDamageableItem()) {
       //unbreakable
       return;

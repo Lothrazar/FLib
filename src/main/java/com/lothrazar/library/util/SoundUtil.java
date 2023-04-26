@@ -15,6 +15,10 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public class SoundUtil {
 
+  public static void playSoundAtBlock(Level world, Entity player, BlockPos pos, SoundEvent soundIn) {
+    world.playSound(player, pos, soundIn, SoundSource.BLOCKS, 1, 1);
+  }
+
   public static void playSound(Level world, BlockPos pos, SoundEvent soundIn) {
     world.playLocalSound(pos.getX(), pos.getY(), pos.getZ(), soundIn, SoundSource.BLOCKS, 0.5F, 0.5F, false);
   }

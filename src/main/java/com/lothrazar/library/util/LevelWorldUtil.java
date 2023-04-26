@@ -106,6 +106,18 @@ public class LevelWorldUtil {
     }
     return entityItem;
   }
+
+  public static void dropItemStackRandomMotion(Level world, BlockPos pos, ItemStack itemStack, float motion) {
+    ItemEntity entityitem = new ItemEntity(world,
+        pos.getX() + world.random.nextFloat() * 0.8F + 0.1F,
+        pos.getY() + world.random.nextFloat() * 0.8F + 0.1F,
+        pos.getZ() + world.random.nextFloat() * 0.8F + 0.1F, itemStack);
+    float motionX = (float) world.random.nextGaussian() * motion;
+    float motionY = (float) world.random.nextGaussian() * motion + 0.2F;
+    float motionZ = (float) world.random.nextGaussian() * motion;
+    entityitem.setDeltaMovement(motionX, motionY, motionZ);
+    world.addFreshEntity(entityitem);
+  }
   //  public static BlockPos getRandomPos(Random rand, BlockPos here, int hRadius) {
   //    int x = here.getX();
   //    int z = here.getZ();

@@ -95,7 +95,7 @@ public class AttributesUtil {
     removePlayerReach(id, player);
     AttributeInstance attr = player.getAttribute(ForgeMod.BLOCK_REACH.get());
     //vanilla is 5, so +11 it becomes 16
-    AttributeModifier enchantment = new AttributeModifier(id, "ReachEnchantmentCyclic", reachBoost, AttributeModifier.Operation.ADDITION);
+    AttributeModifier enchantment = new AttributeModifier(id, "ReachFLIB", reachBoost, AttributeModifier.Operation.ADDITION);
     attr.addPermanentModifier(enchantment);
   }
 
@@ -106,7 +106,7 @@ public class AttributesUtil {
     double old = oldHealthModifier == null ? 0 : oldHealthModifier.getAmount();
     double newVal = value + old;
     healthAttribute.removeModifier(id);
-    AttributeModifier healthModifier = new AttributeModifier(id, "Bonus from Cyclic", newVal, AttributeModifier.Operation.ADDITION);
+    AttributeModifier healthModifier = new AttributeModifier(id, "Bonus", newVal, AttributeModifier.Operation.ADDITION);
     healthAttribute.addPermanentModifier(healthModifier);
     if (attr == Attributes.MAX_HEALTH
         && playerIn.getHealth() > healthAttribute.getValue()) {
