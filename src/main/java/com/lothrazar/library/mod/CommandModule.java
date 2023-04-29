@@ -1,6 +1,8 @@
 package com.lothrazar.library.mod;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import com.lothrazar.library.FutureLibMod;
@@ -10,7 +12,6 @@ import com.lothrazar.library.util.AttributesUtil;
 import com.lothrazar.library.util.ChatUtil;
 import com.lothrazar.library.util.EntityUtil;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -61,7 +62,7 @@ public class CommandModule extends EventFlib {
 
   public enum SubCommands {
 
-    TPX, HEALTH, HUNGER, HEARTS, GAMEMODE, SCOREBOARD, ATTRIBUTE, OVERRIDE, DEBUG;
+    TPX, HEALTH, HUNGER, HEARTS, GAMEMODE, SCOREBOARD, ATTRIBUTE, DEBUG, HELP;
 
     @Override
     public String toString() {
@@ -77,18 +78,14 @@ public class CommandModule extends EventFlib {
     }
     CommandDispatcher<CommandSourceStack> r = event.getDispatcher();
     r.register(LiteralArgumentBuilder.<CommandSourceStack> literal(FutureLibMod.MODID)
-        // cyclic gamemode @p 1
-        .then(Commands.literal(SubCommands.OVERRIDE.toString())
+        .then(Commands.literal(SubCommands.HELP.toString())
             .requires((p) -> {
-              return p.hasPermission(1);
+              return p.hasPermission(0); // everyone
             })
-            .then(Commands.argument("corefeature", StringArgumentType.word())
-                .then(Commands.argument("value", BoolArgumentType.bool())
-                    .executes(x -> {
-                      FutureLibMod.LOGGER.error("/flib override test command ");
-                      //                      FutureLibMod.LOGGER.error("corefeature list: " + FlibCoreFeatures.values());
-                      return 0; // FlibCoreFeatures.executeCommand(x, StringArgumentType.getString(x, "corefeature"), BoolArgumentType.getBool(x, "value"));
-                    }))))
+            .executes(x -> {
+              return CommandModule.executeHelp(x);
+            }))
+        // cyclic gamemode @p 1
         //                /flib tpx minecraft:the_end 0 99 0 @p
         .then(Commands.literal(SubCommands.DEBUG.toString())
             .requires((p) -> {
@@ -481,6 +478,20 @@ public class CommandModule extends EventFlib {
     for (TagKey<Item> tag : held.getTags().collect(Collectors.toList())) {
       ChatUtil.sendFeedback(ctx, tag.toString());
     }
+    return 0;
+  }
+
+  private static int executeHelp(CommandContext<CommandSourceStack> x) {
+    List<String> subHelpList = Arrays.stream(SubCommands.values())
+        .map(s -> "command.flib." + s.toString() + ".help").toList();
+    ChatUtil.sendFeedback(x, "command.flib.help.info");
+    ChatUtil.sendFeedback(x, "command.flib.help.perms");
+    for (String subHelp : subHelpList) {
+      //      ChatUtil.sendFeedback(x, subHelp);
+    }
+    ChatUtil.sendFeedback(x, "https://www.curseforge.com/minecraft/mc-mods/flib");
+    ChatUtil.sendFeedback(x, "https://github.com/lothrazar/flib/issues");
+    ChatUtil.sendFeedback(x, ChatUtil.lang("command.flib.help.config") + ":  config/flib.toml ");
     return 0;
   }
 }
