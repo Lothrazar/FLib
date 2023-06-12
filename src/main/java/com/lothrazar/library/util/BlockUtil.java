@@ -22,12 +22,6 @@ public class BlockUtil {
 
   @SuppressWarnings("deprecation")
   public static Block.Properties wrap(Block.Properties propIn, Block blockIn) {
-    if (blockIn.properties != null
-        && blockIn.properties.materialColor != null) {
-      propIn.materialColor = (state) -> {
-        return blockIn.properties.materialColor.apply(blockIn.defaultBlockState());
-      };
-    }
     return propIn
         .sound(blockIn.getSoundType(blockIn.defaultBlockState()))
         .strength(blockIn.defaultBlockState().destroySpeed);
@@ -144,7 +138,7 @@ public class BlockUtil {
         // ok its a soft (isReplaceable == true) block so try to break it first try to destroy it
         // unless it is liquid, don't try to destroy liquid
         //blockHere.getMaterial(stateHere)
-        if (stateHere.getMaterial().isLiquid() == false) {
+        if (stateHere.liquid() == false) {
           boolean dropBlock = true;
           if (world.isClientSide == false) {
             world.destroyBlock(placePos, dropBlock);

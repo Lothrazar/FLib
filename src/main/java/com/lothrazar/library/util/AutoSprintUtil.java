@@ -24,17 +24,17 @@ public class AutoSprintUtil {
   }
 
   public static void moveAlongVector(Boat p, Vec3 vec) {
-    Level world = p.level;
+    Level world = p.level();
     BlockPos blockpos = BlockPos.containing(p.getX(), p.getBoundingBox().minY - 1.0D, p.getZ());
-    BlockState blockState = p.level.getBlockState(blockpos);
+    BlockState blockState = world.getBlockState(blockpos);
     float f5 = blockState.getFriction(world, blockpos, p);
     p.moveRelative(getRelevantMoveFactorBoat(p, f5), vec);
   }
 
   public static void moveAlongVector(LivingEntity p, Vec3 vec) {
-    Level world = p.level;
+    Level world = p.level();
     BlockPos blockpos = BlockPos.containing(p.getX(), p.getBoundingBox().minY - 1.0D, p.getZ());
-    BlockState bs = p.level.getBlockState(blockpos);
+    BlockState bs = world.getBlockState(blockpos);
     float f5 = bs.getFriction(world, blockpos, p);
     p.moveRelative(getRelevantMoveFactor(p, f5), vec);
   }
@@ -46,7 +46,7 @@ public class AutoSprintUtil {
         return p.getSpeed() * (0.21600002F / (flt * flt * flt));
       }
     }
-    return p.isOnGround()// onGround
+    return p.onGround()// isOnGround
         ? p.getSpeed() * (0.21600002F / (flt * flt * flt))
         // getFlyingSpeed is private so i copied formula
         : (p.getSpeed() * 0.1F); // p.getFlyingSpeed();

@@ -139,7 +139,7 @@ public class ItemStackUtil {
   }
 
   public static void damageItemRandomly(LivingEntity player, ItemStack stack) {
-    if (player.level.random.nextDouble() < 0.001) {
+    if (player.level().random.nextDouble() < 0.001) {
       damageItem(player, stack);
     }
   }
@@ -158,8 +158,8 @@ public class ItemStackUtil {
 
   public static boolean matches(ItemStack current, ItemStack in) {
     //first one fails if size is off
-    return ItemStack.isSame(current, in)
-        && ItemStack.tagMatches(current, in);
+    return ItemStack.matches(current, in)
+        && ItemStack.isSameItemSameTags(current, in);
   }
 
   public static void shrink(Player player, ItemStack stac) {

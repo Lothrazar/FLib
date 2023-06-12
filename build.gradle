@@ -1,8 +1,9 @@
 plugins {
     id 'eclipse'
+    id 'idea'
     id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '5.1.+'
     id 'checkstyle'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
 }
 
 import net.minecraftforge.gradle.common.tasks.SignJar
@@ -13,10 +14,14 @@ version = "${mc_version}-${mod_version}"
 group = 'com.lothrazar.library' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'flib'
 
+base {
+    archivesName = 'flib'
+}
 minecraft {
 
     mappings channel: 'official', version: "${mc_version}"
- 
+  copyIdeResources = true
+	enableEclipsePrepareRuns = true
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     // Default run configurations.
@@ -34,8 +39,10 @@ minecraft {
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'REGISTRIES'
 
+            property 'mixin.env.disableRefMap', 'true'
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
+            property 'forge.enabledGameTestNamespaces', mod_id
 
             mods {
                 flib {
@@ -49,9 +56,11 @@ minecraft {
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
+ //
+            property 'mixin.env.disableRefMap', 'true'
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
+            property 'forge.enabledGameTestNamespaces', mod_id
 
             mods {
                 flib {
@@ -69,12 +78,19 @@ dependencies {
 
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
-	runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
 	
-  // 	implementation group: 'io.karma.sliced', name: 'sliced', version: '1.4.0.21'
+   	implementation group: 'io.karma.sliced', name: 'sliced', version: '1.4.0.21'
 
   //  implementation fg.deobf("curse.maven:flib-661261:0000000")
   	
+
+//  compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}"))
+//  compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}"))
+	runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
+  
+
+ //   runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
+ //   compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
   	
     //https://www.curseforge.com/minecraft/mc-mods/enchantment-descriptions
 	//https://www.curseforge.com/minecraft/mc-mods/just-enough-effect-descriptions-jeed
@@ -124,6 +140,19 @@ repositories {
   maven { url = 'https://maven.blamejared.com' }    
   maven { url = 'https://www.cursemaven.com'  }
   maven { url = 'https://maven.covers1624.net' }
+}
+def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta']
+def replaceProperties = [
+        mod_id: mod_id,  mod_version: mod_version,  version: version
+      
+]
+processResources {
+    inputs.properties replaceProperties
+    replaceProperties.put 'project', project
+
+    filesMatching(resourceTargets) {
+        expand replaceProperties
+    }
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

@@ -61,7 +61,7 @@ public class BlockstatesUtil {
 
   public static int colFromState(BlockState state) {
     DyeColor colour = state.getValue(BlockFlib.COLOUR);
-    int col = colour.getMaterialColor().col | 0xFF000000;
+    int col = colour.getMapColor().col | 0xFF000000;
     return col;
   }
 }

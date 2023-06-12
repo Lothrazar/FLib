@@ -36,7 +36,7 @@ public class SoundUtil {
   }
 
   public static void playSound(Entity entityIn, SoundEvent soundIn, float volume, float pitch) {
-    if (entityIn != null && entityIn.level.isClientSide) {
+    if (entityIn != null && entityIn.level().isClientSide) {
       entityIn.playSound(soundIn, volume, pitch);
     }
   }
@@ -49,7 +49,7 @@ public class SoundUtil {
         Holder.direct(soundIn),
         SoundSource.BLOCKS,
         pos.getX(), pos.getY(), pos.getZ(),
-        vol, pitch, entityIn.level.getRandom().nextLong()));
+        vol, pitch, entityIn.level().getRandom().nextLong()));
   }
 
   public static void playSoundFromServer(ServerPlayer entityIn, SoundEvent soundIn, float vol, float pitch) {
@@ -60,7 +60,7 @@ public class SoundUtil {
         Holder.direct(soundIn),
         SoundSource.BLOCKS,
         entityIn.xOld, entityIn.yOld, entityIn.zOld,
-        vol, pitch, entityIn.level.getRandom().nextLong()));
+        vol, pitch, entityIn.level().getRandom().nextLong()));
   }
 
   public static void playSoundFromServer(ServerLevel world, BlockPos pos, SoundEvent soundIn) {
@@ -81,7 +81,7 @@ public class SoundUtil {
   public static void playSoundById(Player player, String sid) {
     //do the thing
     SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation(sid));
-    if (sound != null && player.level.isClientSide) {
+    if (sound != null && player.level().isClientSide) {
       SoundUtil.playSound(player, sound);
     }
   }
