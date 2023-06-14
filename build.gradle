@@ -14,13 +14,11 @@ version = "${mc_version}-${mod_version}"
 group = 'com.lothrazar.library' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'flib'
 
-base {
-    archivesName = 'flib'
-}
+base {    archivesName = '${mod_id}'  }
 minecraft {
 
     mappings channel: 'official', version: "${mc_version}"
-  copyIdeResources = true
+  	copyIdeResources = true
 	enableEclipsePrepareRuns = true
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -79,15 +77,15 @@ dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
 	
-   	implementation group: 'io.karma.sliced', name: 'sliced', version: '1.4.0.21'
+    implementation group: 'io.karma.sliced', name: 'sliced', version: '1.4.0.21'
 
-  //  implementation fg.deobf("curse.maven:flib-661261:0000000")
+  //  implementation fg.deobf("curse.maven:flib-661261:4583429")
   	
 
 //  compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}"))
 //  compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}"))
 
-	//runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
+    runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
   
 
  //   runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
@@ -145,7 +143,6 @@ repositories {
 def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta']
 def replaceProperties = [
         mod_id: mod_id,  mod_version: mod_version,  version: version
-      
 ]
 processResources {
     inputs.properties replaceProperties
