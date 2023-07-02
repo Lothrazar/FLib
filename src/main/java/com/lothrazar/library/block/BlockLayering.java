@@ -1,6 +1,5 @@
 package com.lothrazar.library.block;
 
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -71,7 +70,6 @@ public class BlockLayering extends BlockFlib {
   }
 
   @Override
-  @Nullable
   public BlockState getStateForPlacement(BlockPlaceContext context) {
     BlockState blockstate = context.getLevel().getBlockState(context.getClickedPos());
     if (blockstate.getBlock() == this) {

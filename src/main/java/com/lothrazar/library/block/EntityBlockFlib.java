@@ -1,6 +1,5 @@
 package com.lothrazar.library.block;
 
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.level.Level;
@@ -40,14 +39,12 @@ public abstract class EntityBlockFlib extends BlockFlib implements EntityBlock {
   }
 
   @Override
-  @Nullable
   public MenuProvider getMenuProvider(BlockState bs, Level level, BlockPos pos) {
     BlockEntity blockentity = level.getBlockEntity(pos);
     return blockentity instanceof MenuProvider ? (MenuProvider) blockentity : null;
   }
 
   @SuppressWarnings("unchecked")
-  @Nullable
   protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(BlockEntityType<A> type, BlockEntityType<E> etype, BlockEntityTicker<? super E> ticker) {
     return etype == type ? (BlockEntityTicker<A>) ticker : null;
   }

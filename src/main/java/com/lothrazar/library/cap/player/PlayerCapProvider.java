@@ -1,7 +1,5 @@
 package com.lothrazar.library.cap.player;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.capabilities.Capability;
@@ -19,7 +17,6 @@ public class PlayerCapProvider implements ICapabilityProvider, INBTSerializable<
   private PlayerCapabilityStorage playerMana = null;
   private final LazyOptional<PlayerCapabilityStorage> opt = LazyOptional.of(this::createMe);
 
-  @Nonnull
   private PlayerCapabilityStorage createMe() {
     if (playerMana == null) {
       playerMana = new PlayerCapabilityStorage();
@@ -27,18 +24,16 @@ public class PlayerCapProvider implements ICapabilityProvider, INBTSerializable<
     return playerMana;
   }
 
-  @Nonnull
   @Override
-  public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap) {
+  public <T> LazyOptional<T> getCapability( Capability<T> cap) {
     if (cap == PLAYERCAP) {
       return opt.cast();
     }
     return LazyOptional.empty();
   }
 
-  @Nonnull
   @Override
-  public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+  public <T> LazyOptional<T> getCapability( Capability<T> cap,  Direction side) {
     return getCapability(cap);
   }
 
