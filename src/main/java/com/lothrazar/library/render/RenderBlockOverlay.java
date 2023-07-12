@@ -1,6 +1,7 @@
 package com.lothrazar.library.render;
 
 import org.joml.Matrix4f;
+import com.lothrazar.library.render.type.OverlayRenderType;
 import com.lothrazar.library.util.UtilPlayerClickBlockface;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

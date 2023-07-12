@@ -31,4 +31,9 @@ public class TimeUtil {
   public static int getHourOfDay(Level level) {
     return ((int) level.getDayTime()) / TimeUtil.TICKS_PER_HOUR;
   }
+
+  public static boolean isNight(Level level) {
+    float angle = level.getSunAngle(0.0F);
+    return angle >= 0.245F && angle <= 0.755F;
+  }
 }

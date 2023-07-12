@@ -6,18 +6,17 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
-/**
- * 
- * @see com/lothrazar/cyclic/data/
- */
 public class BlockPosDim {
 
-  private double x;
-  private double y;
-  private double z;
+  public static final BlockPosDim ORIGIN = new BlockPosDim(BlockPos.ZERO, "");
+  private int x;
+  private int y;
+  private int z;
   private BlockPos pos;
   private String dimension;
   private String name;
@@ -25,8 +24,16 @@ public class BlockPosDim {
   private Direction side;
   private Direction sidePlayerFacing;
 
-  public BlockPosDim(BlockPos pos, Level dimension) {
-    this(pos, LevelWorldUtil.dimensionToString(dimension), null);
+  public BlockPosDim(Entity entity) {
+    this(entity.blockPosition(), entity.level());
+  }
+
+  public BlockPosDim(BlockPos pos, Level level) {
+    this(pos, LevelWorldUtil.dimensionToString(level));
+  }
+
+  public BlockPosDim(BlockPos pos, String dimension) {
+    this(pos, dimension, null);
   }
 
   public BlockPosDim(BlockPos pos, String dimension, CompoundTag stackTag) {
@@ -53,15 +60,9 @@ public class BlockPosDim {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
+    if (this == obj) return true;
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
     BlockPosDim other = (BlockPosDim) obj;
     return Objects.equals(dimension, other.dimension) && Objects.equals(pos, other.pos) && Double.doubleToLongBits(x) == Double.doubleToLongBits(other.x) && Double.doubleToLongBits(y) == Double.doubleToLongBits(other.y) && Double.doubleToLongBits(z) == Double.doubleToLongBits(other.z);
   }
@@ -69,6 +70,21 @@ public class BlockPosDim {
   @Override
   public String toString() {
     return getDisplayString();
+  }
+
+  public boolean isOrigin() {
+    return this.equals(ORIGIN);
+  }
+
+  public BlockPos toBlockPos() {
+    return new BlockPos(this.x, this.y, this.z);
+  }
+
+  public double getDistance(BlockPos pos) {
+    double deltX = this.x - pos.getX();
+    double deltY = this.y - pos.getY();
+    double deltZ = this.z - pos.getZ();
+    return Math.sqrt(deltX * deltX + deltY * deltY + deltZ * deltZ);
   }
 
   public String getDisplayString() {
@@ -88,27 +104,34 @@ public class BlockPosDim {
     this.dimension = dimension;
   }
 
-  public double getZ() {
+  public ServerLevel getTargetLevel(Level world) {
+    if (world == null || world.getServer() == null || dimension == null) {
+      return null;
+    }
+    return world.getServer().getLevel(LevelWorldUtil.stringToDimension(getDimension()));
+  }
+
+  public int getZ() {
     return z;
   }
 
-  public void setZ(double z) {
+  public void setZ(int z) {
     this.z = z;
   }
 
-  public double getY() {
+  public int getY() {
     return y;
   }
 
-  public void setY(double y) {
+  public void setY(int y) {
     this.y = y;
   }
 
-  public double getX() {
+  public int getX() {
     return x;
   }
 
-  public void setX(double x) {
+  public void setX(int x) {
     this.x = x;
   }
 

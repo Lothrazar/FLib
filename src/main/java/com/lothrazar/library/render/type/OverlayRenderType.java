@@ -1,4 +1,4 @@
-package com.lothrazar.library.render;
+package com.lothrazar.library.render.type;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -20,7 +20,9 @@ import net.minecraft.resources.ResourceLocation;
  * 
  * 3. This notice may not be removed or altered from any source distribution.
  *
+ * ********
  * 
+ * Renders a texture overlayed onto one face of a block
  */
 public class OverlayRenderType extends RenderType {
 
