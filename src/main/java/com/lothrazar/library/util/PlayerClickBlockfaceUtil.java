@@ -20,7 +20,7 @@ import net.minecraft.world.phys.Vec3;
  *
  * 
  */
-public class UtilPlayerClickBlockface {
+public class PlayerClickBlockfaceUtil {
 
   private static final int[] sidesXY = new int[] { 4, 5, 0, 1 };
   private static final int[] sidesYZ = new int[] { 0, 1, 2, 3 };

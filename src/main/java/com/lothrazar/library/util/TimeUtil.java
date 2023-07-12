@@ -4,6 +4,8 @@ import net.minecraft.world.level.Level;
 
 public class TimeUtil {
 
+  public static final String TIME_FORMAT = "HH:mm:ss";
+  public static final String DATE_FORMAT = "yyyy/MM/dd";
   // https://minecraft.fandom.com/wiki/Daylight_cycle
   public static final int TICKS_PER_DAY = 24000;
   public static final int TICKS_PER_HOUR = 1000;

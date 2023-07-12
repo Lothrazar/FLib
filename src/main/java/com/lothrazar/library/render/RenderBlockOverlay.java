@@ -2,7 +2,7 @@ package com.lothrazar.library.render;
 
 import org.joml.Matrix4f;
 import com.lothrazar.library.render.type.OverlayRenderType;
-import com.lothrazar.library.util.UtilPlayerClickBlockface;
+import com.lothrazar.library.util.PlayerClickBlockfaceUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -124,7 +124,7 @@ public class RenderBlockOverlay {
       look = new int[] { cancel, cancel, cancel, cancel, cancel, cancel };
     }
     else {
-      indexd = UtilPlayerClickBlockface.getClickLocationDirection(result.getDirection(), hitVec, blockPos);
+      indexd = PlayerClickBlockfaceUtil.getClickLocationDirection(result.getDirection(), hitVec, blockPos);
       if (indexd == null) {
         return;
       }
@@ -158,7 +158,7 @@ public class RenderBlockOverlay {
     poseStack.translate(-projectedView.x, -projectedView.y, -projectedView.z);
     //      .log.info("{} ::  mPos {} ({}  {}  {}) ", mPos, indexd, v.x, v.y, v.z);
     double yDiff = hitVec.y - blockPos.getY();
-    if (yDiff > UtilPlayerClickBlockface.HI && yDiff < UtilPlayerClickBlockface.LO) {
+    if (yDiff > PlayerClickBlockfaceUtil.HI && yDiff < PlayerClickBlockfaceUtil.LO) {
       //edge corner case
       return;
     }
