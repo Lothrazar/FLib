@@ -8,13 +8,15 @@ import net.minecraft.world.item.Items;
 
 public class TagDataUtil {
 
+  public static final String SKULLOWNER = "SkullOwner";
+
   public static ItemStack buildNamedPlayerSkull(Player player) {
     return buildNamedPlayerSkull(player.getDisplayName().getString());
   }
 
   public static ItemStack buildNamedPlayerSkull(String displayNameString) {
     CompoundTag t = new CompoundTag();
-    t.putString("SkullOwner", displayNameString);
+    t.putString(SKULLOWNER, displayNameString);
     return buildSkullFromTag(t);
   }
 
