@@ -6,13 +6,30 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class RenderUtil {
+
+  public static void drawString(GuiGraphics gg, String str, int x, int y) {
+    Minecraft mc = Minecraft.getInstance();
+    gg.drawString(mc.font, str, x, y, 0xFFFFFF);
+  }
+
+  public static void drawStack(GuiGraphics poseStack, ItemStack stack) {
+    Minecraft mc = Minecraft.getInstance();
+    int width = mc.getWindow().getGuiScaledWidth();
+    int height = mc.getWindow().getGuiScaledHeight();
+    //    mc.getItemRenderer().render(stack, null, false, null, null, width, height, null);
+    //    var context = ItemDisplayContext.GUI;
+    //    var pose = poseStack.pose();
+    poseStack.renderItem(stack, width / 2, height / 2, 0, 10);
+  }
 
   @OnlyIn(Dist.CLIENT)
   public static void createBox(MultiBufferSource.BufferSource bufferSource, PoseStack poseStack, float x, float y, float z, float offset) {
