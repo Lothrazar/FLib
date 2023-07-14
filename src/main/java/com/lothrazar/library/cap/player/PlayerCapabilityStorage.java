@@ -41,4 +41,9 @@ public class PlayerCapabilityStorage {
   public void read(CompoundTag compound) {
     mana = compound.getInt("mana");
   }
+
+  @Override
+  public String toString() {
+    return "PlayerCapabilityStorage [mana=" + mana + "]";
+  }
 }

@@ -153,4 +153,9 @@ public class FluidHandlerCapabilityStack implements IFluidHandlerItem, ICapabili
     }
     return LazyOptional.empty();
   }
+
+  @Override
+  public String toString() {
+    return "FluidHandlerCapabilityStack [container=" + container + ", capacity=" + capacity + "]";
+  }
 }

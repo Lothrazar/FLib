@@ -339,6 +339,8 @@ public class LevelWorldUtil {
   }
 
   public static boolean withinArea(BlockPos center, int radius, int height, BlockPos candle) {
+    //
+    //
     //    from center of box, go up and down height, and around in square radius, return true if candle is in region
     if (center.getX() - radius < candle.getX() && candle.getX() < center.getX() + radius
         && center.getY() - height < candle.getY() && candle.getY() < center.getY() + height

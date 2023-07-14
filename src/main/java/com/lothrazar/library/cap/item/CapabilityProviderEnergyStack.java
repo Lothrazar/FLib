@@ -39,4 +39,9 @@ public class CapabilityProviderEnergyStack implements ICapabilitySerializable<Co
   public void deserializeNBT(CompoundTag nbt) {
     energy.deserializeNBT(nbt.getCompound(NBTENERGY));
   }
+
+  @Override
+  public String toString() {
+    return "CapabilityProviderEnergyStack [energy=" + energy + "]";
+  }
 }
