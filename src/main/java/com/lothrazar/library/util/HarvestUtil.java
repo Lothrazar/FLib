@@ -8,8 +8,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 public class HarvestUtil {
 
   public static IntegerProperty getAgeProp(BlockState blockState) {
-    if (blockState.getBlock() instanceof CropBlock) {
-//      CropBlock crops = (CropBlock) blockState.getBlock();
+    if (blockState.getBlock() instanceof CropBlock crop) {
       //better mod compatibility if they dont use 'age'
       return CropBlock.AGE;
     }

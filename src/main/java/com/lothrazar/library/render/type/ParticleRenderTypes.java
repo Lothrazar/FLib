@@ -19,6 +19,7 @@ public class ParticleRenderTypes {
 
   public static final ParticleRenderType MAGIC_RENDER = new ParticleRenderType() {
 
+    @SuppressWarnings("deprecation")
     @Override
     public void begin(BufferBuilder buffer, TextureManager textureManager) {
       RenderSystem.enableBlend();

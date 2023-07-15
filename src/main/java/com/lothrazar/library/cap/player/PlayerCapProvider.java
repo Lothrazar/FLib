@@ -25,7 +25,7 @@ public class PlayerCapProvider implements ICapabilityProvider, INBTSerializable<
   }
 
   @Override
-  public <T> LazyOptional<T> getCapability( Capability<T> cap) {
+  public <T> LazyOptional<T> getCapability(Capability<T> cap) {
     if (cap == PLAYERCAP) {
       return opt.cast();
     }
@@ -33,7 +33,7 @@ public class PlayerCapProvider implements ICapabilityProvider, INBTSerializable<
   }
 
   @Override
-  public <T> LazyOptional<T> getCapability( Capability<T> cap,  Direction side) {
+  public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
     return getCapability(cap);
   }
 

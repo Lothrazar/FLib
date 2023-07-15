@@ -7,6 +7,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
@@ -121,5 +122,24 @@ public abstract class ContainerFlib extends AbstractContainerMenu {
     // Hotbar
     topRow += 58;
     addSlotRange(playerInventory, 0, leftCol, topRow, 9, 18);
+  }
+
+  public ItemStack findBag(Item item) {
+    Player player = this.playerEntity;
+    if (player.getMainHandItem().getItem() == item) {
+      return player.getMainHandItem();
+    }
+    else if (player.getOffhandItem().getItem() == item) {
+      return player.getOffhandItem();
+    }
+    else {
+      for (int x = 0; x < playerInventory.getContainerSize(); x++) {
+        ItemStack stack = playerInventory.getItem(x);
+        if (stack.getItem() == item) {
+          return stack;
+        }
+      }
+    }
+    return ItemStack.EMPTY;
   }
 }

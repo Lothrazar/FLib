@@ -1,8 +1,6 @@
 package com.lothrazar.library.mod;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import com.lothrazar.library.FutureLibMod;
@@ -482,13 +480,13 @@ public class CommandModule extends EventFlib {
   }
 
   private static int executeHelp(CommandContext<CommandSourceStack> x) {
-    List<String> subHelpList = Arrays.stream(SubCommands.values())
-        .map(s -> "command.flib." + s.toString() + ".help").toList();
+    //    List<String> subHelpList = Arrays.stream(SubCommands.values())
+    //        .map(s -> "command.flib." + s.toString() + ".help").toList();
     ChatUtil.sendFeedback(x, "command.flib.help.info");
     ChatUtil.sendFeedback(x, "command.flib.help.perms");
-    for (String subHelp : subHelpList) {
-      //      ChatUtil.sendFeedback(x, subHelp);
-    }
+    // for (String subHelp : subHelpList) {
+    //      ChatUtil.sendFeedback(x, subHelp);
+    //}
     ChatUtil.sendFeedback(x, "https://www.curseforge.com/minecraft/mc-mods/flib");
     ChatUtil.sendFeedback(x, "https://github.com/lothrazar/flib/issues");
     ChatUtil.sendFeedback(x, ChatUtil.lang("command.flib.help.config") + ":  config/flib.toml ");
