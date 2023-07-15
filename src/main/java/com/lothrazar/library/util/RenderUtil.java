@@ -86,6 +86,10 @@ public class RenderUtil {
     };
   }
 
+  public static int intColor(int r, int g, int b) {
+    return (r * 65536 + g * 256 + b);
+  }
+
   public static float[] getHSBtoRGBF(float hue, float saturation, float brightness) {
     int r = 0;
     int g = 0;

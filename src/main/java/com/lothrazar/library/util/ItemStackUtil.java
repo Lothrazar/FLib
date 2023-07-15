@@ -197,4 +197,17 @@ public class ItemStackUtil {
     itemstack.setTag(null);
     itemstack.setDamageValue(dmg);
   }
+
+  /**
+   * call from ::inventoryTick
+   * 
+   * @param rnd
+   * @param stack
+   * @param factor
+   */
+  public static void randomlyRepair(RandomSource rnd, ItemStack stack, int factor) {
+    if (stack.isDamaged() && rnd.nextInt(factor) == 0) {
+      stack.setDamageValue(stack.getDamageValue() - 1);
+    }
+  }
 }
