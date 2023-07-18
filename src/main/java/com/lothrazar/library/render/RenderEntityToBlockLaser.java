@@ -33,13 +33,13 @@ public class RenderEntityToBlockLaser {
     return 0.9f + 0.1f * Mth.sin(gameTime * 0.99f) * Mth.sin(gameTime * 0.3f) * Mth.sin(gameTime * 0.1f);
   }
 
-  public static final int RANGE = 18;
-
   public static void renderLaser(RenderLevelStageEvent event, Player player, float ticks, ItemStack stack, InteractionHand hand) {
+    renderLaser(event, player, ticks, stack, hand, 18, -0.02F); // default range, default speed 
+  }
+
+  public static void renderLaser(RenderLevelStageEvent event, Player player, float ticks, ItemStack stack, InteractionHand hand, final int range, float speedModifier) {
     Vec3 playerPos = player.getEyePosition(ticks);
-    HitResult trace = player.pick(RANGE, 0.0F, false);
-    // parse data from item
-    float speedModifier = 0.4F;
+    HitResult trace = player.pick(range, 0.0F, false);
     drawLasers(hand, stack, event, playerPos, trace, 0, 0, 0, 100F / 255f, 0F / 255f, 2F / 255f, 0.02f, player, ticks, speedModifier);
   }
 
@@ -67,6 +67,7 @@ public class RenderEntityToBlockLaser {
     matrix.translate(from.x, from.y, from.z);
     matrix.mulPose(Axis.YP.rotationDegrees(Mth.lerp(ticks, -player.getYRot(), -player.yRotO)));
     matrix.mulPose(Axis.XP.rotationDegrees(Mth.lerp(ticks, player.getXRot(), player.xRotO)));
+    //
     PoseStack.Pose matrixstack$entry = matrix.last();
     Matrix3f matrixNormal = matrixstack$entry.normal();
     Matrix4f positionMatrix = matrixstack$entry.pose();
@@ -92,28 +93,12 @@ public class RenderEntityToBlockLaser {
    *
    */
   private static void drawBeam(ItemStack stack, double xOffset, double yOffset, double zOffset, VertexConsumer builder, Matrix4f positionMatrix, Matrix3f matrixNormalIn, float thickness, InteractionHand hand, double distance, double v1, double v2, float ticks, float r, float g, float b, float alpha) {
-    boolean isFancy = true; // stack.getItem().equals(ModItems.MININGGADGET_FANCY.get());
-    boolean isSimple = false; // stack.getItem().equals(ModItems.MININGGADGET_SIMPLE.get());
     Vector3f vector3f = new Vector3f(0.0f, 1.0f, 0.0f);
-    vector3f = matrixNormalIn.transform(vector3f);
-    //    vector3f.transform(matrixNormalIn);
+    vector3f.mul(matrixNormalIn); //  vector3f = matrixNormalIn.transform(vector3f);  
     LocalPlayer player = Minecraft.getInstance().player;
-    // Support for hand sides remembering to take into account of Skin options
-    //    if (Minecraft.getInstance().options.mainHand != HumanoidArm.RIGHT) {
-    //      hand = hand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
-    //    }
     float startXOffset = -0.20f;
-    float startYOffset = -.108f;
+    float startYOffset = -.106f;
     float startZOffset = 0.60f;
-    // Adjust for different gadgets
-    if (isFancy) {
-      startYOffset += .02f;
-    }
-    if (isSimple) {
-      startXOffset -= .02f;
-      startZOffset += .05f;
-      startYOffset -= .005f;
-    }
     // Adjust for fov changing
     startZOffset += (1 - player.getFieldOfViewModifier());
     if (hand == InteractionHand.OFF_HAND) {
@@ -125,17 +110,13 @@ public class RenderEntityToBlockLaser {
     startXOffset = startXOffset + (f1 / 750);
     startYOffset = startYOffset + (f / 750);
     Vector4f vec1 = new Vector4f(startXOffset, -thickness + startYOffset, startZOffset, 1.0F);
-    vec1 = positionMatrix.transform(vec1);
-    //    vec1.transform(positionMatrix);
+    vec1.mul(positionMatrix);
     Vector4f vec2 = new Vector4f((float) xOffset, -thickness + (float) yOffset, (float) distance + (float) zOffset, 1.0F);
-    vec2 = positionMatrix.transform(vec2);
-    //    vec2.transform(positionMatrix);
+    vec2.mul(positionMatrix);
     Vector4f vec3 = new Vector4f((float) xOffset, thickness + (float) yOffset, (float) distance + (float) zOffset, 1.0F);
-    vec3 = positionMatrix.transform(vec3);
-    //    vec3.transform(positionMatrix);
+    vec3.mul(positionMatrix);
     Vector4f vec4 = new Vector4f(startXOffset, thickness + startYOffset, startZOffset, 1.0F);
-    vec4 = positionMatrix.transform(vec4);
-    //    vec4.transform(positionMatrix);
+    vec4.mul(positionMatrix);
     if (hand == InteractionHand.MAIN_HAND) {
       builder.vertex(vec4.x(), vec4.y(), vec4.z(), r, g, b, alpha, 0, (float) v1, OverlayTexture.NO_OVERLAY, 15728880, vector3f.x(), vector3f.y(), vector3f.z());
       builder.vertex(vec3.x(), vec3.y(), vec3.z(), r, g, b, alpha, 0, (float) v2, OverlayTexture.NO_OVERLAY, 15728880, vector3f.x(), vector3f.y(), vector3f.z());

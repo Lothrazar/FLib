@@ -118,18 +118,6 @@ public class LevelWorldUtil {
     entityitem.setDeltaMovement(motionX, motionY, motionZ);
     world.addFreshEntity(entityitem);
   }
-  //  public static BlockPos getRandomPos(Random rand, BlockPos here, int hRadius) {
-  //    int x = here.getX();
-  //    int z = here.getZ();
-  //    // search in a square
-  //    int xMin = x - hRadius;
-  //    int xMax = x + hRadius;
-  //    int zMin = z - hRadius;
-  //    int zMax = z + hRadius;
-  //    int posX = MathHelper.nextInt(rand, xMin, xMax);
-  //    int posZ = MathHelper.nextInt(rand, zMin, zMax);
-  //    return new BlockPos(posX, here.getY(), posZ);
-  //  }
 
   public static boolean doesBlockExist(Level world, BlockPos start, BlockState blockHunt, final int radius, final int height) {
     int xMin = start.getX() - radius;
@@ -339,8 +327,6 @@ public class LevelWorldUtil {
   }
 
   public static boolean withinArea(BlockPos center, int radius, int height, BlockPos candle) {
-    //
-    //
     //    from center of box, go up and down height, and around in square radius, return true if candle is in region
     if (center.getX() - radius < candle.getX() && candle.getX() < center.getX() + radius
         && center.getY() - height < candle.getY() && candle.getY() < center.getY() + height

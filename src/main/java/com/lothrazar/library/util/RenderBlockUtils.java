@@ -79,7 +79,7 @@ public class RenderBlockUtils {
   /**
    * This block-rendering function from direwolf20 MIT open source project https://github.com/Direwolf20-MC/BuildingGadgets/blob/1.15/LICENSE.md
    */
-  private static void renderModelBrightnessColorQuads(PoseStack.Pose matrixEntry, VertexConsumer builder, float red, float green, float blue, float alpha, List<BakedQuad> quads,
+  public static void renderModelBrightnessColorQuads(PoseStack.Pose matrixEntry, VertexConsumer builder, float red, float green, float blue, float alpha, List<BakedQuad> quads,
       int combinedLights, int combinedOverlay) {
     for (BakedQuad bakedquad : quads) {
       float r;
@@ -251,15 +251,19 @@ public class RenderBlockUtils {
     renderOutline(view, coords, matrix, scale, color);
   }
 
+  public static BlockHitResult getLookingAt(Player player, int range) {
+    return (BlockHitResult) player.pick(range, 0F, false);
+  }
+
   /**
    * Used by TESRs
    */
-  public static void renderOutline(BlockPos view, List<BlockPos> coords, PoseStack matrix, float scale, Color color) {
-    //    IRenderTypeBuffer.getImpl(ibuffer);
+  public static void renderOutline(BlockPos centerPos, List<BlockPos> coords, PoseStack matrix, float scale, Color color) {
     final Minecraft mc = Minecraft.getInstance();
     MultiBufferSource.BufferSource buffer = mc.renderBuffers().bufferSource();
     matrix.pushPose();
-    matrix.translate(-view.getX(), -view.getY(), -view.getZ());
+    Vec3 view = mc.gameRenderer.getMainCamera().getPosition();
+    matrix.translate(-view.x(), -view.y(), -view.z());
     VertexConsumer builder;
     builder = buffer.getBuffer(FakeBlockRenderTypes.SOLID_COLOUR);
     for (BlockPos e : coords) {
@@ -272,21 +276,15 @@ public class RenderBlockUtils {
       matrix.pushPose();
       float ctr = (1 - scale) / 2;
       matrix.translate(e.getX() + ctr, e.getY() + ctr, e.getZ() + ctr);
-      //      matrix.translate(e.getX() + .5F, e.getY() + .5F, e.getZ() + .5F);
       matrix.translate(-0.005f, -0.005f, -0.005f);
       matrix.scale(scale, scale, scale);
       matrix.mulPose(Axis.YP.rotationDegrees(-90.0F));
-      Matrix4f positionMatrix = matrix.last().pose();
-      RenderBlockUtils.renderCube(positionMatrix, builder, e, color, .125F);
+      RenderBlockUtils.renderCube(matrix.last().pose(), builder, e, color, .125F);
       matrix.popPose();
     }
     matrix.popPose();
     //    RenderSystem.disableDepthTest();
     buffer.endBatch(FakeBlockRenderTypes.SOLID_COLOUR);
-  }
-
-  public static BlockHitResult getLookingAt(Player player, int range) {
-    return (BlockHitResult) player.pick(range, 0F, false);
   }
 
   /**

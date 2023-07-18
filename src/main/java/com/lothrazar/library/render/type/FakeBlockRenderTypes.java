@@ -4,7 +4,6 @@ import java.util.OptionalDouble;
 import com.lothrazar.library.FutureLibMod;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 
@@ -57,7 +56,9 @@ public class FakeBlockRenderTypes extends RenderType {
   public static final RenderType TRANSPARENT_COLOUR = create(FutureLibMod.MODID + ":transparentcolour",
       DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, BUFFERSIZE, CRUMBLING, SORT,
       RenderType.CompositeState.builder()
-          .setShaderState(RENDERTYPE_SOLID_SHADER) //1.17 was BLOCK_SHADER
+          .setShaderState(RENDERTYPE_LINES_SHADER)
+          .setLayeringState(VIEW_OFFSET_Z_LAYERING)
+          .setOutputState(ITEM_ENTITY_TARGET)
           .setTransparencyState(ADDITIVE_TRANSPARENCY)
           .setTextureState(NO_TEXTURE)
           .setDepthTestState(NO_DEPTH_TEST)
@@ -73,7 +74,7 @@ public class FakeBlockRenderTypes extends RenderType {
   public static final RenderType SOLID_COLOUR = create(FutureLibMod.MODID + ":solidcolour",
       DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, BUFFERSIZE, CRUMBLING, SORT,
       RenderType.CompositeState.builder()
-          .setShaderState(RenderStateShard.ShaderStateShard.RENDERTYPE_LINES_SHADER)
+          .setShaderState(RENDERTYPE_LINES_SHADER)
           .setLayeringState(VIEW_OFFSET_Z_LAYERING)
           .setOutputState(ITEM_ENTITY_TARGET)
           .setTransparencyState(ADDITIVE_TRANSPARENCY)
