@@ -3,7 +3,8 @@
   "promos": {
     "1.18.2-latest": "0.0.2",
     "1.19.2-latest": "0.0.3",
-    "1.19.4-latest": "0.0.3"
+    "1.19.4-latest": "0.0.3",
+    "1.20.1-latest": "0.0.8"
   },
   "1.18.2": {
     "0.0.1": "First",
@@ -15,5 +16,11 @@
   "1.19.4": {
   	"0.0.3":"First 1.19 port. Added RegistryFactory for creative tabs. ",
   	"0.0.4":"Added RecipeCompostFactory"
+  },
+  "1.20.1": {
+  	"0.0.5":"Ported to 1.20.  Removed GUI tab factory registry helpers, use native new events isntead ",
+  	"0.0.6":"Ported to 1.20.1 updated 3 accesstransformers",
+  	"0.0.7":"Added several Gui screen widgets. added tile entity sync packets and interfaces. added constants. added rendering utilities. added capability utilities. added particle utilities",
+  	"0.0.8":"Fixed flat-color block rendering utility"
   }
 }
