@@ -14,7 +14,7 @@ base {
 
 // Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-//import net.minecraftforge.gradle.common.tasks.SignJar
+import net.minecraftforge.gradle.common.tasks.SignJar
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 minecraft {
     // The mappings can be changed at any time and must be in the following format.
@@ -205,7 +205,7 @@ publishing {
         }
     }
 }
-/*
+
 task signJar(type: SignJar, dependsOn: jar) {
 
     // findProperty allows us to reference the property without it existing. 
@@ -218,7 +218,7 @@ task signJar(type: SignJar, dependsOn: jar) {
     inputFile = jar.archivePath
     outputFile = jar.archivePath
 }
-*/
+
 task cleanJar {
   delete 'build/libs'
 }
