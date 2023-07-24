@@ -9,7 +9,6 @@ import com.lothrazar.library.mod.PacketRegistry;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
@@ -28,11 +27,6 @@ public class FutureLibMod {
     new FlibBlockEvents();
     IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
     bus.addListener(this::setup);
-    bus.addListener(this::setupClient);
-  }
-
-  private void setupClient(final FMLClientSetupEvent event) {
-    //   placeholder/example
   }
 
   private void setup(final FMLCommonSetupEvent event) {
