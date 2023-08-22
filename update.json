@@ -4,7 +4,7 @@
     "1.18.2-latest": "0.0.2",
     "1.19.2-latest": "0.0.3",
     "1.19.4-latest": "0.0.3",
-    "1.20.1-latest": "0.0.9"
+    "1.20.1-latest": "0.0.10"
   },
   "1.18.2": {
     "0.0.1": "First",
@@ -22,6 +22,7 @@
   	"0.0.6":"Ported to 1.20.1 updated 3 accesstransformers",
   	"0.0.7":"Added several Gui screen widgets. added tile entity sync packets and interfaces. added constants. added rendering utilities. added capability utilities. added particle utilities",
   	"0.0.8":"Fixed flat-color block rendering utility",
-  	"0.0.9":"Fixed so now (more) compatible with newer forge: 47.1.3+"
+  	"0.0.9":"Fixed so now (more) compatible with newer forge: 47.1.3+",
+	"0.0.10":"RenderBlockUtils.java had several changes with the goal of allowing rendering from both the 'Player' and 'TESR' perspective: several private methods now public(renderCube, createBox), several methods now have new with different input arguments (renderOutline, renderColourCubes), one method @Deprecated and it re-routes to the new public version (the renderColourCubes variant that depends on RenderLevelStageEvent).  One variant of the getColorARGB method marked as deprecated since it had an unused argument "
   }
 }

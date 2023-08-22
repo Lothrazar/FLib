@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import com.lothrazar.library.data.Model3D;
 import com.lothrazar.library.render.RenderResizableCuboid;
@@ -41,7 +43,11 @@ import net.minecraftforge.fluids.FluidStack;
  */
 public class RenderBlockUtils {
 
-  private static void renderCube(Matrix4f matrix, VertexConsumer builder, BlockPos pos, Color color, float alpha) {
+  // Replace various usages of this with the getter for calculating glow light, at least if we end up making it only
+  // effect block light for the glow rather than having it actually become full light
+  public static final int FULL_LIGHT = 0xF000F0;
+
+  public static void renderCube(Matrix4f matrix, VertexConsumer builder, BlockPos pos, Color color, float alpha) {
     float red = color.getRed() / 255f, green = color.getGreen() / 255f, blue = color.getBlue() / 255f;
     float startX = 0, startY = 0, startZ = -1, endX = 1, endY = 1, endZ = 0;
     //down
@@ -122,15 +128,10 @@ public class RenderBlockUtils {
    * @return
    */
   public static int calculateGlowLight(int light, FluidStack fluid) {
-    //    IClientFluidTypeExtensions fluidAttributes = IClientFluidTypeExtensions.of(fluid.getFluid());
     return fluid.isEmpty() ? light
         : calculateGlowLight(light,
             fluid.getFluid().getFluidType().getLightLevel());
   }
-
-  // Replace various usages of this with the getter for calculating glow light, at least if we end up making it only
-  // effect block light for the glow rather than having it actually become full light
-  public static final int FULL_LIGHT = 0xF000F0;
 
   public static int calculateGlowLight(int light, int glow) {
     if (glow >= 15) {
@@ -141,6 +142,7 @@ public class RenderBlockUtils {
     return LightTexture.pack(Math.max(blockLight, glow), Math.max(skyLight, glow));
   }
 
+  @Deprecated
   public static int getColorARGB(FluidStack fluidStack, float fluidScale) {
     if (fluidStack.isEmpty()) {
       return -1;
@@ -148,7 +150,10 @@ public class RenderBlockUtils {
     return getColorARGB(fluidStack);
   }
 
-  private static int getColorARGB(FluidStack fluidStack) {
+  public static int getColorARGB(FluidStack fluidStack) {
+    if (fluidStack.isEmpty()) {
+      return -1;
+    }
     IClientFluidTypeExtensions fluidAttributes = IClientFluidTypeExtensions.of(fluidStack.getFluid());
     return fluidAttributes.getTintColor(fluidStack);
   }
@@ -186,29 +191,18 @@ public class RenderBlockUtils {
    * 
    */
   public static void renderAsBlock(Level world, final BlockPos centerPos, final List<BlockPos> shape, PoseStack matrix, BlockState renderBlockState, float alpha, float scale) {
-    //    Level world = Minecraft.getInstance().level;
-    //render 
-    //    Minecraft.getInstance().getTextureManager().bind(InventoryMenu.BLOCK_ATLAS);
+
     RenderSystem.setShader(GameRenderer::getPositionTexShader);
     RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
-    //
-    //    double range = 6F;
-    //    ClientPlayerEntity player = Minecraft.getInstance().player;
-    //    BlockRayTraceResult lookingAt = (BlockRayTraceResult) player.pick(range, 0F, false);
-    //    if (world.isAirBlock(lookingAt.getPos())) {
-    //      return;
-    //    }
+
     Minecraft mc = Minecraft.getInstance();
     MultiBufferSource.BufferSource buffer = mc.renderBuffers().bufferSource();
     VertexConsumer builder = buffer.getBuffer(FakeBlockRenderTypes.FAKE_BLOCK);
     BlockRenderDispatcher dispatcher = mc.getBlockRenderer();
     matrix.pushPose();
-    //    BlockPos centerPos = center;//mc.gameRenderer.getActiveRenderInfo().getProjectedView();
     matrix.translate(-centerPos.getX(), -centerPos.getY(), -centerPos.getZ());
     for (BlockPos coordinate : shape) {
-      //      if (!world.isAirBlock(coordinate)) {
-      //        continue;
-      //      }
+
       float x = coordinate.getX();
       float y = coordinate.getY();
       float z = coordinate.getZ();
@@ -218,8 +212,6 @@ public class RenderBlockUtils {
       //shrink it up
       matrix.translate(-0.0005f, -0.0005f, -0.0005f);
       matrix.scale(scale, scale, scale);
-      //
-      //      UtilWorld.OutlineRenderer.renderHighLightedBlocksOutline(builder, x, y, z, r / 255.0f, g / 255.0f, b / 255.0f, 1.0f); // .02f
       BakedModel ibakedmodel = dispatcher.getBlockModel(renderBlockState);
       BlockColors blockColors = Minecraft.getInstance().getBlockColors();
       int color = blockColors.getColor(renderBlockState, world, coordinate, 0);
@@ -235,13 +227,9 @@ public class RenderBlockUtils {
                   ibakedmodel.getModelData(world, centerPos, renderBlockState, null), FakeBlockRenderTypes.FAKE_BLOCK), // EmptyModelData.INSTANCE 
               combinedLights, combinedOverlay);
         }
-        //        UtilRender.renderModelBrightnessColorQuads(matrix.getLast(), builder, red, green, blue, alpha,
-        //            ibakedmodel.getQuads(renderBlockState, null, new Random(MathHelper.getPositionRandom(coordinate)), EmptyModelData.INSTANCE),
-        //            combinedLights, combinedOverlay);
       }
       matrix.popPose();
     }
-    ///
     matrix.popPose();
   }
 
@@ -257,22 +245,20 @@ public class RenderBlockUtils {
 
   /**
    * Used by TESRs
+   * 
+   * View can be tile entity position, or player pos depending on context mc.gameRenderer.getMainCamera().getPosition();
    */
-  public static void renderOutline(BlockPos centerPos, List<BlockPos> coords, PoseStack matrix, float scale, Color color) {
+  public static void renderOutline(BlockPos view, List<BlockPos> coords, PoseStack matrix, float scale, Color color) {
     final Minecraft mc = Minecraft.getInstance();
     MultiBufferSource.BufferSource buffer = mc.renderBuffers().bufferSource();
     matrix.pushPose();
-    Vec3 view = mc.gameRenderer.getMainCamera().getPosition();
-    matrix.translate(-view.x(), -view.y(), -view.z());
+    matrix.translate(-view.getX(), -view.getY(), -view.getZ());
     VertexConsumer builder;
     builder = buffer.getBuffer(FakeBlockRenderTypes.SOLID_COLOUR);
     for (BlockPos e : coords) {
       if (e == null) {
         continue;
       }
-      //      if (!world.isAirBlock(e)) {
-      //        continue;
-      //      }
       matrix.pushPose();
       float ctr = (1 - scale) / 2;
       matrix.translate(e.getX() + ctr, e.getY() + ctr, e.getZ() + ctr);
@@ -283,27 +269,35 @@ public class RenderBlockUtils {
       matrix.popPose();
     }
     matrix.popPose();
-    //    RenderSystem.disableDepthTest();
+    RenderSystem.disableDepthTest();
     buffer.endBatch(FakeBlockRenderTypes.SOLID_COLOUR);
   }
 
   /**
-   * for ITEMS held by the PLAYER rendering cubes in world
-   *
+   * Create your own PoseStack and view perspective and use the method that does not depend on forge events
+   * 
    * @param evt
    * @param coords
    * @param alpha
    */
+  @Deprecated
   public static void renderColourCubes(RenderLevelStageEvent evt, Map<BlockPos, Color> coords, float alpha) {
+    PoseStack matrix = evt.getPoseStack();
+    Vec3 view = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+    float scale = 1.01F;
+    renderColourCubes(matrix, view, coords, scale, alpha);
+  }
+
+  /**
+   * for ITEMS held by the PLAYER rendering cubes in world
+   */
+  public static void renderColourCubes(PoseStack matrix, Vec3 view, Map<BlockPos, Color> coords, float scale, float alpha) {
     LocalPlayer player = Minecraft.getInstance().player;
     if (player == null) {
       return;
     }
-    float scale = 1.01F;
     final Minecraft mc = Minecraft.getInstance();
     MultiBufferSource.BufferSource buffer = mc.renderBuffers().bufferSource();
-    Vec3 view = mc.gameRenderer.getMainCamera().getPosition();
-    PoseStack matrix = evt.getPoseStack();
     matrix.pushPose();
     matrix.translate(-view.x(), -view.y(), -view.z());
     VertexConsumer builder = buffer.getBuffer(FakeBlockRenderTypes.TRANSPARENT_COLOUR);
@@ -322,16 +316,19 @@ public class RenderBlockUtils {
   }
 
   public static void createBox(PoseStack poseStack, BlockPos pos) {
+    createBox(poseStack, pos, Minecraft.getInstance().gameRenderer.getMainCamera().getPosition());
+  }
+  public static void createBox(PoseStack poseStack, BlockPos pos, Vec3 cameraPosition) {
     poseStack.pushPose();
-    createBox(Minecraft.getInstance().renderBuffers().bufferSource(), poseStack, pos.getX(), pos.getY(), pos.getZ(), 1.0F);
+    Minecraft mc = Minecraft.getInstance();
+    createBox(mc.renderBuffers().bufferSource(), cameraPosition, poseStack, pos.getX(), pos.getY(), pos.getZ(), 1.0F);
     poseStack.popPose();
   }
 
-  private static void createBox(MultiBufferSource.BufferSource bufferSource, PoseStack poseStack, float x, float y, float z, float offset) {
-    long c = (System.currentTimeMillis() / 15L) % 360L;
-    float[] color = getHSBtoRGBF(c / 360f, 1f, 1f);
-    Minecraft mc = Minecraft.getInstance();
-    Vec3 cameraPosition = mc.gameRenderer.getMainCamera().getPosition();
+
+  public static void createBox(MultiBufferSource.BufferSource bufferSource, Vec3 cameraPosition, PoseStack poseStack, float x, float y, float z, float offset) {
+    //rainbow magic
+    float[] color = getRandomColour();
     // get a closer pos if too far
     Vec3 vec = new Vec3(x, y, z).subtract(cameraPosition);
     if (vec.distanceTo(Vec3.ZERO) > 200d) { // could be 300
@@ -370,6 +367,12 @@ public class RenderBlockUtils {
     vertexConsumer.vertex(pose, x, y + offset, z + offset).color(color[0], color[1], color[2], 1.0F).endVertex();
     bufferSource.endBatch(FakeBlockRenderTypes.TOMB_LINES);
     RenderSystem.enableDepthTest();
+  }
+
+  public static float[] getRandomColour() {
+    long c = (System.currentTimeMillis() / 15L) % 360L;
+    float[] color = getHSBtoRGBF(c / 360f, 1f, 1f);
+    return color;
   }
 
   /**

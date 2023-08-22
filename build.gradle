@@ -112,18 +112,13 @@ minecraft {
 //sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-  flatDir { dir 'libs' } 
+//  flatDir { dir 'libs' }
 
   maven {
-    // location of the maven that hosts JEI files
-    name = "Progwml6 maven"
-    url = 'https://dvs1.progwml6.com/files/maven/'
+      name = "curios"
+      url = 'https://maven.theillusivec4.top/'
   }
-  maven {
-  	name = "curios"
-    url = 'https://maven.theillusivec4.top/'
-  }
-  maven { url = 'https://maven.blamejared.com' }    
+    maven { url = 'https://maven.blamejared.com' }
 //  maven { url = 'https://www.cursemaven.com'  }
 }
 
