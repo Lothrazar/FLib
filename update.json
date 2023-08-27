@@ -24,5 +24,6 @@
   	"0.0.8":"Fixed flat-color block rendering utility",
   	"0.0.9":"Fixed so now (more) compatible with newer forge: 47.1.3+",
 	"0.0.10":"RenderBlockUtils.java had several changes with the goal of allowing rendering from both the 'Player' and 'TESR' perspective: several private methods now public(renderCube, createBox), several methods now have new with different input arguments (renderOutline, renderColourCubes), one method @Deprecated and it re-routes to the new public version (the renderColourCubes variant that depends on RenderLevelStageEvent).  One variant of the getColorARGB method marked as deprecated since it had an unused argument "
+  	,"0.0.11":"Add recipe conditional to check if an entity exists.   type: flib:entity_exists "
   }
 }

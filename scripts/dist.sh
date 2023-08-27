@@ -9,6 +9,7 @@ cp -R build/libs/. ../RootsClassic/libs
 cp -R build/libs/. ../Similsax-Transtructors/libs
 cp -R build/libs/. ../SimpleTomb/libs
 cp -R build/libs/. ../Storage-Network/libs
+cp -R build/libs/. ../VeinCreeper/libs
 
 # cp -R build/libs/. ../Cyclic/libs
 # cp -R build/libs/. ../ElementaryOres/libs
