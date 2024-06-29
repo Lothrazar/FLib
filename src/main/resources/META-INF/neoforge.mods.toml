@@ -1,4 +1,4 @@
-# This is an example mods.toml file. It contains the data relating to the loading mods.
+# This is an example neoforge.mods.toml file. It contains the data relating to the loading mods.
 # There are several mandatory fields (#mandatory), and many more that are optional (#optional).
 # The overall format is standard TOML format, v0.5.0.
 # Note that there are a couple of TOML lists in this file.
@@ -7,7 +7,7 @@
 modLoader="javafml" #mandatory
 license="MIT"
 # A version range to match for said mod loader - for regular FML @Mod it will be the forge version
-loaderVersion="[26,)" #mandatory (26 is current forge version)
+loaderVersion="[4,)" #mandatory (26 is current forge version)
 # A URL to refer people to when problems occur with this mod
 issueTrackerURL="https://github.com/Lothrazar/FLib/issues" #optional
 # A list of mods - how many allowed here is determined by the individual mod loader
@@ -36,9 +36,9 @@ description='''
 Future Library.  Empowers many forge mods.  by Lothrazar
 '''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
-[[dependencies.flib]] #optional
+[[dependencies.${mod_id}]] #optional
     # the modid of the dependency
-    modId="forge" #mandatory
+    modId="neoforge" #mandatory
     # Does this dependency have to exist - if not, ordering below must be specified
     mandatory=true #mandatory
     # The version range of the dependency
@@ -48,9 +48,9 @@ Future Library.  Empowers many forge mods.  by Lothrazar
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
     side="BOTH"
 # Here's another dependency
-[[dependencies.flib]]
+[[dependencies.${mod_id}]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.20.1,)"
+    versionRange="[1.21,)"
     ordering="NONE"
     side="BOTH"
