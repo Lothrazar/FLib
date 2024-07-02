@@ -22,7 +22,7 @@ public class AttributesUtil {
 
   //    player.maxUpStep = 0.6F; // LivingEntity.class constructor defaults to this
   public static void disableStepHeight(Player player) {
-    AttributeInstance attr = player.getAttribute(ForgeMod.STEP_HEIGHT_ADDITION.get());
+    AttributeInstance attr = player.getAttribute(ForgeMod.STEP_HEIGHT.get());
     attr.removeModifier(ID_STEP_HEIGHT);
   }
 
@@ -36,7 +36,7 @@ public class AttributesUtil {
       newVal = 1.0F + (1F / 16F) - VANILLA; //PATH BLOCKS etc are 1/16th downif MY feature turns this on, then do it
     }
     //    player.maxUpStep = newVal; // Deprecated
-    AttributeInstance attr = player.getAttribute(ForgeMod.STEP_HEIGHT_ADDITION.get());
+    AttributeInstance attr = player.getAttribute(ForgeMod.STEP_HEIGHT.get());
     AttributeModifier oldModifier = attr.getModifier(AttributesUtil.ID_STEP_HEIGHT);
     double old = oldModifier == null ? 0 : oldModifier.getAmount();
     if (newVal != old) {
@@ -46,7 +46,7 @@ public class AttributesUtil {
 
   private static void setStepHeightInternal(Player player, double newVal) {
     //    player.maxUpStep = 0.6F; // LivingEntity.class constructor defaults to this
-    AttributeInstance attr = player.getAttribute(ForgeMod.STEP_HEIGHT_ADDITION.get());
+    AttributeInstance attr = player.getAttribute(ForgeMod.STEP_HEIGHT.get());
     attr.removeModifier(ID_STEP_HEIGHT);
     if (newVal != 0) {
       AttributeModifier healthModifier = new AttributeModifier(ID_STEP_HEIGHT, FutureLibMod.MODID, newVal, AttributeModifier.Operation.ADDITION);

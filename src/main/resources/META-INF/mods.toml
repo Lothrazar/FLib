@@ -20,7 +20,7 @@ version="${mod_version}" #mandatory
  
 displayName="flib" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
-#updateJSONURL="https://raw.githubusercontent.com/Lothrazar/FLib/trunk/1.20/update.json" #optional
+#updateJSONURL="https://raw.githubusercontent.com/Lothrazar/FLib/trunk/${mc_version}/update.json" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI # replace with your website
 displayURL="https://www.curseforge.com/minecraft/mc-mods/flib"
 
@@ -29,21 +29,18 @@ logoFile="logoFile.png" #optional
 # A text field displayed in the mod UI
 credits="Lothrazar" #optional
 # A text field displayed in the mod UI
-authors="Lothrazar" #optional
+authors="${mod_authors}" #optional
 # The description text for the mod (multi line!) (#mandatory)
 
 description='''
-Future Library.  Empowers many forge mods.  by Lothrazar
+${mod_description}
 '''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
-[[dependencies.flib]] #optional
-    # the modid of the dependency
+[[dependencies.flib]]
     modId="forge" #mandatory
     # Does this dependency have to exist - if not, ordering below must be specified
-    mandatory=true #mandatory
-    # The version range of the dependency
-    versionRange="[47.1,)" #mandatory
-    # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
+    mandatory=true
+    versionRange="[47.1,)" #mandatory, hardcoded
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
     side="BOTH"
@@ -51,6 +48,6 @@ Future Library.  Empowers many forge mods.  by Lothrazar
 [[dependencies.flib]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.20.1,)"
+    versionRange="[${mc_version},)"
     ordering="NONE"
     side="BOTH"
