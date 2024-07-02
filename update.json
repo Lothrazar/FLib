@@ -27,5 +27,6 @@
   	,"0.0.11":"Add recipe conditional to check if an entity exists.   type: flib:entity_exists "
   	,"0.0.12":"Three new features for mod devs: fluid/FluidHolder; gui/CraftingMenuExt; block/BlockAxisPillar.  "
   	,"0.0.13":"Updated to latest neoforge.  Four PlayerUtil functions added; fix crash error with dependency CustomGameRules"
+  	,"0.0.14":"Fix compatibility with old-forge v47.1.47+ (STEP_HEIGHT crash). "
   }
 }
