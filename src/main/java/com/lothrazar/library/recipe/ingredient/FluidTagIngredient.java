@@ -2,13 +2,15 @@ package com.lothrazar.library.recipe.ingredient;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 public class FluidTagIngredient {
 
@@ -42,10 +44,10 @@ public class FluidTagIngredient {
     if (!hasTag()) {
       return List.of(fluid.getFluid());
     }
-    TagKey<Fluid> ft = FluidTags.create(new ResourceLocation(tag));
+    TagKey<Fluid> ft = FluidTags.create(ResourceLocation.parse(tag));
     if (ft != null) {
-      TagKey<Fluid> key = ForgeRegistries.FLUIDS.tags().createTagKey(new ResourceLocation(tag));
-      return ForgeRegistries.FLUIDS.tags().getTag(key).stream().toList();
+      TagKey<Fluid> key = BuiltInRegistries.FLUID.tags().createTagKey(ResourceLocation.parse(tag));
+      return NeoForgeRegistries.FLUIDS.tags().getTag(key).stream().toList();
     }
     return null;
   }

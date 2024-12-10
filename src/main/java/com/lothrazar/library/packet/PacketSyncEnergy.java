@@ -23,49 +23,43 @@
  ******************************************************************************/
 package com.lothrazar.library.packet;
 
-import java.util.function.Supplier;
+
+import com.lothrazar.library.FutureLibMod;
 import com.lothrazar.library.core.IHasEnergy;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 /**
  * Forge docs suggest using a direct packet to keep capabilities, such as power, in sync with the client according to https://mcforge.readthedocs.io/en/latest/datastorage/capabilities/
  */
-public class PacketSyncEnergy extends PacketFlib {
+public record PacketSyncEnergy(
+        BlockPos pos,
+        int energy
+) implements PacketFlib {
 
-  private BlockPos pos;
-  private int energy;
+  public static final CustomPacketPayload.Type<PacketSyncEnergy> TYPE = new CustomPacketPayload.Type<>(FutureLibMod.rl( "sync_energy"));
+  public static final StreamCodec<ByteBuf, PacketSyncEnergy> STREAM_CODEC = StreamCodec.composite(
+          BlockPos.STREAM_CODEC, PacketSyncEnergy::pos,
+          ByteBufCodecs.INT, PacketSyncEnergy::energy,
+          PacketSyncEnergy::new
+  );
 
-  public PacketSyncEnergy(BlockPos p, int fluid) {
-    pos = p;
-    this.energy = fluid;
+  @Override
+  public Type<? extends CustomPacketPayload> type() {
+    return TYPE;
   }
 
-  public static void handle(PacketSyncEnergy message, Supplier<NetworkEvent.Context> ctx) {
-    ctx.get().enqueueWork(() -> {
-      doWork(message);
-    });
-    message.done(ctx);
-  }
+  public void handle(IPayloadContext context) {
 
-  private static void doWork(PacketSyncEnergy message) {
-    BlockEntity te = Minecraft.getInstance().level.getBlockEntity(message.pos);
+    BlockEntity te = Minecraft.getInstance().level.getBlockEntity(this.pos());
     if (te instanceof IHasEnergy tile) {
-      tile.setEnergy(message.energy);
+      tile.setEnergy(this.energy());
     }
-  }
-
-  public static PacketSyncEnergy decode(FriendlyByteBuf buf) {
-    PacketSyncEnergy msg = new PacketSyncEnergy(buf.readBlockPos(),
-        buf.readInt());
-    return msg;
-  }
-
-  public static void encode(PacketSyncEnergy msg, FriendlyByteBuf buf) {
-    buf.writeBlockPos(msg.pos);
-    buf.writeInt(msg.energy);
   }
 }

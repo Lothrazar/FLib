@@ -10,7 +10,7 @@ import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 public class EnchantUtil {
 
@@ -31,7 +31,7 @@ public class EnchantUtil {
   }
 
   public static List<MobEffect> getEffects(MobEffectCategory effectType) {
-    Collection<MobEffect> effects = ForgeRegistries.MOB_EFFECTS.getValues();
+    Collection<MobEffect> effects = NeoForgeRegistries.MOB_EFFECTS.getValues();
     List<MobEffect> effectsList = new ArrayList<>();
     for (MobEffect effect : effects) {
       if (effectType == null || effect.getCategory() == effectType) {
@@ -45,6 +45,7 @@ public class EnchantUtil {
     Item item1 = stack1.getItem();
     Item item2 = stack2.getItem();
     if (item1 == Items.ENCHANTED_BOOK && item2 == Items.ENCHANTED_BOOK) {
+
       ListTag ench1 = EnchantedBookItem.getEnchantments(stack1);
       ListTag ench2 = EnchantedBookItem.getEnchantments(stack2);
       if (ench1 == null || ench2 == null) {

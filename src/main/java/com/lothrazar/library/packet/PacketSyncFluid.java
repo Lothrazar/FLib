@@ -23,52 +23,39 @@
  ******************************************************************************/
 package com.lothrazar.library.packet;
 
-import java.util.function.Supplier;
+import com.lothrazar.library.FutureLibMod;
 import com.lothrazar.library.core.IHasFluid;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public class PacketSyncFluid extends PacketFlib {
+public record PacketSyncFluid(
+         BlockPos pos,
+         FluidStack fluid
+) implements PacketFlib {
 
-  private BlockPos pos;
-  private FluidStack fluid;
+  public static final CustomPacketPayload.Type<PacketSyncFluid> TYPE = new CustomPacketPayload.Type<>(FutureLibMod.rl( "sync_fluid"));
 
-  public PacketSyncFluid(BlockPos p, FluidStack fluid) {
-    pos = p;
-    this.fluid = fluid;
+  public static final StreamCodec<? extends ByteBuf, PacketSyncFluid> STREAM_CODEC = StreamCodec.composite(
+          BlockPos.STREAM_CODEC, PacketSyncFluid::pos,
+          FluidStack.STREAM_CODEC, PacketSyncFluid::fluid,
+          PacketSyncFluid::new
+  );
+
+  @Override
+  public Type<? extends CustomPacketPayload> type() {
+    return TYPE;
   }
+  public void handle(IPayloadContext context) {
 
-  public static void handle(PacketSyncFluid message, Supplier<NetworkEvent.Context> ctx) {
-    ctx.get().enqueueWork(() -> {
-      doWork(message);
-    });
-    message.done(ctx);
-  }
-
-  private static void doWork(PacketSyncFluid message) {
-    BlockEntity te = Minecraft.getInstance().level.getBlockEntity(message.pos);
+    BlockEntity te = Minecraft.getInstance().level.getBlockEntity(this.pos());
     if (te instanceof IHasFluid tile) {
-      tile.setFluid(message.fluid);
+      tile.setFluid(this.fluid());
     }
-  }
-
-  public static PacketSyncFluid decode(FriendlyByteBuf buf) {
-    PacketSyncFluid msg = new PacketSyncFluid(buf.readBlockPos(),
-        FluidStack.loadFluidStackFromNBT(buf.readNbt()));
-    return msg;
-  }
-
-  public static void encode(PacketSyncFluid msg, FriendlyByteBuf buf) {
-    buf.writeBlockPos(msg.pos);
-    CompoundTag tags = new CompoundTag();
-    if (msg.fluid != null) {
-      msg.fluid.writeToNBT(tags);
-    }
-    buf.writeNbt(tags);
   }
 }

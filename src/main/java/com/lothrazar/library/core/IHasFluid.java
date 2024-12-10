@@ -1,6 +1,6 @@
 package com.lothrazar.library.core;
 
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public interface IHasFluid {
 

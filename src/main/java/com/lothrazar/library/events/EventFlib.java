@@ -1,6 +1,6 @@
 package com.lothrazar.library.events;
 
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 
 public abstract class EventFlib {
 
@@ -18,6 +18,6 @@ public abstract class EventFlib {
      * 
      * inside of the event @FMLCommonSetupEvent
      */
-    MinecraftForge.EVENT_BUS.register(this);
+    NeoForge.EVENT_BUS.register(this);
   }
 }

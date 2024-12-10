@@ -17,9 +17,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.registries.ForgeRegistries;
-
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.registries.*;
 public class ItemStackUtil {
 
   public static final String NBT_LORE = "Lore";
@@ -91,7 +90,7 @@ public class ItemStackUtil {
   }
 
   public static ItemStack findItem(String id) {
-    Item head = ForgeRegistries.ITEMS.getValue(ResourceLocation.tryParse(id));
+    Item head = NeoForgeRegistries.ITEMS.getValue(ResourceLocation.tryParse(id));
     if (head != null) {
       return new ItemStack(head);
     }

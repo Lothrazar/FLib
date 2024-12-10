@@ -12,29 +12,28 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.portal.PortalInfo;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.ITeleporter;
 
 /**
  * 
  * @see com/lothrazar/cyclic/world/
  */
-public class DimensionTransit implements ITeleporter {
+public class DimensionTransit { //  implements ITeleporter
 
   protected ServerLevel world;
   private BlockPosDim target;
 
   public DimensionTransit(ServerLevel world, BlockPosDim target) {
     this.world = world;
+
     this.target = target;
   }
-
-  @Override
-  public PortalInfo getPortalInfo(Entity entity, ServerLevel destWorld, Function<ServerLevel, PortalInfo> defaultPortalInfo) {
-    BlockPos myPos = moveToSafeCoords(destWorld, target.getPos());
-    return new PortalInfo(new Vec3(myPos.getX() + 0.5F, myPos.getY() + 0.5F, myPos.getZ() + 0.5F), Vec3.ZERO, entity.getYRot(), entity.getXRot());
-  }
+//
+//  @Override
+//  public PortalInfo getPortalInfo(Entity entity, ServerLevel destWorld, Function<ServerLevel, PortalInfo> defaultPortalInfo) {
+//    BlockPos myPos = moveToSafeCoords(destWorld, target.getPos());
+//    return new PortalInfo(new Vec3(myPos.getX() + 0.5F, myPos.getY() + 0.5F, myPos.getZ() + 0.5F), Vec3.ZERO, entity.getYRot(), entity.getXRot());
+//  }
 
   @SuppressWarnings("deprecation")
   private BlockPos moveToSafeCoords(ServerLevel world, BlockPos pos) {
@@ -48,7 +47,7 @@ public class DimensionTransit implements ITeleporter {
     return pos;
   }
 
-  @Override
+//  @Override
   public Entity placeEntity(Entity newEntity, ServerLevel currentWorld, ServerLevel destWorld, float yaw, Function<Boolean, Entity> repositionEntity) {
     if (newEntity instanceof LivingEntity) {
       ((LivingEntity) newEntity).addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 200, 200, false, false));

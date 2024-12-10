@@ -32,6 +32,7 @@ import com.lothrazar.library.mod.PacketRegistry;
 import com.lothrazar.library.packet.PacketPlayerFalldamage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -51,7 +52,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayer;
 
 public class EntityUtil {
 
@@ -134,7 +135,6 @@ public class EntityUtil {
    * Launch entity in the fixed facing direction given
    *
    * @param entity
-   * @param rotationPitch
    * @param power
    * @param facing
    */
@@ -350,7 +350,7 @@ public class EntityUtil {
   public static List<Villager> getVillagers(Level world, BlockPos p, int r) {
     BlockPos start = p.offset(-r, -r, -r);
     BlockPos end = p.offset(r, r, r);
-    return world.getEntitiesOfClass(Villager.class, new AABB(start, end));
+    return world.getEntitiesOfClass(Villager.class, AABB.encapsulatingFullBlocks(start, end));
   }
 
   public static LivingEntity getClosestEntity(Level world, Player player, List<? extends LivingEntity> list) {
@@ -448,8 +448,8 @@ public class EntityUtil {
     player.getCooldowns().addCooldown(item, cooldown);
   }
 
-  public static Attribute getAttributeJump(Horse ahorse) {
-    return Attributes.JUMP_STRENGTH; //was reflection lol
+  public static Holder<Attribute> getAttributeJump(Horse ahorse) {
+    return Attributes.JUMP_STRENGTH; // no longer needs reflection
   }
 
   public static void eatingHorse(Horse ahorse) {
@@ -473,7 +473,7 @@ public class EntityUtil {
     if (player instanceof FakePlayer) {
       return;
     }
-    if (!player.canChangeDimensions()) {
+    if (!player.canChangeDimensions(player.level(), world)) {
       return;
     }
     if (!world.isClientSide) {

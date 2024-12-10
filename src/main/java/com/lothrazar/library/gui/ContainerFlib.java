@@ -1,6 +1,8 @@
 package com.lothrazar.library.gui;
 
 import com.lothrazar.library.entity.BlockEntityFlib;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -10,8 +12,9 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
 public abstract class ContainerFlib extends AbstractContainerMenu {
 
@@ -25,12 +28,27 @@ public abstract class ContainerFlib extends AbstractContainerMenu {
     super(type, id);
   }
 
+  private BlockCapabilityCache<IEnergyStorage, Direction> capCache;
+
   protected void trackEnergy(BlockEntity tile) {
+    // Later, for example in `onLoad` for a block entity:
+    this.capCache = BlockCapabilityCache.create(
+            Capabilities.EnergyStorage.BLOCK, // capability to cache
+            (ServerLevel) tile.getLevel(), // level
+            tile.getBlockPos(), // target position
+            Direction.NORTH // context
+    );
+
     addDataSlot(new DataSlot() {
 
       @Override
       public int get() {
-        return tile.getCapability(ForgeCapabilities.ENERGY).map(IEnergyStorage::getEnergyStored).orElse(0);
+        //  Capabilities.EnergyStorage.BLOCK,
+
+      var energy =         capCache.getCapability();
+
+        return (energy == null) ? 0 : energy.getEnergyStored();
+//        return tile.getCapability(ForgeCapabilities.ENERGY).map(IEnergyStorage::getEnergyStored).orElse(0);
       }
 
       @Override

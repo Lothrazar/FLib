@@ -2,13 +2,13 @@ package com.lothrazar.library.events;
 
 import com.lothrazar.library.block.BlockFlib;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 public class FlibBlockEvents extends EventFlib {
 
   @SubscribeEvent
-  public void onRightClickBlock(RightClickBlock event) {
+  public void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
     if (event.getItemStack().isEmpty()) {
       return;
     }

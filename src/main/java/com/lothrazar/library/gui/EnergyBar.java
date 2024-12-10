@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class EnergyBar {
 
-  public static final ResourceLocation ENERGY_BAR = new ResourceLocation("flib", "textures/gui/energy_bar.png");
+  public static final ResourceLocation ENERGY_BAR = ResourceLocation.fromNamespaceAndPath("flib", "textures/gui/energy_bar.png");
   private int x = 154;
   private int y = 8;
   public int capacity;

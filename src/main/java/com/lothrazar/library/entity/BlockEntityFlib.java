@@ -6,6 +6,7 @@ import com.lothrazar.library.util.EntityUtil;
 import com.lothrazar.library.util.FakePlayerUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -17,7 +18,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayer;
 
 public abstract class BlockEntityFlib extends BlockEntity {
 
@@ -26,15 +27,15 @@ public abstract class BlockEntityFlib extends BlockEntity {
   }
 
   @Override
-  public void load(CompoundTag tag) {
+  public void loadAdditional(CompoundTag tag ,  HolderLookup.Provider registries) {
     //    timer = tag.getInt("timer");
-    super.load(tag);
+    super.loadAdditional(tag,registries);
   }
 
   @Override
-  public void saveAdditional(CompoundTag tag) {
+  public void saveAdditional(CompoundTag tag ,  HolderLookup.Provider registries) {
     //    tag.putInt("timer", timer);
-    super.saveAdditional(tag);
+    super.saveAdditional(tag, registries);
   }
 
   public abstract void setField(int field, int value);
@@ -52,16 +53,16 @@ public abstract class BlockEntityFlib extends BlockEntity {
   }
 
   @Override
-  public CompoundTag getUpdateTag() {
-    CompoundTag syncData = super.getUpdateTag();
-    this.saveAdditional(syncData);
+  public CompoundTag getUpdateTag(  HolderLookup.Provider registries) {
+    CompoundTag syncData = super.getUpdateTag(registries);
+    this.saveAdditional(syncData,registries);
     return syncData;
   }
 
   @Override
-  public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-    this.load(pkt.getTag());
-    super.onDataPacket(net, pkt);
+  public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries) {
+    this.loadAdditional(pkt.getTag(),registries);
+    super.onDataPacket(net, pkt,registries);
   }
 
   @Override

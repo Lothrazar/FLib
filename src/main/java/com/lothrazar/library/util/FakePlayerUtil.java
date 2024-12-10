@@ -39,11 +39,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.common.util.FakePlayerFactory;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class FakePlayerUtil {
 
@@ -57,26 +56,18 @@ public class FakePlayerUtil {
     final String name = "fake_player." + blockName;
     final GameProfile breakerProfile = new GameProfile(ID, name);
     WeakReference<FakePlayer> fakePlayer = new WeakReference<FakePlayer>(FakePlayerFactory.get(ws, breakerProfile));
-    if (fakePlayer == null || fakePlayer.get() == null) {
-      fakePlayer = null;
-      return null; // trying to get around https://github.com/PrinceOfAmber/Cyclic/issues/113
-    }
-    fakePlayer.get().setOnGround(true);
-    //    fakePlayer.get().onGround = true;
-    fakePlayer.get().connection = new ServerGamePacketListenerImpl(ws.getServer(), new Connection(PacketFlow.SERVERBOUND), fakePlayer.get()) {
 
-      @Override
-      public void send(Packet<?> packetIn) {}
-    };
+    fakePlayer.get().setOnGround(true);
+
     fakePlayer.get().setSilent(true);
     return fakePlayer;
   }
 
-  public static void tryEquipItem(LazyOptional<IItemHandler> i, WeakReference<FakePlayer> fp, int slot, InteractionHand hand) {
+  public static void tryEquipItem(IItemHandler inv, WeakReference<FakePlayer> fp, int slot, InteractionHand hand) {
     if (fp == null) {
       return;
     }
-    i.ifPresent(inv -> {
+//    i.ifPresent(inv -> {
       ItemStack maybeTool = inv.getStackInSlot(0);
       if (!maybeTool.isEmpty()) {
         if (maybeTool.getCount() <= 0) {
@@ -86,7 +77,7 @@ public class FakePlayerUtil {
       if (!maybeTool.equals(fp.get().getItemInHand(hand))) {
         fp.get().setItemInHand(hand, maybeTool);
       }
-    });
+//    });
   }
 
   public static InteractionResult interactUseOnBlock(WeakReference<FakePlayer> fakePlayer,

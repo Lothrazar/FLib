@@ -1,6 +1,8 @@
 package com.lothrazar.library.registry;
 
 import java.lang.reflect.Method;
+
+import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import net.minecraft.world.level.GameRules;
@@ -8,7 +10,6 @@ import net.minecraft.world.level.GameRules.BooleanValue;
 import net.minecraft.world.level.GameRules.Category;
 import net.minecraft.world.level.GameRules.Key;
 import net.minecraft.world.level.GameRules.Type;
-import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 
 /**
  * accesstransformers.cfg:

@@ -1,6 +1,9 @@
 package com.lothrazar.library.core;
 
 import java.util.Objects;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.lothrazar.library.util.LevelWorldUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -46,9 +49,11 @@ public class BlockPosDim {
       //
       CompoundTag displayTag = stackTag.getCompound("display");
       if (displayTag != null && displayTag.contains("Name", 8)) {
-        //
-        Component namec = Component.Serializer.fromJson(displayTag.getString("Name"));
-        this.name = namec.getString();
+
+
+//        JsonElement stuff = JsonParser.parseString(displayTag.getString("Name"));
+//        Component namec = Component.Serializer.fromJson(stuff);
+        this.name = displayTag.getString("Name"); // namec.getString();
       }
     }
   }

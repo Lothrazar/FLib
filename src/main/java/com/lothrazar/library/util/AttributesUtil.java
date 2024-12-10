@@ -4,13 +4,14 @@ import java.util.Collection;
 import java.util.Random;
 import java.util.UUID;
 import com.lothrazar.library.FutureLibMod;
+import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
 public class AttributesUtil {
 
@@ -22,7 +23,9 @@ public class AttributesUtil {
 
   //    player.maxUpStep = 0.6F; // LivingEntity.class constructor defaults to this
   public static void disableStepHeight(Player player) {
-    AttributeInstance attr = player.getAttribute(ForgeMod.STEP_HEIGHT_ADDITION.get());
+
+
+    AttributeInstance attr = player.getAttribute(Attributes.STEP_HEIGHT);
     attr.removeModifier(ID_STEP_HEIGHT);
   }
 
@@ -36,7 +39,8 @@ public class AttributesUtil {
       newVal = 1.0F + (1F / 16F) - VANILLA; //PATH BLOCKS etc are 1/16th downif MY feature turns this on, then do it
     }
     //    player.maxUpStep = newVal; // Deprecated
-    AttributeInstance attr = player.getAttribute(ForgeMod.STEP_HEIGHT_ADDITION.get());
+    AttributeInstance attr = player.getAttribute(Attributes.STEP_HEIGHT);
+
     AttributeModifier oldModifier = attr.getModifier(AttributesUtil.ID_STEP_HEIGHT);
     double old = oldModifier == null ? 0 : oldModifier.getAmount();
     if (newVal != old) {
@@ -54,30 +58,31 @@ public class AttributesUtil {
     }
   }
 
-  public static int add(Attribute attribute, Collection<ServerPlayer> players, int integer) {
+  public static int add(Holder<Attribute> attribute, Collection<ServerPlayer> players, int integer) {
     for (ServerPlayer playerIn : players) {
       updateAttrModifierBy(attribute, DEFAULT_ID, playerIn, integer);
     }
     return 0;
   }
 
-  public static int addRandom(Attribute attribute, Collection<ServerPlayer> players, int min, int max) {
+  public static int addRandom(Holder<Attribute> attribute, Collection<ServerPlayer> players, int min, int max) {
     for (ServerPlayer playerIn : players) {
       updateAttrModifierBy(attribute, DEFAULT_ID, playerIn, RAND.nextInt(min, max));
     }
     return 0;
   }
 
-  public static int multiply(Attribute attribute, Collection<ServerPlayer> players, double integer) {
+  public static int multiply(Holder<Attribute> attribute, Collection<ServerPlayer> players, double integer) {
     for (ServerPlayer playerIn : players) {
       multiplyAttrModifierBy(attribute, playerIn, integer);
     }
     return 0;
   }
 
-  public static int reset(Attribute attribute, Collection<ServerPlayer> players) {
+  public static int reset(Holder<Attribute> attribute, Collection<ServerPlayer> players) {
     for (ServerPlayer playerIn : players) {
       AttributeInstance attr = playerIn.getAttribute(attribute);
+
       attr.removeModifier(DEFAULT_ID);
       attr.removeModifier(MULT_ID);
     }
@@ -86,20 +91,20 @@ public class AttributesUtil {
 
   //ench
   public static void removePlayerReach(UUID id, Player player) {
-    AttributeInstance attr = player.getAttribute(ForgeMod.BLOCK_REACH.get());
+    AttributeInstance attr = player.getAttribute(Attributes.BLOCK_INTERACTION_RANGE);
     attr.removeModifier(id);
   }
 
   // ench
   public static void setPlayerReach(UUID id, Player player, int reachBoost) {
     removePlayerReach(id, player);
-    AttributeInstance attr = player.getAttribute(ForgeMod.BLOCK_REACH.get());
+    AttributeInstance attr = player.getAttribute(Attributes.BLOCK_INTERACTION_RANGE);
     //vanilla is 5, so +11 it becomes 16
     AttributeModifier enchantment = new AttributeModifier(id, "ReachFLIB", reachBoost, AttributeModifier.Operation.ADDITION);
     attr.addPermanentModifier(enchantment);
   }
 
-  public static void updateAttrModifierBy(Attribute attr, UUID id, Player playerIn, int value) {
+  public static void updateAttrModifierBy(Holder<Attribute> attr, UUID id, Player playerIn, int value) {
     AttributeInstance healthAttribute = playerIn.getAttribute(attr);
     AttributeModifier oldHealthModifier = healthAttribute.getModifier(id);
     //what is our value
@@ -114,7 +119,7 @@ public class AttributesUtil {
     }
   }
 
-  public static void multiplyAttrModifierBy(Attribute attr, Player playerIn, double value) {
+  public static void multiplyAttrModifierBy(Holder<Attribute> attr, Player playerIn, double value) {
     AttributeInstance healthAttribute = playerIn.getAttribute(attr);
     //what is our value 
     healthAttribute.removeModifier(MULT_ID);

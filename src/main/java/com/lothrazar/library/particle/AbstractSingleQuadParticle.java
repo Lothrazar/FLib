@@ -14,8 +14,8 @@ import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 /**
  * used by ParticleCasting
@@ -38,7 +38,7 @@ public abstract class AbstractSingleQuadParticle extends SingleQuadParticle {
 
   @Override
   public void render(VertexConsumer buffer, Camera entityIn, float partialTicks) {
-    TextureManager textureManager = Minecraft.getInstance().textureManager;
+    TextureManager textureManager = Minecraft.getInstance().getTextureManager();
     //    Lighting.turnOff();
     RenderSystem.depthMask(false);
     textureManager.bindForSetup(getTexture());

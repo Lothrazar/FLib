@@ -23,57 +23,52 @@
  ******************************************************************************/
 package com.lothrazar.library.packet;
 
-import java.util.function.Supplier;
+import com.lothrazar.library.FutureLibMod;
 import com.lothrazar.library.util.BlockUtil;
 import com.lothrazar.library.util.ItemStackUtil;
 import com.lothrazar.library.util.SoundUtil;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public class PacketRotateBlock extends PacketFlib {
+public record  PacketRotateBlock(
+        BlockPos pos,
+        Direction side,
+        InteractionHand hand
+) implements PacketFlib {
 
-  private BlockPos pos;
-  private Direction side;
-  private InteractionHand hand;
+  public static final CustomPacketPayload.Type<PacketPlayerFalldamage> TYPE = new CustomPacketPayload.Type<>(FutureLibMod.rl( "rotate_block"));
+  public static final StreamCodec<ByteBuf, PacketRotateBlock> STREAM_CODEC = StreamCodec.composite(
+          BlockPos.STREAM_CODEC, PacketRotateBlock::pos,
+          DIRECTION_SLOT_STREAM_CODEC, PacketRotateBlock::side,
+          INTERACTION_HAND_STREAM_CODEC, PacketRotateBlock::hand,
+          PacketRotateBlock::new
+  );
 
-  public PacketRotateBlock(BlockPos mouseover, Direction s, InteractionHand hand) {
-    pos = mouseover;
-    side = s;
-    this.hand = hand;
+  @Override
+  public Type<? extends CustomPacketPayload> type() {
+    return TYPE;
   }
 
-  public static PacketRotateBlock decode(FriendlyByteBuf buf) {
-    return new PacketRotateBlock(buf.readBlockPos(),
-        Direction.values()[buf.readInt()],
-        InteractionHand.values()[buf.readInt()]);
-  }
-
-  public static void encode(PacketRotateBlock msg, FriendlyByteBuf buf) {
-    buf.writeBlockPos(msg.pos);
-    buf.writeInt(msg.side.ordinal());
-    buf.writeInt(msg.hand.ordinal());
-  }
-
-  public static void handle(PacketRotateBlock message, Supplier<NetworkEvent.Context> ctx) {
-    ctx.get().enqueueWork(() -> {
+  public void handle(IPayloadContext context) {
       //rotate type
-      Level level = ctx.get().getSender().level();
-      boolean succ = BlockUtil.rotateBlockValidState(level, message.pos, message.side);
-      if (succ) {
-        ServerPlayer player = ctx.get().getSender();
-        ItemStack itemStackHeld = player.getItemInHand(message.hand);
+      Player player = context.player();
+      Level level = player.level();
+      boolean succ = BlockUtil.rotateBlockValidState(level, this.pos(), this.side());
+      if (succ && player instanceof ServerPlayer sp) {
+        ItemStack itemStackHeld = player.getItemInHand(this.hand());
         ItemStackUtil.damageItem(player, itemStackHeld);
-        if (level.getBlockState(message.pos).getSoundType() != null) {
-          SoundUtil.playSoundFromServer(player, level.getBlockState(message.pos).getSoundType().getPlaceSound(), 1F, 1F);
+        if (level.getBlockState(this.pos()).getSoundType() != null) {
+          SoundUtil.playSoundFromServer(sp, level.getBlockState(this.pos()).getSoundType().getPlaceSound(), 1F, 1F);
         }
       }
-    });
-    message.done(ctx);
   }
 }

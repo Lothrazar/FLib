@@ -3,6 +3,7 @@ package com.lothrazar.library.data;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -94,7 +95,8 @@ public class RelativeShape {
 
   public static RelativeShape read(ItemStack item) {
     CompoundTag tag = item.getTag();
-    return read(tag);
+    item.getComponents().get(DataComponents.CONTAINER_LOOT);
+    return read( tag);
   }
 
   public CompoundTag write(CompoundTag tag) {

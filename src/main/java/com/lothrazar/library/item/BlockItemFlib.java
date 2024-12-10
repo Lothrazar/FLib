@@ -7,10 +7,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class BlockItemFlib extends BlockItem {
 
@@ -26,8 +23,7 @@ public class BlockItemFlib extends BlockItem {
   }
 
   @Override
-  @OnlyIn(Dist.CLIENT)
-  public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+  public void appendHoverText(ItemStack stack, TooltipContext worldIn, List<Component> tooltip, TooltipFlag flagIn) {
     if (me.tooltip) {
       me.tooltipApply(this, tooltip);
     }

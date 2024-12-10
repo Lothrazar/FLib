@@ -11,11 +11,11 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class FluidBar {
 
-  public static final ResourceLocation FLUID_WIDGET = new ResourceLocation("flib", "textures/gui/fluid.png");
+  public static final ResourceLocation FLUID_WIDGET = ResourceLocation.fromNamespaceAndPath("flib", "textures/gui/fluid.png");
   public String emtpyTooltip = "0";
   private Font font;
   private int x;

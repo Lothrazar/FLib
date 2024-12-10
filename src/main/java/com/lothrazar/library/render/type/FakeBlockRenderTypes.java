@@ -22,7 +22,7 @@ public class FakeBlockRenderTypes extends RenderType {
     super(nameIn, formatIn, drawModeIn, bufferSizeIn, useDelegateIn, needsSortingIn, setupTaskIn, clearTaskIn);
   }
 
-  public final static ResourceLocation BEAM = new ResourceLocation(FutureLibMod.MODID, "textures/effect/beam.png");
+  public final static ResourceLocation BEAM = ResourceLocation.fromNamespaceAndPath(FutureLibMod.MODID, "textures/effect/beam.png");
   public static final RenderType LASER_MAIN_BEAM = create(FutureLibMod.MODID + ":mininglasermainbeam",
       DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, BUFFERSIZE, CRUMBLING, SORT,
       RenderType.CompositeState.builder()

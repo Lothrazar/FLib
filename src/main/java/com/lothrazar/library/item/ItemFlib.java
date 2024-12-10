@@ -1,6 +1,8 @@
 package com.lothrazar.library.item;
 
 import java.util.List;
+
+import net.minecraft.world.entity.LivingEntity;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import com.lothrazar.library.util.ChatUtil;
@@ -16,8 +18,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class ItemFlib extends Item {
 
@@ -67,12 +67,11 @@ public class ItemFlib extends Item {
   }
 
   @Override
-  @OnlyIn(Dist.CLIENT)
-  public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+  public void appendHoverText(ItemStack stack, TooltipContext worldContext, List<Component> tooltip, TooltipFlag flagIn) {
     if (me.tooltip) {
       me.tooltipApply(this, tooltip);
     }
-    super.appendHoverText(stack, worldIn, tooltip, flagIn);
+    super.appendHoverText(stack, worldContext, tooltip, flagIn);
   }
 
   public void tryRepairWith(ItemStack stackToRepair, Player player, Item target) {
@@ -112,7 +111,7 @@ public class ItemFlib extends Item {
     return ItemStack.EMPTY;
   }
 
-  public float getChargedPercent(ItemStack stack, int chargeTimer) {
-    return BowItem.getPowerForTime(this.getUseDuration(stack) - chargeTimer);
+  public float getChargedPercent(ItemStack stack, int chargeTimer, LivingEntity player) {
+    return BowItem.getPowerForTime(this.getUseDuration(stack, player) - chargeTimer);
   }
 }

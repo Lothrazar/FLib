@@ -7,8 +7,8 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 /**
  * Source from MIT open source https://github.com/mekanism/Mekanism/tree/1.15x
@@ -59,15 +59,15 @@ public class FluidRenderMap<V> extends Object2ObjectOpenCustomHashMap<FluidStack
       }
       int code = 1;
       code = 31 * code + stack.getFluid().hashCode();
-      if (stack.hasTag()) {
-        code = 31 * code + stack.getTag().hashCode();
-      }
+//      if (stack.hasTag()) {
+//        code = 31 * code + stack.getTag().hashCode();
+//      }
       return code;
     }
 
     @Override
     public boolean equals(FluidStack a, FluidStack b) {
-      return a == null ? b == null : b != null && a.isFluidEqual(b);
+      return a == null ? b == null : b != null && FluidStack.isSameFluid(a,b);
     }
   }
 }

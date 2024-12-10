@@ -9,12 +9,12 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
 
 public class BlockstatesUtil {
 
   public static boolean isGlass(BlockState blockIn) {
-    return blockIn.is(Tags.Blocks.GLASS) || blockIn.is(Tags.Blocks.GLASS_PANES);
+    return blockIn.is(Tags.Blocks.GLASS_BLOCKS) || blockIn.is(Tags.Blocks.GLASS_PANES);
   }
 
   public static Direction getFacingFromEntity(BlockPos clickedBlock, LivingEntity entity) {

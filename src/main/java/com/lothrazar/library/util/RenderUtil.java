@@ -1,5 +1,7 @@
 package com.lothrazar.library.util;
 
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 import com.lothrazar.library.render.type.LineRenderType;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -11,8 +13,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class RenderUtil {
 
