@@ -2,8 +2,8 @@ package com.lothrazar.library.events;
 
 import com.lothrazar.library.block.BlockFlib;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
+import net.neoforged.bus.api.SubscribeEvent;
 
 public class FlibBlockEvents extends EventFlib {
 

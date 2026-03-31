@@ -1,6 +1,6 @@
 package com.lothrazar.library.events;
 
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 
 public abstract class EventFlib {
 

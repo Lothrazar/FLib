@@ -26,7 +26,7 @@ package com.lothrazar.library.util;
 import java.util.List;
 import com.lothrazar.library.FutureLibMod;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 public class StringParseUtil {
 

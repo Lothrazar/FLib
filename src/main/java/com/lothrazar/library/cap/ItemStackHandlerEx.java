@@ -3,7 +3,7 @@ package com.lothrazar.library.cap;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class ItemStackHandlerEx extends ItemStackHandler {
 

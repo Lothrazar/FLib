@@ -1,8 +1,8 @@
 package com.lothrazar.library.cap;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.energy.EnergyStorage;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.energy.EnergyStorage;
 
 /**
  * For use with items, tile entities, etc.

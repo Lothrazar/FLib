@@ -5,7 +5,7 @@ import com.lothrazar.library.FutureLibMod;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionSerializer;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 
 /**
  * Example: "conditions": [ {"type": "flib:entity_exists", "value": "veincreeper:coal_creeper" } ]

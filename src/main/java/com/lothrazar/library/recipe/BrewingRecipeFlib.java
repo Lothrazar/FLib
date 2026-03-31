@@ -3,7 +3,7 @@ package com.lothrazar.library.recipe;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.brewing.BrewingRecipe;
+import net.neoforged.neoforge.common.brewing.BrewingRecipe;
 
 public class BrewingRecipeFlib extends BrewingRecipe {
 
