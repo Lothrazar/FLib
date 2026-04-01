@@ -67,7 +67,7 @@ public class FluidRenderMap<V> extends Object2ObjectOpenCustomHashMap<FluidStack
 
     @Override
     public boolean equals(FluidStack a, FluidStack b) {
-      return a == null ? b == null : b != null && a.isFluidEqual(b);
+      return a == null ? b == null : b != null && FluidStack.isSameFluidSameComponents(a, b);
     }
   }
 }
