@@ -114,7 +114,7 @@ public class FluidBar {
   public void renderTooltip(GuiGraphics gg, int mouseX, int mouseY, FluidStack current) {
     String tt = emtpyTooltip;
     if (current != null && !current.isEmpty()) {
-      tt = current.getAmount() + "/" + getCapacity() + " " + current.getDisplayName().getString();
+      tt = current.getAmount() + "/" + getCapacity() + " " + current.getHoverName().getString(); // getDisplayName() -> getHoverName()
     }
     List<Component> list = new ArrayList<>();
     list.add(Component.translatable(tt));
