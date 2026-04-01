@@ -64,7 +64,7 @@ public class RecipeCauldronFactory {
         }
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
       };
-      CauldronInteraction.WATER.map(rec.input.asItem(), interaction);
+      CauldronInteraction.WATER.map().put(rec.input.asItem(), interaction);
     }
   }
 }

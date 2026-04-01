@@ -350,7 +350,7 @@ public class EntityUtil {
   public static List<Villager> getVillagers(Level world, BlockPos p, int r) {
     BlockPos start = p.offset(-r, -r, -r);
     BlockPos end = p.offset(r, r, r);
-    return world.getEntitiesOfClass(Villager.class, new AABB(start, end));
+    return world.getEntitiesOfClass(Villager.class, AABB.encapsulatingFullBlocks(start, end));
   }
 
   public static LivingEntity getClosestEntity(Level world, Player player, List<? extends LivingEntity> list) {
@@ -449,11 +449,11 @@ public class EntityUtil {
   }
 
   public static Attribute getAttributeJump(Horse ahorse) {
-    return Attributes.JUMP_STRENGTH; //was reflection lol
+    return Attributes.JUMP_STRENGTH.value();
   }
 
   public static void eatingHorse(Horse ahorse) {
-    ahorse.eating(); // requires accesstransformer.cfg 
+    ahorse.eating(); // requires accesstransformer.cfg
   }
 
   public static void tryMakeEntityClimb(Level worldIn, LivingEntity entity, double climbSpeed) {
