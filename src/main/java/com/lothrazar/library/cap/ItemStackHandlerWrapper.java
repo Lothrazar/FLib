@@ -1,5 +1,6 @@
 package com.lothrazar.library.cap;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.util.INBTSerializable;
@@ -85,17 +86,17 @@ public class ItemStackHandlerWrapper implements IItemHandler, IItemHandlerModifi
   }
 
   @Override
-  public CompoundTag serializeNBT() {
+  public CompoundTag serializeNBT(HolderLookup.Provider provider) {
     CompoundTag cmp = new CompoundTag();
-    cmp.put(NBT_INPUT, input.serializeNBT());
-    cmp.put(NBT_OUTPUT, output.serializeNBT());
+    cmp.put(NBT_INPUT, input.serializeNBT(provider));
+    cmp.put(NBT_OUTPUT, output.serializeNBT(provider));
     return cmp;
   }
 
   @Override
-  public void deserializeNBT(CompoundTag nbt) {
-    input.deserializeNBT(nbt.getCompound(NBT_INPUT));
-    output.deserializeNBT(nbt.getCompound(NBT_OUTPUT));
+  public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+    input.deserializeNBT(provider, nbt.getCompound(NBT_INPUT));
+    output.deserializeNBT(provider, nbt.getCompound(NBT_OUTPUT));
   }
 
   @FunctionalInterface

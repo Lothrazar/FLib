@@ -1,15 +1,16 @@
 package com.lothrazar.library.cap;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.minecraft.nbt.IntTag;
 import net.neoforged.neoforge.energy.EnergyStorage;
 
 /**
  * For use with items, tile entities, etc.
- * 
+ *
  * @see cyclic
  */
-public class CustomEnergyStorage extends EnergyStorage implements INBTSerializable<net.minecraft.nbt.Tag> {
+public class CustomEnergyStorage extends EnergyStorage {
 
   public static final String NBTENERGY = "energy";
 
@@ -22,21 +23,36 @@ public class CustomEnergyStorage extends EnergyStorage implements INBTSerializab
       energyIn = 0;
     }
     if (energyIn > getMaxEnergyStored()) {
-      energyIn = getEnergyStored();
+      energyIn = getMaxEnergyStored();
     }
     this.energy = energyIn;
   }
 
-  @Override
-  public CompoundTag serializeNBT() {
+  /**
+   * Serialize energy to a CompoundTag (e.g. for block entity NBT).
+   * Use this instead of serializeNBT() when embedding energy inside a larger compound.
+   */
+  public CompoundTag saveToTag() {
     CompoundTag tag = new CompoundTag();
     tag.putInt(NBTENERGY, getEnergyStored());
     return tag;
   }
 
+  /**
+   * Deserialize energy from a CompoundTag (e.g. from block entity NBT).
+   */
+  public void loadFromTag(CompoundTag tag) {
+    setEnergy(tag.getInt(NBTENERGY));
+  }
+
+  // Override INBTSerializable<IntTag> from EnergyStorage with provider signatures
   @Override
-  public void deserializeNBT(net.minecraft.nbt.Tag nbt) {
-    CompoundTag real = (CompoundTag) nbt;
-    setEnergy(real.getInt(NBTENERGY));
+  public IntTag serializeNBT(HolderLookup.Provider provider) {
+    return IntTag.valueOf(getEnergyStored());
+  }
+
+  @Override
+  public void deserializeNBT(HolderLookup.Provider provider, IntTag nbt) {
+    setEnergy(nbt.getAsInt());
   }
 }
