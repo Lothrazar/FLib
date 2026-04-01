@@ -6,6 +6,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
@@ -38,7 +39,8 @@ public class FakeBlockRenderTypes extends RenderType {
   public static final RenderType LASER_MAIN_BEAM = create(FutureLibMod.MODID + ":mininglasermainbeam",
       DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, BUFFERSIZE, CRUMBLING, SORT,
       RenderType.CompositeState.builder()
-          .setTextureState(new TextureStateShard(BEAM, BLUR, MIPMAP)).setShaderState(POSITION_COLOR_SHADER) // was POSITION_COLOR_TEX_SHADER
+          .setTextureState(new TextureStateShard(BEAM, BLUR, MIPMAP))
+          .setShaderState(new RenderStateShard.ShaderStateShard(GameRenderer::getPositionTexColorShader)) // was POSITION_COLOR_TEX_SHADER
           .setLayeringState(VIEW_OFFSET_Z_LAYERING)
           .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
           .setDepthTestState(NO_DEPTH_TEST)

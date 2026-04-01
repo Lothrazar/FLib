@@ -1,6 +1,8 @@
 package com.lothrazar.library.recipe.ingredient;
 
 import com.google.gson.JsonObject;
+import com.lothrazar.library.FutureLibMod;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.ShapedRecipe;
@@ -23,7 +25,15 @@ public class RandomizedOutputIngredient {
 
   private void parseData(JsonObject json) {
     if (json.has(KEY_BONUS) && json.has(KEY_PERCENT)) {
-      bonus = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, KEY_BONUS));
+
+      //bonus =  ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, KEY_BONUS));
+      // replaced with codec parse
+      bonus = ItemStack.CODEC.parse(JsonOps.INSTANCE, json)
+        .resultOrPartial(errorMessage -> {
+          FutureLibMod.LOGGER.error("Failed to parse ItemStack: {}", errorMessage);
+        })
+        .orElse(ItemStack.EMPTY);
+
       percent = json.get(KEY_PERCENT).getAsInt();
       percent = Math.max(0, percent);
       if (percent > 100) {

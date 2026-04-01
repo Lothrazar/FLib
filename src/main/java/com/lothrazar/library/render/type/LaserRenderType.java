@@ -3,14 +3,19 @@ package com.lothrazar.library.render.type;
 import com.lothrazar.library.FutureLibMod;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 
 /**
- * Citation/source/author
- * 
- * 
- * https://github.com/Direwolf20-MC/MiningGadgets
+ *
+ * Old Forge 1.20         	  NeoForge 1.21 (GameRenderer Method or Constant)
+ * POSITION_COLOR_TEX_SHADER	getPositionTexColorShader()
+ * POSITION_COLOR_SHADER	    getPositionColorShader()
+ * POSITION_TEX_SHADER	      getPositionTexShader()
+ * POSITION_SHADER	          getPositionShader()
+ * POSITION_COLOR_TEX         POSITION_TEX_COLOR
  *
  */
 public class LaserRenderType extends RenderType {
@@ -23,9 +28,9 @@ public class LaserRenderType extends RenderType {
   private final static ResourceLocation RL_BEAM = ResourceLocation.fromNamespaceAndPath(FutureLibMod.MODID, "textures/effect/beam.png");
   private final static ResourceLocation RL_GLOW = ResourceLocation.fromNamespaceAndPath(FutureLibMod.MODID, "textures/effect/glow.png");
   public static final RenderType LASER_MAIN_BEAM = create("MAIN_",
-      DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, false, false,
+      DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, 256, false, false,
       RenderType.CompositeState.builder().setTextureState(new TextureStateShard(RL_BEAM, false, false))
-          .setShaderState(POSITION_COLOR_TEX_SHADER)
+          .setShaderState(new RenderStateShard.ShaderStateShard(GameRenderer::getPositionTexColorShader)) // was POSITION_COLOR_TEX_SHADER
           .setLayeringState(VIEW_OFFSET_Z_LAYERING)
           .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
           .setDepthTestState(NO_DEPTH_TEST)
@@ -34,9 +39,9 @@ public class LaserRenderType extends RenderType {
           .setWriteMaskState(COLOR_WRITE)
           .createCompositeState(false));
   public static final RenderType LASER_MAIN_ADDITIVE = create("MiningLaserAdditiveBeam",
-      DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, false, false,
+      DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, 256, false, false,
       RenderType.CompositeState.builder().setTextureState(new TextureStateShard(RL_GLOW, false, false))
-          .setShaderState(POSITION_COLOR_TEX_SHADER)
+          .setShaderState(new RenderStateShard.ShaderStateShard(GameRenderer::getPositionTexColorShader)) // was POSITION_COLOR_TEX_SHADER
           .setLayeringState(VIEW_OFFSET_Z_LAYERING)
           .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
           .setDepthTestState(NO_DEPTH_TEST)
@@ -45,9 +50,9 @@ public class LaserRenderType extends RenderType {
           .setWriteMaskState(COLOR_WRITE)
           .createCompositeState(false));
   public static final RenderType LASER_MAIN_CORE = create("MiningLaserCoreBeam",
-      DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, false, false,
+      DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, 256, false, false,
       RenderType.CompositeState.builder().setTextureState(new TextureStateShard(RL_LASER, false, false))
-          .setShaderState(POSITION_COLOR_TEX_SHADER)
+          .setShaderState(new RenderStateShard.ShaderStateShard(GameRenderer::getPositionTexColorShader))// was POSITION_COLOR_TEX_SHADER
           .setLayeringState(VIEW_OFFSET_Z_LAYERING)
           .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
           .setDepthTestState(NO_DEPTH_TEST)

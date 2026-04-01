@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -97,7 +98,7 @@ public class PlayerUtil {
     BlockPos respawnPos = player.getRespawnPosition();
     Optional<Vec3> optional = Optional.empty();
     if (respawnPos != null) {
-      optional = Player.findRespawnPositionAndUseSpawnBlock((ServerLevel) player.level(), respawnPos, 0.0F, true, true);
+      optional = ServerPlayer.findRespawnPositionAndUseSpawnBlock((ServerLevel) player.level(), respawnPos, player.getRespawnAngle(), true, true);
     }
     return optional;
   }
