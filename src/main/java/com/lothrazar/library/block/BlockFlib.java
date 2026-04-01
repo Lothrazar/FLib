@@ -167,13 +167,6 @@ public class BlockFlib extends Block {
     return super.getDirectSignal(blockState, blockAccess, pos, side);
   }
 
-  @SuppressWarnings("deprecation")
-  @Override
-  public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-    //    ItemStack heldStack = player.getItemInHand(hand);
-    return super.use(state, world, pos, player, hand, hit);
-  }
-
   public void onRightClickBlock(RightClickBlock event, BlockState state) {
     if (me.rotateColour &&
         event.getItemStack().getItem() instanceof DyeItem newColor) {

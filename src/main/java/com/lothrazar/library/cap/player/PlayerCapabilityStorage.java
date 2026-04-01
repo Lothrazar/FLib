@@ -3,12 +3,13 @@ package com.lothrazar.library.cap.player;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.nbt.CompoundTag;
+import net.neoforged.neoforge.attachment.IAttachmentHolder;
 
 public class PlayerCapabilityStorage {
 
   public static final Codec<PlayerCapabilityStorage> CODEC = RecordCodecBuilder.create(instance ->
       instance.group(Codec.INT.fieldOf("mana").forGetter(PlayerCapabilityStorage::getMana))
-          .apply(instance, PlayerCapabilityStorage::new));
+          .apply(instance, mana -> new PlayerCapabilityStorage(mana)));
 
   int mana;
 
@@ -18,6 +19,7 @@ public class PlayerCapabilityStorage {
 
   public PlayerCapabilityStorage() {}
 
+  @Deprecated // i think
   public PlayerCapabilityStorage(CompoundTag tag) {
     this.read(tag);
   }

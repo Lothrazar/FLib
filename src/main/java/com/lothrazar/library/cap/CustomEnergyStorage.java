@@ -3,6 +3,7 @@ package com.lothrazar.library.cap;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.Tag;
 import net.neoforged.neoforge.energy.EnergyStorage;
 
 /**
@@ -52,7 +53,11 @@ public class CustomEnergyStorage extends EnergyStorage {
   }
 
   @Override
-  public void deserializeNBT(HolderLookup.Provider provider, IntTag nbt) {
-    setEnergy(nbt.getAsInt());
+  public void deserializeNBT(HolderLookup.Provider provider, Tag nbt) {
+    if (nbt instanceof IntTag intNbt) {
+      setEnergy(intNbt.getAsInt());
+    } else {
+      throw new IllegalArgumentException("Can not deserialize to an instance that isn't the default implementation");
+    }
   }
 }

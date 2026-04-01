@@ -26,9 +26,9 @@ public abstract class BlockEntityFlib extends BlockEntity {
   }
 
   @Override
-  public void load(CompoundTag tag, HolderLookup.Provider registries) {
+  public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
     //    timer = tag.getInt("timer");
-    super.load(tag, registries);
+    super.loadAdditional(tag, registries);
   }
 
   @Override
@@ -60,7 +60,7 @@ public abstract class BlockEntityFlib extends BlockEntity {
 
   @Override
   public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
-    this.load(tag, registries);
+    this.loadAdditional(tag, registries);
   }
 
   @Override

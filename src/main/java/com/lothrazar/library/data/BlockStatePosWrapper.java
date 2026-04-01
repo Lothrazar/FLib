@@ -24,7 +24,7 @@ public class BlockStatePosWrapper {
     this.blockPos = chunkPosition;
     BlockEntity te = world.getBlockEntity(chunkPosition);
     if (te != null) {
-      this.tileEntityTag = te.saveWithoutMetadata();
+      this.tileEntityTag = te.saveWithoutMetadata(world.registryAccess());
     }
   }
 
@@ -44,7 +44,7 @@ public class BlockStatePosWrapper {
 
   public void readFromNBT(CompoundTag tag, Level level) {
     this.blockState = NbtUtils.readBlockState(level.holderLookup(Registries.BLOCK), tag.getCompound("block"));
-    this.blockPos = NbtUtils.readBlockPos(tag.getCompound("pos"));
+    this.blockPos = NbtUtils.readBlockPos(tag,"pos").orElse(null);
     if (tag.contains("tileentity")) {
       this.tileEntityTag = tag.getCompound("tileentity");
     }
@@ -53,8 +53,7 @@ public class BlockStatePosWrapper {
   public void writeToNBT(CompoundTag tag) {
     CompoundTag encoded = NbtUtils.writeBlockState(this.blockState);
     tag.put("block", encoded);
-    CompoundTag epos = NbtUtils.writeBlockPos(this.blockPos);
-    tag.put("pos", epos);
+    tag.put("pos", NbtUtils.writeBlockPos(this.blockPos));
     if (this.tileEntityTag != null) {
       tag.put("tileentity", this.tileEntityTag);
     }

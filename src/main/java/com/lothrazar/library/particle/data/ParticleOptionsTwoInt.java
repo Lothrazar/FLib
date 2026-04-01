@@ -1,45 +1,36 @@
 package com.lothrazar.library.particle.data;
 
-import java.util.Locale;
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
 /**
- * used by ParticleBlinkingAura
+ * ParticleOptions implementation carrying two ints (e.g. two RGB color values).
+ * Used by ParticleBlinkingAura and similar effects.
  *
+ * <p>In 1.21.1, ParticleOptions no longer has Deserializer, writeToNetwork, or
+ * writeToString. Instead, the ParticleType provides a MapCodec and a StreamCodec.
+ * Use the static factory methods here when registering your ParticleType: </p>
+ *
+ * <pre>
+ * PARTICLES.register("my_particle", () -> new ParticleType<&lt>;ParticleOptionsTwoInt>;(false) {
+ *   public MapCodec<ParticleOptionsTwoInt>; codec() {
+ *     return ParticleOptionsTwoInt.codec(this);
+ *   }
+ *  public StreamCodec<? super RegistryFriendlyByteBuf, ParticleOptionsTwoInt>; streamCodec() {
+ *     return ParticleOptionsTwoInt.streamCodec(this);
+ *   }
+ * });
+ * </pre>
  */
 public class ParticleOptionsTwoInt implements ParticleOptions {
 
-  @SuppressWarnings("deprecation")
-  public static final Deserializer<ParticleOptionsTwoInt> DESERIALIZER = new Deserializer<ParticleOptionsTwoInt>() {
-
-    @Override
-    public ParticleOptionsTwoInt fromCommand(ParticleType<ParticleOptionsTwoInt> particleType, StringReader reader) throws CommandSyntaxException {
-      if (reader.canRead()) {
-        reader.expect(' ');
-      }
-      int oneInt = 0xffffff, twoInt = 0xffffff;
-      if (reader.canRead()) {
-        oneInt = reader.readInt();
-      }
-      if (reader.canRead()) {
-        reader.expect(' ');
-      }
-      if (reader.canRead()) {
-        twoInt = reader.readInt();
-      }
-      return new ParticleOptionsTwoInt(particleType, oneInt, twoInt);
-    }
-
-    @Override
-    public ParticleOptionsTwoInt fromNetwork(ParticleType<ParticleOptionsTwoInt> particleType, FriendlyByteBuf buf) {
-      return new ParticleOptionsTwoInt(particleType, buf.readInt(), buf.readInt());
-    }
-  };
   private final ParticleType<ParticleOptionsTwoInt> particleType;
   public int oneInt, twoInt;
 
@@ -54,14 +45,33 @@ public class ParticleOptionsTwoInt implements ParticleOptions {
     return this.particleType;
   }
 
-  @Override
-  public void writeToNetwork(FriendlyByteBuf buf) {
-    buf.writeInt(this.oneInt);
-    buf.writeInt(this.twoInt);
+  /**
+   * Returns a MapCodec for command/config serialization.
+   * Call this from your ParticleType's codec() override, passing {@code this}.
+   */
+  public static MapCodec<ParticleOptionsTwoInt> codec(ParticleType<ParticleOptionsTwoInt> type) {
+    return RecordCodecBuilder.mapCodec(instance ->
+        instance.group(
+            Codec.INT.fieldOf("oneInt").forGetter(p -> p.oneInt),
+            Codec.INT.fieldOf("twoInt").forGetter(p -> p.twoInt)
+        ).apply(instance, (a, b) -> new ParticleOptionsTwoInt(type, a, b))
+    );
+  }
+
+  /**
+   * Returns a StreamCodec for network serialization.
+   * Call this from your ParticleType's streamCodec() override, passing {@code this}.
+   */
+  public static StreamCodec<RegistryFriendlyByteBuf, ParticleOptionsTwoInt> streamCodec(ParticleType<ParticleOptionsTwoInt> type) {
+    return StreamCodec.composite(
+        ByteBufCodecs.INT, p -> p.oneInt,
+        ByteBufCodecs.INT, p -> p.twoInt,
+        (a, b) -> new ParticleOptionsTwoInt(type, a, b)
+    );
   }
 
   @Override
-  public String writeToString() {
-    return String.format(Locale.ROOT, "%s %d %d", BuiltInRegistries.PARTICLE_TYPE.getKey(getType()), this.oneInt, this.twoInt);
+  public String toString() {
+    return String.format("%s %d %d", BuiltInRegistries.PARTICLE_TYPE.getKey(getType()), oneInt, twoInt);
   }
 }

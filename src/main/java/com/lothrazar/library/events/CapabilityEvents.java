@@ -35,8 +35,9 @@ public class CapabilityEvents {
   public static void onRegisterCapabilities(RegisterCapabilitiesEvent event) {
     event.registerEntity(
         PlayerCapProvider.PLAYER_MANA_CAP,
-        (entity, ctx) -> entity instanceof Player ? entity.getData(PlayerCapProvider.PLAYER_MANA.get()) : null,
-        EntityType.PLAYER);
-    FutureLibMod.LOGGER.info("RegisterCapabilitiesEvent success for PlayerMana");
+        EntityType.PLAYER,
+        (entity, ctx) -> entity.getData(PlayerCapProvider.PLAYER_MANA.get()));
+
+    FutureLibMod.LOGGER.info("RegisterCapabilitiesEvent success");
   }
 }

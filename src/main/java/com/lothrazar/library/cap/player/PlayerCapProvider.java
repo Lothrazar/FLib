@@ -18,7 +18,7 @@ public class PlayerCapProvider {
    */
   public static final Supplier<AttachmentType<PlayerCapabilityStorage>> PLAYER_MANA =
       ATTACHMENT_TYPES.register("player_mana", () ->
-          AttachmentType.builder(PlayerCapabilityStorage::new)
+          AttachmentType.builder(() -> new PlayerCapabilityStorage())
               .serialize(PlayerCapabilityStorage.CODEC)
               .build());
 
