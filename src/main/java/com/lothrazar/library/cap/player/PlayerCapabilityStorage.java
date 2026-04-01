@@ -1,13 +1,19 @@
 package com.lothrazar.library.cap.player;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.nbt.CompoundTag;
 
 public class PlayerCapabilityStorage {
 
+  public static final Codec<PlayerCapabilityStorage> CODEC = RecordCodecBuilder.create(instance ->
+      instance.group(Codec.INT.fieldOf("mana").forGetter(PlayerCapabilityStorage::getMana))
+          .apply(instance, PlayerCapabilityStorage::new));
+
   int mana;
 
-  public PlayerCapabilityStorage(int readInt) {
-    mana = readInt;
+  public PlayerCapabilityStorage(int mana) {
+    this.mana = mana;
   }
 
   public PlayerCapabilityStorage() {}

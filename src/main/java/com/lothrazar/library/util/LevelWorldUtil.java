@@ -61,7 +61,7 @@ public class LevelWorldUtil {
   public static String dimensionToString(Level world) {
     //example: returns "minecraft:overworld" resource location
     return world.dimension().location().toString();
-    //RegistryKey.create(Registry.WORLD_KEY, new ResourceLocation("twilightforest", "twilightforest"));
+    //RegistryKey.create(Registry.WORLD_KEY, ResourceLocation.fromNamespaceAndPath("twilightforest", "twilightforest"));
   }
 
   public static ResourceKey<Level> stringToDimension(String key) {

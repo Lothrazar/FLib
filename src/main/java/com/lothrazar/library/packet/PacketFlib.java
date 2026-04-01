@@ -1,11 +1,10 @@
 package com.lothrazar.library.packet;
 
-import java.util.function.Supplier;
-import net.minecraftforge.network.NetworkEvent.Context;
-
+/**
+ * Base class for FLib packets. Subclasses implement CustomPacketPayload.
+ * With the NeoForge 1.21+ payload system, packets are marked as handled automatically
+ * once the handler method returns — no explicit done() call is needed.
+ */
 public class PacketFlib {
-
-  public void done(Supplier<Context> ctx) {
-    ctx.get().setPacketHandled(true);
-  }
+  // intentionally empty
 }

@@ -3,62 +3,40 @@ package com.lothrazar.library.events;
 import com.lothrazar.library.FutureLibMod;
 import com.lothrazar.library.cap.player.PlayerCapProvider;
 import com.lothrazar.library.cap.player.PlayerCapabilityStorage;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.bus.api.SubscribeEvent;
 
 /**
- * NOT loaded by default load this into your event bus to pull in
+ * NOT loaded by default. Call {@link #register(IEventBus)} from inside your @Mod constructor to enable
+ * the FLib player mana capability.
  *
- *
- * Import @MinecraftForge and run
- * 
- * MinecraftForge.EVENT_BUS.register(new CapabilityEvents());
- * 
- * inside of the event @FMLCommonSetupEvent
+ * Example:
+ *   CapabilityEvents.register(modEventBus);
  */
 public class CapabilityEvents {
 
-  public CapabilityEvents() {
-    MinecraftForge.EVENT_BUS.addGenericListener(Entity.class, CapabilityEvents::onAttachCapabilitiesPlayer);
+  public static void register(IEventBus modBus) {
+    NeoForge.EVENT_BUS.addListener(CapabilityEvents::onPlayerCloned);
+    modBus.addListener(CapabilityEvents::onRegisterCapabilities);
+    FutureLibMod.LOGGER.info("CapabilityEvents registered");
   }
-  // When a player dies or teleports from the end capabilities are cleared. Using the PlayerEvent.Clone event
-  // we can detect this and copy our capability from the old player to the new one
 
-  @SubscribeEvent
-  public void onPlayerCloned(PlayerEvent.Clone event) {
+  public static void onPlayerCloned(PlayerEvent.Clone event) {
     if (event.isWasDeath()) {
-      // We need to copyFrom the capabilities
-      event.getOriginal().getCapability(PlayerCapProvider.PLAYERCAP).ifPresent(oldStore -> {
-        event.getEntity().getCapability(PlayerCapProvider.PLAYERCAP).ifPresent(newStore -> {
-          newStore.copyFrom(oldStore);
-        });
-      });
+      PlayerCapabilityStorage oldData = event.getOriginal().getData(PlayerCapProvider.PLAYER_MANA.get());
+      event.getEntity().getData(PlayerCapProvider.PLAYER_MANA.get()).copyFrom(oldData);
     }
   }
 
-  @SubscribeEvent
-  public void onRegisterCapabilities(RegisterCapabilitiesEvent event) {
-    event.register(PlayerCapabilityStorage.class);
-    FutureLibMod.LOGGER.info("RegisterCapabilitiesEvent success for ManaManager");
-  }
-  // Whenever a new object of some type is created the AttachCapabilitiesEvent will fire. In our case we want to know
-  // when a new player arrives so that we can attach our capability here
-
-  //  @SubscribeEvent not sub, uses  MinecraftForge.EVENT_BUS.addGenericListener instead
-  public static void onAttachCapabilitiesPlayer(AttachCapabilitiesEvent<Entity> event) {
-    if (event.getObject() instanceof Player) {
-      if (!event.getObject().getCapability(PlayerCapProvider.PLAYERCAP).isPresent()) {
-        // The player does not already have this capability so we need to add the capability provider here
-        //TODO: Data keyword string from IMC? 
-        event.addCapability(new ResourceLocation(FutureLibMod.MODID, "data"), new PlayerCapProvider());
-        FutureLibMod.LOGGER.info("CapabilityRegistry success for data");
-      }
-    }
+  public static void onRegisterCapabilities(RegisterCapabilitiesEvent event) {
+    event.registerEntity(
+        PlayerCapProvider.PLAYER_MANA_CAP,
+        (entity, ctx) -> entity instanceof Player ? entity.getData(PlayerCapProvider.PLAYER_MANA.get()) : null,
+        EntityType.PLAYER);
+    FutureLibMod.LOGGER.info("RegisterCapabilitiesEvent success for PlayerMana");
   }
 }

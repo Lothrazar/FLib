@@ -37,7 +37,7 @@ public class StringParseUtil {
   public static String getFluidRatioName(IFluidHandler handler) {
     String ratio = handler.getFluidInTank(0).getAmount() + "/" + handler.getTankCapacity(0);
     if (!handler.getFluidInTank(0).isEmpty()) {
-      ratio += " " + handler.getFluidInTank(0).getDisplayName().getString();
+      ratio += " " + handler.getFluidInTank(0).getHoverName().getString();
     }
     return ratio;
   }

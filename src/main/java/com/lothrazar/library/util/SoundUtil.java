@@ -70,7 +70,7 @@ public class SoundUtil {
   }
 
   public static void playSoundFromServerById(ServerLevel world, BlockPos pos, String sid) {
-    SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation(sid));
+    SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(ResourceLocation.parse(sid));
     if (sound != null) {
       for (ServerPlayer sp : world.players()) {
         playSoundFromServer(sp, pos, sound, 1F, 1F);
@@ -80,7 +80,7 @@ public class SoundUtil {
 
   public static void playSoundById(Player player, String sid) {
     //do the thing
-    SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation(sid));
+    SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(ResourceLocation.parse(sid));
     if (sound != null && player.level().isClientSide) {
       SoundUtil.playSound(player, sound);
     }

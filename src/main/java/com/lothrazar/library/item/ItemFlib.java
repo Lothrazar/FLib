@@ -1,6 +1,8 @@
 package com.lothrazar.library.item;
 
 import java.util.List;
+
+import net.minecraft.world.entity.LivingEntity;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import com.lothrazar.library.util.ChatUtil;
@@ -68,7 +70,7 @@ public class ItemFlib extends Item {
 
   @Override
   @OnlyIn(Dist.CLIENT)
-  public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+  public void appendHoverText(ItemStack stack, Item.TooltipContext worldIn, List<Component> tooltip, TooltipFlag flagIn) {
     if (me.tooltip) {
       me.tooltipApply(this, tooltip);
     }
@@ -112,7 +114,7 @@ public class ItemFlib extends Item {
     return ItemStack.EMPTY;
   }
 
-  public float getChargedPercent(ItemStack stack, int chargeTimer) {
-    return BowItem.getPowerForTime(this.getUseDuration(stack) - chargeTimer);
+  public float getChargedPercent(ItemStack stack, int chargeTimer, LivingEntity entity) {
+    return BowItem.getPowerForTime(this.getUseDuration(stack, entity) - chargeTimer);
   }
 }

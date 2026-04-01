@@ -41,7 +41,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
@@ -72,21 +71,17 @@ public class FakePlayerUtil {
     return fakePlayer;
   }
 
-  public static void tryEquipItem(LazyOptional<IItemHandler> i, WeakReference<FakePlayer> fp, int slot, InteractionHand hand) {
-    if (fp == null) {
+  public static void tryEquipItem(IItemHandler inv, WeakReference<FakePlayer> fp, int slot, InteractionHand hand) {
+    if (fp == null || inv == null) {
       return;
     }
-    i.ifPresent(inv -> {
-      ItemStack maybeTool = inv.getStackInSlot(0);
-      if (!maybeTool.isEmpty()) {
-        if (maybeTool.getCount() <= 0) {
-          maybeTool = ItemStack.EMPTY;
-        }
-      }
-      if (!maybeTool.equals(fp.get().getItemInHand(hand))) {
-        fp.get().setItemInHand(hand, maybeTool);
-      }
-    });
+    ItemStack maybeTool = inv.getStackInSlot(0);
+    if (!maybeTool.isEmpty() && maybeTool.getCount() <= 0) {
+      maybeTool = ItemStack.EMPTY;
+    }
+    if (!maybeTool.equals(fp.get().getItemInHand(hand))) {
+      fp.get().setItemInHand(hand, maybeTool);
+    }
   }
 
   public static InteractionResult interactUseOnBlock(WeakReference<FakePlayer> fakePlayer,

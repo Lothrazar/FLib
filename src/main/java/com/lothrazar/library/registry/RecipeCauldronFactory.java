@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.cauldron.CauldronInteraction;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
@@ -59,11 +60,11 @@ public class RecipeCauldronFactory {
           if (rec.lowerFillLevel) {
             LayeredCauldronBlock.lowerFillLevel(state, level, pos);
           }
-          return InteractionResult.sidedSuccess(level.isClientSide);
+          return ItemInteractionResult.sidedSuccess(level.isClientSide);
         }
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
       };
-      CauldronInteraction.WATER.put(rec.input.asItem(), interaction);
+      CauldronInteraction.WATER.map(rec.input.asItem(), interaction);
     }
   }
 }

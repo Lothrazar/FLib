@@ -1,79 +1,70 @@
-/*******************************************************************************
- * The MIT License (MIT)
- *
- * Copyright (C) 2014-2018 Sam Bassett (aka Lothrazar)
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- ******************************************************************************/
 package com.lothrazar.library.packet;
 
-import java.util.function.Supplier;
+import com.lothrazar.library.FutureLibMod;
 import com.lothrazar.library.util.BlockUtil;
 import com.lothrazar.library.util.ItemStackUtil;
 import com.lothrazar.library.util.SoundUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public class PacketRotateBlock extends PacketFlib {
+public class PacketRotateBlock extends PacketFlib implements CustomPacketPayload {
 
-  private BlockPos pos;
-  private Direction side;
-  private InteractionHand hand;
+  public static final CustomPacketPayload.Type<PacketRotateBlock> TYPE =
+      new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(FutureLibMod.MODID, "rotate_block"));
 
-  public PacketRotateBlock(BlockPos mouseover, Direction s, InteractionHand hand) {
-    pos = mouseover;
-    side = s;
+  private static final StreamCodec<FriendlyByteBuf, Direction> DIRECTION_CODEC =
+      StreamCodec.of((buf, dir) -> buf.writeEnum(dir), buf -> buf.readEnum(Direction.class));
+
+  private static final StreamCodec<FriendlyByteBuf, InteractionHand> HAND_CODEC =
+      StreamCodec.of((buf, hand) -> buf.writeEnum(hand), buf -> buf.readEnum(InteractionHand.class));
+
+  public static final StreamCodec<FriendlyByteBuf, PacketRotateBlock> STREAM_CODEC =
+      StreamCodec.composite(
+          BlockPos.STREAM_CODEC, PacketRotateBlock::getPos,
+          DIRECTION_CODEC, PacketRotateBlock::getSide,
+          HAND_CODEC, PacketRotateBlock::getHand,
+          PacketRotateBlock::new);
+
+  private final BlockPos pos;
+  private final Direction side;
+  private final InteractionHand hand;
+
+  public PacketRotateBlock(BlockPos pos, Direction side, InteractionHand hand) {
+    this.pos = pos;
+    this.side = side;
     this.hand = hand;
   }
 
-  public static PacketRotateBlock decode(FriendlyByteBuf buf) {
-    return new PacketRotateBlock(buf.readBlockPos(),
-        Direction.values()[buf.readInt()],
-        InteractionHand.values()[buf.readInt()]);
+  public BlockPos getPos() { return pos; }
+  public Direction getSide() { return side; }
+  public InteractionHand getHand() { return hand; }
+
+  @Override
+  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    return TYPE;
   }
 
-  public static void encode(PacketRotateBlock msg, FriendlyByteBuf buf) {
-    buf.writeBlockPos(msg.pos);
-    buf.writeInt(msg.side.ordinal());
-    buf.writeInt(msg.hand.ordinal());
-  }
-
-  public static void handle(PacketRotateBlock message, Supplier<NetworkEvent.Context> ctx) {
-    ctx.get().enqueueWork(() -> {
-      //rotate type
-      Level level = ctx.get().getSender().level();
-      boolean succ = BlockUtil.rotateBlockValidState(level, message.pos, message.side);
+  public static void handle(PacketRotateBlock msg, IPayloadContext context) {
+    context.enqueueWork(() -> {
+      ServerPlayer player = (ServerPlayer) context.player();
+      Level level = player.level();
+      boolean succ = BlockUtil.rotateBlockValidState(level, msg.pos, msg.side);
       if (succ) {
-        ServerPlayer player = ctx.get().getSender();
-        ItemStack itemStackHeld = player.getItemInHand(message.hand);
+        ItemStack itemStackHeld = player.getItemInHand(msg.hand);
         ItemStackUtil.damageItem(player, itemStackHeld);
-        if (level.getBlockState(message.pos).getSoundType() != null) {
-          SoundUtil.playSoundFromServer(player, level.getBlockState(message.pos).getSoundType().getPlaceSound(), 1F, 1F);
+        if (level.getBlockState(msg.pos).getSoundType() != null) {
+          SoundUtil.playSoundFromServer(player, level.getBlockState(msg.pos).getSoundType().getPlaceSound(), 1F, 1F);
         }
       }
     });
-    message.done(ctx);
   }
 }

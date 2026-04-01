@@ -1,29 +1,24 @@
 package com.lothrazar.library.cap.item;
 
-import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.neoforged.neoforge.common.util.LazyOptional;
+import net.minecraft.world.item.component.CustomData;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStack;
 
-public class FluidHandlerCapabilityStack implements IFluidHandlerItem, ICapabilityProvider {
+/**
+ * IFluidHandlerItem that reads/writes a single fluid to an ItemStack's CustomData component.
+ * In NeoForge 1.21+, register this via RegisterCapabilitiesEvent:
+ *   event.registerItem(Capabilities.FluidHandler.ITEM,
+ *       (stack, ctx) -> new FluidHandlerCapabilityStack(stack, capacity), myItem);
+ */
+public class FluidHandlerCapabilityStack implements IFluidHandlerItem {
 
-  public static final String FLUID_NBT_KEY = FluidHandlerItemStack.FLUID_NBT_KEY;
-  private final LazyOptional<IFluidHandlerItem> holder = LazyOptional.of(() -> this);
+  public static final String FLUID_NBT_KEY = "Fluid";
   protected ItemStack container;
   protected int capacity;
 
-  /**
-   * @param container
-   *          The container itemStack, data is stored on it directly as NBT.
-   * @param capacity
-   *          The maximum capacity of this fluid tank.
-   */
   public FluidHandlerCapabilityStack(ItemStack container, int capacity) {
     this.container = container;
     this.capacity = capacity;
@@ -34,21 +29,32 @@ public class FluidHandlerCapabilityStack implements IFluidHandlerItem, ICapabili
     return container;
   }
 
+  private CompoundTag getContainerTag() {
+    return container.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+  }
+
+  private void setContainerTag(CompoundTag tag) {
+    container.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+  }
+
   public FluidStack getFluid() {
-    CompoundTag tagCompound = container.getTag();
-    if (tagCompound == null || !tagCompound.contains(FLUID_NBT_KEY)) {
+    CompoundTag tag = getContainerTag();
+    if (!tag.contains(FLUID_NBT_KEY)) {
       return FluidStack.EMPTY;
     }
-    return FluidStack.loadFluidStackFromNBT(tagCompound.getCompound(FLUID_NBT_KEY));
+    return FluidStack.parseOptional(null, tag.getCompound(FLUID_NBT_KEY));
   }
 
   public void setFluid(FluidStack fluid) {
-    if (!container.hasTag()) {
-      container.setTag(new CompoundTag());
+    CompoundTag tag = getContainerTag();
+    if (fluid.isEmpty()) {
+      tag.remove(FLUID_NBT_KEY);
+    } else {
+      CompoundTag fluidTag = new CompoundTag();
+      fluid.save(null, fluidTag);
+      tag.put(FLUID_NBT_KEY, fluidTag);
     }
-    CompoundTag fluidTag = new CompoundTag();
-    fluid.writeToNBT(fluidTag);
-    container.getTag().put(FLUID_NBT_KEY, fluidTag);
+    setContainerTag(tag);
   }
 
   @Override
@@ -85,8 +91,7 @@ public class FluidHandlerCapabilityStack implements IFluidHandlerItem, ICapabili
         setFluid(filled);
       }
       return fillAmount;
-    }
-    else {
+    } else {
       if (contained.isFluidEqual(resource)) {
         int fillAmount = Math.min(capacity - contained.getAmount(), resource.getAmount());
         if (doFill.execute() && fillAmount > 0) {
@@ -123,8 +128,7 @@ public class FluidHandlerCapabilityStack implements IFluidHandlerItem, ICapabili
       contained.shrink(drainAmount);
       if (contained.isEmpty()) {
         setContainerToEmpty();
-      }
-      else {
+      } else {
         setFluid(contained);
       }
     }
@@ -139,19 +143,10 @@ public class FluidHandlerCapabilityStack implements IFluidHandlerItem, ICapabili
     return true;
   }
 
-  /**
-   * Override this method for special handling. Can be used to swap out or destroy the container.
-   */
   protected void setContainerToEmpty() {
-    container.removeTagKey(FLUID_NBT_KEY);
-  }
-
-  @Override
-  public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction facing) {
-    if (ForgeCapabilities.FLUID_HANDLER_ITEM == capability) {
-      return holder.cast();
-    }
-    return LazyOptional.empty();
+    CompoundTag tag = getContainerTag();
+    tag.remove(FLUID_NBT_KEY);
+    setContainerTag(tag);
   }
 
   @Override

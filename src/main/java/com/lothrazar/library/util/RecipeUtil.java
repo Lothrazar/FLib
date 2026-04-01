@@ -12,6 +12,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 public class RecipeUtil {
 
@@ -25,7 +26,7 @@ public class RecipeUtil {
     //either recipe has no fluid or didnt match, try for tag
     if (ing.hasTag()) {
       //see /data/<id>/tags/fluids/
-      TagKey<Fluid> ft = FluidTags.create(new ResourceLocation(ing.getTag()));
+      TagKey<Fluid> ft = FluidTags.create(ResourceLocation.parse(ing.getTag()));
       if (FluidHelpersUtil.matches(tileFluid.getFluid(), ft)) {
         return true;
       }
@@ -42,8 +43,9 @@ public class RecipeUtil {
     FluidStack fluidstack = FluidStack.EMPTY;
     if (mix.has("fluid")) {
       String fluidId = mix.get("fluid").getAsString(); // JSONUtils.getString(mix, "fluid");
-      ResourceLocation resourceLocation = new ResourceLocation(fluidId);
+      ResourceLocation resourceLocation = ResourceLocation.parse(fluidId);
       Fluid fluid = ForgeRegistries.FLUIDS.getValue(resourceLocation);
+//         fluid = NeoForgeRegistries.FLUID_TYPES.getValue(resourceLocation); // TODO  what for 1.21 ??
       fluidstack = (fluid == null) ? FluidStack.EMPTY : new FluidStack(fluid, count);
     }
     String ftag = mix.has("tag") ? mix.get("tag").getAsString() : "";
@@ -67,7 +69,7 @@ public class RecipeUtil {
       //      String fluidTag = fluidJson.get("fluidTag").getAsString();
     }
     String fluidId = GsonHelper.getAsString(fluidJson, "fluid");
-    ResourceLocation resourceLocation = new ResourceLocation(fluidId);
+    ResourceLocation resourceLocation = ResourceLocation.parse(fluidId);
     Fluid fluid = ForgeRegistries.FLUIDS.getValue(resourceLocation);
     int count = fluidJson.get("count").getAsInt();
     if (count < 1) {

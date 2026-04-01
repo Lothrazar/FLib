@@ -19,9 +19,9 @@ public class LaserRenderType extends RenderType {
     super(nameIn, formatIn, drawModeIn, bufferSizeIn, useDelegateIn, needsSortingIn, setupTaskIn, clearTaskIn);
   }
 
-  private final static ResourceLocation RL_LASER = new ResourceLocation(FutureLibMod.MODID, "textures/effect/laser.png");
-  private final static ResourceLocation RL_BEAM = new ResourceLocation(FutureLibMod.MODID, "textures/effect/beam.png");
-  private final static ResourceLocation RL_GLOW = new ResourceLocation(FutureLibMod.MODID, "textures/effect/glow.png");
+  private final static ResourceLocation RL_LASER = ResourceLocation.fromNamespaceAndPath(FutureLibMod.MODID, "textures/effect/laser.png");
+  private final static ResourceLocation RL_BEAM = ResourceLocation.fromNamespaceAndPath(FutureLibMod.MODID, "textures/effect/beam.png");
+  private final static ResourceLocation RL_GLOW = ResourceLocation.fromNamespaceAndPath(FutureLibMod.MODID, "textures/effect/glow.png");
   public static final RenderType LASER_MAIN_BEAM = create("MAIN_",
       DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, false, false,
       RenderType.CompositeState.builder().setTextureState(new TextureStateShard(RL_BEAM, false, false))

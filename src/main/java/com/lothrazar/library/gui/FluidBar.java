@@ -2,6 +2,8 @@ package com.lothrazar.library.gui;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.lothrazar.library.FutureLibMod;
 import com.lothrazar.library.render.FluidRenderMap;
 import com.lothrazar.library.render.FluidRenderMap.FluidFlow;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -15,7 +17,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 
 public class FluidBar {
 
-  public static final ResourceLocation FLUID_WIDGET = new ResourceLocation("flib", "textures/gui/fluid.png");
+  public static final ResourceLocation FLUID_WIDGET = ResourceLocation.fromNamespaceAndPath(FutureLibMod.MODID, "textures/gui/fluid.png");
   public String emtpyTooltip = "0";
   private Font font;
   private int x;

@@ -12,6 +12,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.level.portal.PortalInfo;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.ITeleporter;
@@ -58,6 +59,10 @@ public class DimensionTransit implements ITeleporter {
     return repositionEntity.apply(false); //Must be false or we fall on vanilla. thanks /Mrbysco/TelePastries/
   }
 
+    /**
+     * wrapper for Player::changeDimension
+     * @param player
+     */
   public void teleport(Player player) {
     if (!player.isCreative() && !player.level().isClientSide) {
       player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 200, 200, false, false));
@@ -67,6 +72,9 @@ public class DimensionTransit implements ITeleporter {
       this.world.playSound(player, target.getX() + 0.5D, target.getY() + 0.5D, target.getZ() + 0.5D, SoundEvents.PORTAL_TRAVEL, SoundSource.MASTER, 0.25F, this.world.random.nextFloat() * 0.4F + 0.8F);
       //      player.changeDimension(dim, this);
     }
+    //now actually teleport
+
+      player.changeDimension(new DimensionTransition());
   }
 
   public ServerLevel getTargetLevel() {

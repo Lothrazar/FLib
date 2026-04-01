@@ -38,7 +38,7 @@ public abstract class AbstractSingleQuadParticle extends SingleQuadParticle {
 
   @Override
   public void render(VertexConsumer buffer, Camera entityIn, float partialTicks) {
-    TextureManager textureManager = Minecraft.getInstance().textureManager;
+    TextureManager textureManager = Minecraft.getInstance().getTextureManager();
     //    Lighting.turnOff();
     RenderSystem.depthMask(false);
     textureManager.bindForSetup(getTexture());

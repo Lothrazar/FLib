@@ -1,49 +1,34 @@
 package com.lothrazar.library.cap.player;
 
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.neoforged.neoforge.common.util.INBTSerializable;
-import net.neoforged.neoforge.common.util.LazyOptional;
+import com.lothrazar.library.FutureLibMod;
+import java.util.function.Supplier;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.capabilities.EntityCapability;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
-public class PlayerCapProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
+public class PlayerCapProvider {
 
-  public static Capability<PlayerCapabilityStorage> PLAYERCAP = CapabilityManager.get(new CapabilityToken<>() {
-    //empty by design
-  });
-  private PlayerCapabilityStorage playerMana = null;
-  private final LazyOptional<PlayerCapabilityStorage> opt = LazyOptional.of(this::createMe);
+  public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES =
+      DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, FutureLibMod.MODID);
 
-  private PlayerCapabilityStorage createMe() {
-    if (playerMana == null) {
-      playerMana = new PlayerCapabilityStorage();
-    }
-    return playerMana;
-  }
+  /**
+   * Per-player mana storage, persists across death and dimension changes via AttachmentType serialization.
+   */
+  public static final Supplier<AttachmentType<PlayerCapabilityStorage>> PLAYER_MANA =
+      ATTACHMENT_TYPES.register("player_mana", () ->
+          AttachmentType.builder(PlayerCapabilityStorage::new)
+              .serialize(PlayerCapabilityStorage.CODEC)
+              .build());
 
-  @Override
-  public <T> LazyOptional<T> getCapability(Capability<T> cap) {
-    if (cap == PLAYERCAP) {
-      return opt.cast();
-    }
-    return LazyOptional.empty();
-  }
-
-  @Override
-  public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
-    return getCapability(cap);
-  }
-
-  @Override
-  public CompoundTag serializeNBT() {
-    return createMe().write();
-  }
-
-  @Override
-  public void deserializeNBT(CompoundTag nbt) {
-    createMe().read(nbt);
-  }
+  /**
+   * EntityCapability key for accessing player mana.
+   * Usage: player.getCapability(PlayerCapProvider.PLAYER_MANA_CAP)
+   * Returns null for non-player entities.
+   */
+  public static final EntityCapability<PlayerCapabilityStorage, Void> PLAYER_MANA_CAP =
+      EntityCapability.createVoid(
+          ResourceLocation.fromNamespaceAndPath(FutureLibMod.MODID, "player_mana"),
+          PlayerCapabilityStorage.class);
 }

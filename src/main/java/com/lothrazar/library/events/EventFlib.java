@@ -18,6 +18,6 @@ public abstract class EventFlib {
      * 
      * inside of the event @FMLCommonSetupEvent
      */
-    MinecraftForge.EVENT_BUS.register(this);
+    NeoForge.EVENT_BUS.register(this);
   }
 }
