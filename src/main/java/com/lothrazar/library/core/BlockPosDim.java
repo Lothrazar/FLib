@@ -54,7 +54,7 @@ public class BlockPosDim {
             .parse(JsonOps.INSTANCE, JsonParser.parseString(nameJson))
             .result()
             .orElseGet(() -> Component.literal(nameJson));
-
+        // TODO: is this a waste of overcomplication? should it just be name string?
 //        this.name = displayTag.getString("Name");
         this.name = namec.getString();
       }
