@@ -23,13 +23,11 @@ public class CapabilityProviderEnergyStack {
   }
 
   public CompoundTag serializeNBT() {
-    CompoundTag tag = new CompoundTag();
-    tag.put(NBTENERGY, energy.serializeNBT());
-    return tag;
+    return energy.saveToTag();
   }
 
   public void deserializeNBT(CompoundTag nbt) {
-    energy.deserializeNBT(nbt.getCompound(NBTENERGY));
+    energy.loadFromTag(nbt);
   }
 
   @Override

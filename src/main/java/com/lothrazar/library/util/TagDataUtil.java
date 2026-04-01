@@ -1,10 +1,12 @@
 package com.lothrazar.library.util;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.CustomData;
 
 public class TagDataUtil {
 
@@ -22,7 +24,7 @@ public class TagDataUtil {
 
   public static ItemStack buildSkullFromTag(CompoundTag player) {
     ItemStack skull = new ItemStack(Items.PLAYER_HEAD);
-    skull.setTag(player);
+    skull.set(DataComponents.CUSTOM_DATA, CustomData.of(player));
     return skull;
   }
 
@@ -42,10 +44,17 @@ public class TagDataUtil {
   }
 
   public static BlockPos getItemStackBlockPos(ItemStack item) {
-    if (item.isEmpty() || item.getTag() == null || !item.getTag().contains("xpos")) {
+    if (item.isEmpty()) {
       return null;
     }
-    CompoundTag tag = item.getOrCreateTag();
+    CustomData data = item.get(DataComponents.CUSTOM_DATA);
+    if (data == null) {
+      return null;
+    }
+    CompoundTag tag = data.copyTag();
+    if (!tag.contains("xpos")) {
+      return null;
+    }
     return getBlockPos(tag);
   }
 
@@ -57,10 +66,12 @@ public class TagDataUtil {
     if (item.isEmpty()) {
       return;
     }
-    item.getOrCreateTag().putInt(prop, value);
+    CompoundTag tag = item.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+    tag.putInt(prop, value);
+    item.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
   }
 
   public static CompoundTag getItemStackNBT(ItemStack held) {
-    return held.getOrCreateTag();
+    return held.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
   }
 }
