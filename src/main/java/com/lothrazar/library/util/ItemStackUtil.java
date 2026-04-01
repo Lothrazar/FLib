@@ -18,7 +18,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 public class ItemStackUtil {
 
@@ -91,7 +91,7 @@ public class ItemStackUtil {
   }
 
   public static ItemStack findItem(String id) {
-    Item head = ForgeRegistries.ITEMS.getValue(ResourceLocation.tryParse(id));
+    Item head = BuiltInRegistries.ITEM.getOptional(ResourceLocation.tryParse(id)).orElse(null);
     if (head != null) {
       return new ItemStack(head);
     }

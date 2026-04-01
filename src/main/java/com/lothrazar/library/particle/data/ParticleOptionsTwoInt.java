@@ -6,7 +6,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 /**
  * used by ParticleBlinkingAura
@@ -62,6 +62,6 @@ public class ParticleOptionsTwoInt implements ParticleOptions {
 
   @Override
   public String writeToString() {
-    return String.format(Locale.ROOT, "%s %d %d", ForgeRegistries.PARTICLE_TYPES.getKey(getType()), this.oneInt, this.twoInt);
+    return String.format(Locale.ROOT, "%s %d %d", BuiltInRegistries.PARTICLE_TYPE.getKey(getType()), this.oneInt, this.twoInt);
   }
 }

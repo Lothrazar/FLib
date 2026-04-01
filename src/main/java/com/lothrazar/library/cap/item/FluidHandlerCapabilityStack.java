@@ -1,9 +1,13 @@
 package com.lothrazar.library.cap.item;
 
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 
@@ -42,7 +46,13 @@ public class FluidHandlerCapabilityStack implements IFluidHandlerItem {
     if (!tag.contains(FLUID_NBT_KEY)) {
       return FluidStack.EMPTY;
     }
-    return FluidStack.parseOptional(null, tag.getCompound(FLUID_NBT_KEY));
+    CompoundTag fluidTag = tag.getCompound(FLUID_NBT_KEY);
+    ResourceLocation fluidId = ResourceLocation.tryParse(fluidTag.getString("id"));
+    int amount = fluidTag.getInt("amount");
+    if (fluidId == null) return FluidStack.EMPTY;
+    Fluid fluid = BuiltInRegistries.FLUID.getOptional(fluidId).orElse(null);
+    if (fluid == null || fluid == Fluids.EMPTY) return FluidStack.EMPTY;
+    return new FluidStack(fluid, amount);
   }
 
   public void setFluid(FluidStack fluid) {
@@ -51,7 +61,8 @@ public class FluidHandlerCapabilityStack implements IFluidHandlerItem {
       tag.remove(FLUID_NBT_KEY);
     } else {
       CompoundTag fluidTag = new CompoundTag();
-      fluid.save(null, fluidTag);
+      fluidTag.putString("id", BuiltInRegistries.FLUID.getKey(fluid.getFluid()).toString());
+      fluidTag.putInt("amount", fluid.getAmount());
       tag.put(FLUID_NBT_KEY, fluidTag);
     }
     setContainerTag(tag);

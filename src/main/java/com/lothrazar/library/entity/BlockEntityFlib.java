@@ -6,8 +6,8 @@ import com.lothrazar.library.util.EntityUtil;
 import com.lothrazar.library.util.FakePlayerUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.server.level.ServerLevel;
@@ -26,15 +26,15 @@ public abstract class BlockEntityFlib extends BlockEntity {
   }
 
   @Override
-  public void load(CompoundTag tag) {
+  public void load(CompoundTag tag, HolderLookup.Provider registries) {
     //    timer = tag.getInt("timer");
-    super.load(tag);
+    super.load(tag, registries);
   }
 
   @Override
-  public void saveAdditional(CompoundTag tag) {
+  public void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
     //    tag.putInt("timer", timer);
-    super.saveAdditional(tag);
+    super.saveAdditional(tag, registries);
   }
 
   public abstract void setField(int field, int value);
@@ -52,16 +52,15 @@ public abstract class BlockEntityFlib extends BlockEntity {
   }
 
   @Override
-  public CompoundTag getUpdateTag() {
-    CompoundTag syncData = super.getUpdateTag();
-    this.saveAdditional(syncData);
+  public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+    CompoundTag syncData = super.getUpdateTag(registries);
+    this.saveAdditional(syncData, registries);
     return syncData;
   }
 
   @Override
-  public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-    this.load(pkt.getTag());
-    super.onDataPacket(net, pkt);
+  public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
+    this.load(tag, registries);
   }
 
   @Override

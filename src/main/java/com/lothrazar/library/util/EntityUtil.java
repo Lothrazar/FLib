@@ -27,9 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 import com.lothrazar.library.core.BlockPosDim;
 import com.lothrazar.library.core.Vector3;
-import com.lothrazar.library.dim.DimensionTransit;
-import com.lothrazar.library.mod.PacketRegistry;
+import com.lothrazar.library.portal.DimensionTransitionWrapper;
 import com.lothrazar.library.packet.PacketPlayerFalldamage;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -49,7 +49,6 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.FakePlayer;
@@ -466,7 +465,7 @@ public class EntityUtil {
       entity.fallDistance = 0.0F;
     } //setting fall distance on clientside wont work
     if (worldIn.isClientSide && entity.tickCount % TICKS_FALLDIST_SYNC == 0) {
-      PacketRegistry.INSTANCE.sendToServer(new PacketPlayerFalldamage());
+      PacketDistributor.sendToServer(new PacketPlayerFalldamage());
     }
   }
 
@@ -474,12 +473,13 @@ public class EntityUtil {
     if (player instanceof FakePlayer) {
       return;
     }
-    if (!player.canChangeDimensions()) {
+    if (!player.canChangeDimensions(player.getCommandSenderWorld(), world)) {
       return;
     }
     if (!world.isClientSide) {
-      DimensionTransit transit = new DimensionTransit(world, loc);
-      transit.teleport(player);
+      DimensionTransitionWrapper transit = new DimensionTransitionWrapper(world, loc);
+      transit.applyPreTeleportEffects(player);
+      player.changeDimension(transit.buildTransition(player));
     }
   }
 }

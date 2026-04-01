@@ -11,7 +11,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 public class SoundUtil {
 
@@ -70,7 +70,7 @@ public class SoundUtil {
   }
 
   public static void playSoundFromServerById(ServerLevel world, BlockPos pos, String sid) {
-    SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(ResourceLocation.parse(sid));
+    SoundEvent sound = BuiltInRegistries.SOUND_EVENT.getOptional(ResourceLocation.parse(sid)).orElse(null);
     if (sound != null) {
       for (ServerPlayer sp : world.players()) {
         playSoundFromServer(sp, pos, sound, 1F, 1F);
@@ -80,7 +80,7 @@ public class SoundUtil {
 
   public static void playSoundById(Player player, String sid) {
     //do the thing
-    SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(ResourceLocation.parse(sid));
+    SoundEvent sound = BuiltInRegistries.SOUND_EVENT.getOptional(ResourceLocation.parse(sid)).orElse(null);
     if (sound != null && player.level().isClientSide) {
       SoundUtil.playSound(player, sound);
     }

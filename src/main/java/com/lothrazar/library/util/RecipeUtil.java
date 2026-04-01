@@ -3,7 +3,9 @@ package com.lothrazar.library.util;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.lothrazar.library.recipe.ingredient.FluidTagIngredient;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.TagKey;
@@ -11,8 +13,6 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 public class RecipeUtil {
 
@@ -44,8 +44,7 @@ public class RecipeUtil {
     if (mix.has("fluid")) {
       String fluidId = mix.get("fluid").getAsString(); // JSONUtils.getString(mix, "fluid");
       ResourceLocation resourceLocation = ResourceLocation.parse(fluidId);
-      Fluid fluid = ForgeRegistries.FLUIDS.getValue(resourceLocation);
-//         fluid = NeoForgeRegistries.FLUID_TYPES.getValue(resourceLocation); // TODO  what for 1.21 ??
+      Fluid fluid = BuiltInRegistries.FLUID.getOptional(resourceLocation).orElse(null);
       fluidstack = (fluid == null) ? FluidStack.EMPTY : new FluidStack(fluid, count);
     }
     String ftag = mix.has("tag") ? mix.get("tag").getAsString() : "";
@@ -56,7 +55,7 @@ public class RecipeUtil {
     JsonArray array = GsonHelper.getAsJsonArray(obj, "ingredients");
     NonNullList<Ingredient> nonnulllist = NonNullList.create();
     for (int i = 0; i < array.size(); ++i) {
-      Ingredient ingredient = Ingredient.fromJson(array.get(i));
+      Ingredient ingredient = Ingredient.CODEC.parse(JsonOps.INSTANCE, array.get(i)).result().orElse(Ingredient.EMPTY);
       if (!ingredient.isEmpty()) {
         nonnulllist.add(ingredient);
       }
@@ -70,7 +69,7 @@ public class RecipeUtil {
     }
     String fluidId = GsonHelper.getAsString(fluidJson, "fluid");
     ResourceLocation resourceLocation = ResourceLocation.parse(fluidId);
-    Fluid fluid = ForgeRegistries.FLUIDS.getValue(resourceLocation);
+    Fluid fluid = BuiltInRegistries.FLUID.getOptional(resourceLocation).orElse(null);
     int count = fluidJson.get("count").getAsInt();
     if (count < 1) {
       count = 1;
