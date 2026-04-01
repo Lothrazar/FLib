@@ -17,7 +17,7 @@ import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.GameRenderer;
+
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
@@ -192,7 +192,7 @@ public class RenderBlockUtils {
    */
   public static void renderAsBlock(Level world, final BlockPos centerPos, final List<BlockPos> shape, PoseStack matrix, BlockState renderBlockState, float alpha, float scale) {
 
-    RenderSystem.setShader(GameRenderer::getPositionTexShader);
+    // GameRenderer::getPositionTexShader removed in 1.21.1; shader is managed by the RenderType
     RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
 
     Minecraft mc = Minecraft.getInstance();

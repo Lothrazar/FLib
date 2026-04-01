@@ -24,8 +24,9 @@ public class EntityExistsCondition implements ICondition {
     this.entityId = entityId;
   }
 
+  // used to be ICondition.Context
   @Override
-  public boolean test(ICondition.Context context) {
+  public boolean test(IContext context) {
     return entityId != null && BuiltInRegistries.ENTITY_TYPE.containsKey(entityId);
   }
 
