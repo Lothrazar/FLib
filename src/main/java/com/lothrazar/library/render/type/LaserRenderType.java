@@ -25,7 +25,7 @@ public class LaserRenderType extends RenderType {
   public static final RenderType LASER_MAIN_BEAM = create("MAIN_",
       DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, false, false,
       RenderType.CompositeState.builder().setTextureState(new TextureStateShard(RL_BEAM, false, false))
-          .setShaderState(ShaderStateShard.POSITION_COLOR_TEX_SHADER)
+          .setShaderState(POSITION_COLOR_TEX_SHADER)
           .setLayeringState(VIEW_OFFSET_Z_LAYERING)
           .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
           .setDepthTestState(NO_DEPTH_TEST)
@@ -36,7 +36,7 @@ public class LaserRenderType extends RenderType {
   public static final RenderType LASER_MAIN_ADDITIVE = create("MiningLaserAdditiveBeam",
       DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, false, false,
       RenderType.CompositeState.builder().setTextureState(new TextureStateShard(RL_GLOW, false, false))
-          .setShaderState(ShaderStateShard.POSITION_COLOR_TEX_SHADER)
+          .setShaderState(POSITION_COLOR_TEX_SHADER)
           .setLayeringState(VIEW_OFFSET_Z_LAYERING)
           .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
           .setDepthTestState(NO_DEPTH_TEST)
@@ -47,7 +47,7 @@ public class LaserRenderType extends RenderType {
   public static final RenderType LASER_MAIN_CORE = create("MiningLaserCoreBeam",
       DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, false, false,
       RenderType.CompositeState.builder().setTextureState(new TextureStateShard(RL_LASER, false, false))
-          .setShaderState(ShaderStateShard.POSITION_COLOR_TEX_SHADER)
+          .setShaderState(POSITION_COLOR_TEX_SHADER)
           .setLayeringState(VIEW_OFFSET_Z_LAYERING)
           .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
           .setDepthTestState(NO_DEPTH_TEST)

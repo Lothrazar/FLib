@@ -2,8 +2,11 @@ package com.lothrazar.library.render.type;
 
 import java.util.OptionalDouble;
 import com.lothrazar.library.FutureLibMod;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 
@@ -22,11 +25,20 @@ public class FakeBlockRenderTypes extends RenderType {
     super(nameIn, formatIn, drawModeIn, bufferSizeIn, useDelegateIn, needsSortingIn, setupTaskIn, clearTaskIn);
   }
 
+  // ADDITIVE_TRANSPARENCY was removed from RenderStateShard in 1.21.1; define it locally
+  private static final TransparencyStateShard ADDITIVE_TRANSPARENCY_SHARD = new TransparencyStateShard(
+      "additive_transparency",
+      () -> {
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
+      },
+      RenderSystem::disableBlend);
+
   public final static ResourceLocation BEAM = ResourceLocation.fromNamespaceAndPath(FutureLibMod.MODID, "textures/effect/beam.png");
   public static final RenderType LASER_MAIN_BEAM = create(FutureLibMod.MODID + ":mininglasermainbeam",
-      DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, BUFFERSIZE, CRUMBLING, SORT,
+      DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, BUFFERSIZE, CRUMBLING, SORT,
       RenderType.CompositeState.builder()
-          .setTextureState(new TextureStateShard(BEAM, BLUR, MIPMAP)).setShaderState(ShaderStateShard.POSITION_COLOR_TEX_SHADER)
+          .setTextureState(new TextureStateShard(BEAM, BLUR, MIPMAP)).setShaderState(POSITION_COLOR_SHADER) // was POSITION_COLOR_TEX_SHADER
           .setLayeringState(VIEW_OFFSET_Z_LAYERING)
           .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
           .setDepthTestState(NO_DEPTH_TEST)
@@ -36,16 +48,16 @@ public class FakeBlockRenderTypes extends RenderType {
           .createCompositeState(false));
   /**
    * used by TESR that render blocks with textures Shape builder, ghostsoundmuffler, render light camo.
-   * 
+   *
    */
   public static final RenderType FAKE_BLOCK = create(FutureLibMod.MODID + ":fakeblock",
       DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, BUFFERSIZE, CRUMBLING, SORT,
       RenderType.CompositeState.builder()
           .setShaderState(RENDERTYPE_SOLID_SHADER) //1.17 was -   BLOCK_SHADER
-          .setLayeringState(POLYGON_OFFSET_LAYERING) // VIEW_OFFSET_Z_LAYERING) //                    .setShadeModelState(SMOOTH_SHADE)
+          .setLayeringState(POLYGON_OFFSET_LAYERING) // VIEW_OFFSET_Z_LAYERING)
           .setLightmapState(NO_LIGHTMAP)
           .setTextureState(BLOCK_SHEET_MIPPED)
-          .setTransparencyState(ADDITIVE_TRANSPARENCY)
+          .setTransparencyState(ADDITIVE_TRANSPARENCY_SHARD)
           .setDepthTestState(NO_DEPTH_TEST)
           .setCullState(CULL)
           .setWriteMaskState(COLOR_DEPTH_WRITE)
@@ -59,7 +71,7 @@ public class FakeBlockRenderTypes extends RenderType {
           .setShaderState(RENDERTYPE_LINES_SHADER)
           .setLayeringState(VIEW_OFFSET_Z_LAYERING)
           .setOutputState(ITEM_ENTITY_TARGET)
-          .setTransparencyState(ADDITIVE_TRANSPARENCY)
+          .setTransparencyState(ADDITIVE_TRANSPARENCY_SHARD)
           .setTextureState(NO_TEXTURE)
           .setDepthTestState(NO_DEPTH_TEST)
           .setCullState(CULL)
@@ -68,8 +80,8 @@ public class FakeBlockRenderTypes extends RenderType {
           .createCompositeState(false));
   /**
    * used by most blocks that select blocks such as cyclic:forester, cyclic:harvester, cyclic:miner in TESRs
-   * 
-   * 
+   *
+   *
    */
   public static final RenderType SOLID_COLOUR = create(FutureLibMod.MODID + ":solidcolour",
       DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, BUFFERSIZE, CRUMBLING, SORT,
@@ -77,7 +89,7 @@ public class FakeBlockRenderTypes extends RenderType {
           .setShaderState(RENDERTYPE_LINES_SHADER)
           .setLayeringState(VIEW_OFFSET_Z_LAYERING)
           .setOutputState(ITEM_ENTITY_TARGET)
-          .setTransparencyState(ADDITIVE_TRANSPARENCY)
+          .setTransparencyState(ADDITIVE_TRANSPARENCY_SHARD)
           .setTextureState(NO_TEXTURE)
           .setDepthTestState(NO_DEPTH_TEST)
           .setCullState(CULL)

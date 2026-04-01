@@ -14,7 +14,7 @@ import net.neoforged.neoforge.common.Tags;
 public class BlockstatesUtil {
 
   public static boolean isGlass(BlockState blockIn) {
-    return blockIn.is(Tags.Blocks.GLASS) || blockIn.is(Tags.Blocks.GLASS_PANES);
+    return blockIn.is(Tags.Blocks.GLASS_BLOCKS) || blockIn.is(Tags.Blocks.GLASS_PANES);
   }
 
   public static Direction getFacingFromEntity(BlockPos clickedBlock, LivingEntity entity) {

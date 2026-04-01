@@ -23,7 +23,7 @@ public class BlockUtil {
   @SuppressWarnings("deprecation")
   public static Block.Properties wrap(Block.Properties propIn, Block blockIn) {
     return propIn
-        .sound(blockIn.getSoundType(blockIn.defaultBlockState()))
+        .sound(blockIn.soundType)
         .strength(blockIn.defaultBlockState().destroySpeed);
   }
 

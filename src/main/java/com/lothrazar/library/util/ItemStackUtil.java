@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -122,9 +123,11 @@ public class ItemStackUtil {
       stack.setDamageValue(stack.getDamageValue() + 1);
     }
     else {
-      stack.hurtAndBreak(1, player, (p) -> {
-        p.broadcastBreakEvent(InteractionHand.MAIN_HAND);
-      });
+      final Item item = stack.getItem();
+      stack.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
+//          (p) -> {
+//        p.broadcastBreakEvent(EquipmentSlot.MAINHAND);
+//      });
     }
     if (stack.getDamageValue() >= stack.getMaxDamage()) {
       stack.shrink(1);

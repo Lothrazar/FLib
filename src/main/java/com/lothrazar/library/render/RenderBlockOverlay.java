@@ -225,8 +225,8 @@ public class RenderBlockOverlay {
   }
 
   private void addVertex(VertexConsumer buffer, Matrix4f matrix, double u, double v, int i) {
-    buffer.vertex(matrix, (float) vs[i].x, (float) vs[i].y, (float) vs[i].z)
-        .color(1.0f, 1.0f, 1.0f, 0.375f)
-        .uv((float) u, (float) v).endVertex();
+    buffer.addVertex(matrix, (float) vs[i].x, (float) vs[i].y, (float) vs[i].z)
+        .setColor(1.0f, 1.0f, 1.0f, 0.375f)
+        .setUv((float) u, (float) v);
   }
 }

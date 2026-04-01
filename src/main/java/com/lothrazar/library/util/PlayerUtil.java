@@ -99,7 +99,6 @@ public class PlayerUtil {
     if (respawnPos != null) {
       optional = Player.findRespawnPositionAndUseSpawnBlock((ServerLevel) player.level(), respawnPos, 0.0F, true, true);
     }
-    //    optional = Player.findRespawnPositionAndUseSpawnBlock(player.getLevel(), respawnPos, 0.0F, true, true);
     return optional;
   }
 }

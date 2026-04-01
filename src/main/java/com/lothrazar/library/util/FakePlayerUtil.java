@@ -61,12 +61,12 @@ public class FakePlayerUtil {
       return null; // trying to get around https://github.com/PrinceOfAmber/Cyclic/issues/113
     }
     fakePlayer.get().setOnGround(true);
-    //    fakePlayer.get().onGround = true;
-    fakePlayer.get().connection = new ServerGamePacketListenerImpl(ws.getServer(), new Connection(PacketFlow.SERVERBOUND), fakePlayer.get()) {
-
-      @Override
-      public void send(Packet<?> packetIn) {}
-    };
+    // in neoforge 1.21.1 the connection should already be faked
+//    fakePlayer.get().connection = new ServerGamePacketListenerImpl(ws.getServer(), new Connection(PacketFlow.SERVERBOUND), fakePlayer.get()) {
+//
+//      @Override
+//      public void send(Packet<?> packetIn) {}
+//    };
     fakePlayer.get().setSilent(true);
     return fakePlayer;
   }
