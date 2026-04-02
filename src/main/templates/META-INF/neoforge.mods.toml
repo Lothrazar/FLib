@@ -11,7 +11,7 @@ license="${mod_license}"
 loaderVersion="${loader_version_range}" #mandatory
 
 # A URL to refer people to when problems occur with this mod
-issueTrackerURL="https://github.com/Lothrazar/FLib/issues" #optional
+issueTrackerURL="https://github.com/Lothrazar/${mod_id}/issues" #optional
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #mandatory
 # The modid of the mod
@@ -22,14 +22,13 @@ version="${mod_version}" #mandatory
 
 displayName="${mod_name}" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
-updateJSONURL="https://raw.githubusercontent.com/Lothrazar/FLib/trunk/${minecraft_version}/update.json" #optional
+updateJSONURL="https://raw.githubusercontent.com/Lothrazar/${mod_id}/trunk/${minecraft_version}/update.json" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI # replace with your website
-displayURL="https://www.curseforge.com/minecraft/mc-mods/flib"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/${mod_id}"
 
 # A file name (in the root of the mod JAR) containing a logo for display
-logoFile="flib.png" #optional
-# A text field displayed in the mod UI
-#="Lothrazar" #optional
+logoFile="logoFile.png" #optional
+
 # A text field displayed in the mod UI
 authors="${mod_authors}" #optional
 # The description text for the mod (multi line!) (#mandatory)
