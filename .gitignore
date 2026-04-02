@@ -16,12 +16,10 @@ out
 # gradle
 build
 .gradle
+deploy.properties
 
 # other
 run
 logs
 libs
 repo
-
-# Files from Forge MDK
-forge*changelog.txt

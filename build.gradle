@@ -224,6 +224,10 @@ publishing {
     }
 }
 
+tasks.named('publish') {
+    finalizedBy 'deployLocal'
+}
+
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
@@ -233,5 +237,47 @@ idea {
     module {
         downloadSources = true
         downloadJavadoc = true
+    }
+}
+
+
+// ---------------------------------------------------------------------------
+// deployLocal
+// this triggers after 'publish' task every time
+// depends on only jar because all we need is the jar complete, so deployLocal can also run standalone if the jar exists.
+// otherwise if this dependson publish, then running deployLocal would trigger a full publish cycle, which is not neeeded
+// ---------------------------------------------------------------------------
+def deployProps = new Properties()
+def deployFile = rootProject.file('deploy.properties')
+if (deployFile.exists()) {
+    deployFile.withInputStream { deployProps.load(it) }
+}
+tasks.register('deployLocal') {
+    description = 'Copies build jar to all destinations in deploy.properties'
+    group = 'distribution'
+    dependsOn 'jar'
+
+    def jarFile = layout.buildDirectory.file("libs/${base.archivesName.get()}-${version}.jar")
+
+    def destinations = deployProps.getProperty('destinations', '')
+            .split(',')
+            .collect { it.trim() }
+            .findAll { it }
+
+    onlyIf { !destinations.isEmpty() }
+
+    // important to use doLast to avoid errors like 'Caused by: org.gradle.api.InvalidUserCodeException: Invocation of 'copy' references a Gradle script object from a Groovy closure at execution time, which is unsupported with the configuration cache'
+    doLast {
+        def source = jarFile.get().asFile
+        destinations.each { dest ->
+            def destDir = new File(dest)
+            destDir.mkdirs()
+            java.nio.file.Files.copy(
+                source.toPath(),
+                new File(destDir, source.name).toPath(),
+                java.nio.file.StandardCopyOption.REPLACE_EXISTING
+            )
+            logger.lifecycle("Deployed ${source.name} -> ${dest}")
+        }
     }
 }
