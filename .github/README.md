@@ -31,7 +31,7 @@ Use the libs folder in the repositories section of your build scripts as follows
 ```
 And then use the blank keyword to add the version inside your dependencies block
 ```
-    implementation fg.deobf("blank:flib-${mc_version}:${flib_version}")
+    implementation "local.mods:flib:${minecraft_version}-${flib_version}"
 ```
 And then your gradle.properties file will get the version number set that you are using
 ```
@@ -54,8 +54,8 @@ And then add a dependency at the bottom of your META-INF/mods.toml page
 ```
 [[dependencies.examplemod]]
     modId="flib"
-    mandatory=true
-    versionRange="[0.0.0,)"
+    type="required" # was mandatory=true
+    versionRange="[1.0.0,)"
     ordering="NONE"
     side="BOTH"
 ```
