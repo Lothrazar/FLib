@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import com.lothrazar.library.data.Model3D;
 import com.lothrazar.library.render.RenderResizableCuboid;
