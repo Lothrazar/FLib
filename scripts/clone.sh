@@ -16,6 +16,7 @@ MC="1.21.1"
 TARGET_DIR="/c/Users/USER/MyFiles/mc121/$REPONAME"
 GIT_URL="git@github.com:${GITHUB}/${REPONAME}.git"
 MOD_PROPS="$TARGET_DIR/mod.properties"
+DEPLOY_PROPS="$TARGET_DIR/deploy.properties"
 FLIB_VERSION="1.0.0-SNAPSHOT"
 
 echo
@@ -36,12 +37,26 @@ flib_version=$FLIB_VERSION
 
 EOF
 
+
   echo "✓  mod.properties not found, template created"
 
   grep -E "^(mod_version|mod_id|mod_name|mod_license|mod_authors|mod_description|mod_group_id|curse_id|curse_slug)=" "$TARGET_DIR/gradle.properties" >> "$MOD_PROPS" || true
 
   echo "✓  Moved mod-specific properties into $MOD_PROPS"
 
+fi
+
+if [ ! -f "$DEPLOY_PROPS" ]; then
+
+  cat > "$DEPLOY_PROPS" << EOF
+
+# CSV list of folders that will copy the release version to
+# after the gradle publish task
+
+destinations=C:/temp
+
+EOF
+  echo "✓  deploy.properties not found, template created"
 fi
 
 cp     "$SOURCE_DIR/.gitignore"          ./.gitignore
@@ -86,6 +101,8 @@ echo "✓  Default library copied from temp"
 echo "✓  Source branch $(git rev-parse --abbrev-ref HEAD)"
 
 echo "!  Verify mod.properties values and optional dependencies before building  !"
+
+echo "!  Update build.gradle dependencies as needed"
 
 echo
 
