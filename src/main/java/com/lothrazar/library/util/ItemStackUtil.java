@@ -206,4 +206,12 @@ public class ItemStackUtil {
       stack.setDamageValue(stack.getDamageValue() - 1);
     }
   }
+
+  /**
+   * true if item is edible. replaces old item.isEdible().  based on FoodProperties
+   * @return
+   */
+  public static boolean isEdible(ItemStack s) {
+    return (s.getItem().getFoodProperties(s,null) != null);
+  }
 }

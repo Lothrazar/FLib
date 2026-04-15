@@ -93,7 +93,7 @@ fi
 
 
 
-mkdir  "$TARGET_DIR/libs"
+mkdir -p "$TARGET_DIR/libs"
 cp     "/c/temp/flib-$MC-$FLIB_VERSION.jar"  "$TARGET_DIR/libs/flib-$MC-$FLIB_VERSION.jar"
 
 echo "✓  Default library copied from temp"
