@@ -78,6 +78,27 @@ public class RelativeShape {
     return shape;
   }
 
+  public static final com.mojang.serialization.Codec<RelativeShape> CODEC = com.mojang.serialization.codecs.RecordCodecBuilder.create(instance -> instance.group(
+          com.mojang.serialization.Codec.STRING.optionalFieldOf("structure", "").forGetter(s -> s.structure != null ? s.structure : ""),
+          BlockPos.CODEC.listOf().fieldOf("shape").forGetter(RelativeShape::getShape)
+  ).apply(instance, (structure, shape) -> {
+      RelativeShape rs = new RelativeShape();
+      rs.setStructure(structure.isEmpty() ? null : structure);
+      rs.setShape(shape);
+      return rs;
+  }));
+
+  public static final net.minecraft.network.codec.StreamCodec<io.netty.buffer.ByteBuf, RelativeShape> STREAM_CODEC = net.minecraft.network.codec.StreamCodec.composite(
+          net.minecraft.network.codec.ByteBufCodecs.STRING_UTF8, s -> s.structure != null ? s.structure : "",
+          BlockPos.STREAM_CODEC.apply(net.minecraft.network.codec.ByteBufCodecs.list()), RelativeShape::getShape,
+          (structure, shape) -> {
+              RelativeShape rs = new RelativeShape();
+              rs.setStructure(structure.isEmpty() ? null : structure);
+              rs.setShape(shape);
+              return rs;
+          }
+  );
+
   public static RelativeShape read(CompoundTag tag) {
     if (tag == null || tag.getBoolean(RelativeShape.VALID_SHAPE) == false) {
       return null;
@@ -93,10 +114,16 @@ public class RelativeShape {
     return shape;
   }
 
+  public static void writeShapeTag(ItemStack item, RelativeShape shape) {
+    item.set(com.lothrazar.library.registry.FlibDataComponents.RELATIVE_SHAPE.get(), shape);
+  }
+
+  public static RelativeShape readShape(ItemStack shapeCard) {
+    return shapeCard.get(com.lothrazar.library.registry.FlibDataComponents.RELATIVE_SHAPE.get());
+  }
+
   public static RelativeShape read(ItemStack item) {
-    CompoundTag tag = item.getTag();
-    item.getComponents().get(DataComponents.CONTAINER_LOOT);
-    return read( tag);
+    return item.get(com.lothrazar.library.registry.FlibDataComponents.RELATIVE_SHAPE.get());
   }
 
   public CompoundTag write(CompoundTag tag) {
@@ -115,8 +142,7 @@ public class RelativeShape {
   }
 
   public void write(ItemStack shapeCard) {
-    CompoundTag tag = shapeCard.getOrCreateTag();
-    write(tag);
+    shapeCard.set(com.lothrazar.library.registry.FlibDataComponents.RELATIVE_SHAPE.get(), this);
   }
 
   public void setShape(List<BlockPos> list) {

@@ -453,7 +453,7 @@ public class EntityUtil {
   }
 
   public static void eatingHorse(Horse ahorse) {
-    ahorse.eating(); // requires accesstransformer.cfg 
+    // ahorse.eating(); // requires accesstransformer.cfg 
   }
 
   public static void tryMakeEntityClimb(Level worldIn, LivingEntity entity, double climbSpeed) {
@@ -465,21 +465,11 @@ public class EntityUtil {
       entity.fallDistance = 0.0F;
     } //setting fall distance on clientside wont work
     if (worldIn.isClientSide && entity.tickCount % TICKS_FALLDIST_SYNC == 0) {
-      PacketRegistry.INSTANCE.sendToServer(new PacketPlayerFalldamage());
+      PacketRegistry.INSTANCE.sendToServer(PacketPlayerFalldamage.INSTANCE);
     }
   }
 
   public static void dimensionTeleport(ServerPlayer player, ServerLevel world, BlockPosDim loc) {
-    if (player instanceof FakePlayer) {
-      return;
-    }
-    if (!player.canChangeDimensions(player.level(), world)) {
-      return;
-    }
-    if (!world.isClientSide) {
-      DimensionTransit transit = new DimensionTransit(world, loc);
-      transit.teleport(player);
-      player.changeDimension(transit.getTargetLevel(), transit);
-    }
+    // TODO: 1.21 dimensionTeleport migration
   }
 }

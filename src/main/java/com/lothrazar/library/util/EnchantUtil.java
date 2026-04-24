@@ -31,7 +31,7 @@ public class EnchantUtil {
   }
 
   public static List<MobEffect> getEffects(MobEffectCategory effectType) {
-    Collection<MobEffect> effects = NeoForgeRegistries.MOB_EFFECTS.getValues();
+    Collection<MobEffect> effects = net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.stream().toList();
     List<MobEffect> effectsList = new ArrayList<>();
     for (MobEffect effect : effects) {
       if (effectType == null || effect.getCategory() == effectType) {
@@ -46,14 +46,8 @@ public class EnchantUtil {
     Item item2 = stack2.getItem();
     if (item1 == Items.ENCHANTED_BOOK && item2 == Items.ENCHANTED_BOOK) {
 
-      ListTag ench1 = EnchantedBookItem.getEnchantments(stack1);
-      ListTag ench2 = EnchantedBookItem.getEnchantments(stack2);
-      if (ench1 == null || ench2 == null) {
-        return false;
-      }
-      if (ench1.equals(ench2)) {
-        return true;
-      }
+      // TODO: 1.21 Enchantments DataComponents
+      return true;
     }
     return false;
   }

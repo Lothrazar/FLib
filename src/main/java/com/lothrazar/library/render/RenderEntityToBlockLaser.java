@@ -118,26 +118,26 @@ public class RenderEntityToBlockLaser {
     Vector4f vec4 = new Vector4f(startXOffset, thickness + startYOffset, startZOffset, 1.0F);
     vec4.mul(positionMatrix);
     if (hand == InteractionHand.MAIN_HAND) {
-      builder.vertex(vec4.x(), vec4.y(), vec4.z(), r, g, b, alpha, 0, (float) v1, OverlayTexture.NO_OVERLAY, 15728880, vector3f.x(), vector3f.y(), vector3f.z());
-      builder.vertex(vec3.x(), vec3.y(), vec3.z(), r, g, b, alpha, 0, (float) v2, OverlayTexture.NO_OVERLAY, 15728880, vector3f.x(), vector3f.y(), vector3f.z());
-      builder.vertex(vec2.x(), vec2.y(), vec2.z(), r, g, b, alpha, 1, (float) v2, OverlayTexture.NO_OVERLAY, 15728880, vector3f.x(), vector3f.y(), vector3f.z());
-      builder.vertex(vec1.x(), vec1.y(), vec1.z(), r, g, b, alpha, 1, (float) v1, OverlayTexture.NO_OVERLAY, 15728880, vector3f.x(), vector3f.y(), vector3f.z());
+      builder.addVertex(vec4.x(), vec4.y(), vec4.z()).setColor(r, g, b, alpha).setUv(0, (float) v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(vector3f.x(), vector3f.y(), vector3f.z());
+      builder.addVertex(vec3.x(), vec3.y(), vec3.z()).setColor(r, g, b, alpha).setUv(0, (float) v2).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(vector3f.x(), vector3f.y(), vector3f.z());
+      builder.addVertex(vec2.x(), vec2.y(), vec2.z()).setColor(r, g, b, alpha).setUv(1, (float) v2).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(vector3f.x(), vector3f.y(), vector3f.z());
+      builder.addVertex(vec1.x(), vec1.y(), vec1.z()).setColor(r, g, b, alpha).setUv(1, (float) v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(vector3f.x(), vector3f.y(), vector3f.z());
       //Rendering a 2nd time to allow you to see both sides in multiplayer, shouldn't be necessary with culling disabled but here we are....
-      builder.vertex(vec1.x(), vec1.y(), vec1.z(), r, g, b, alpha, 1, (float) v1, OverlayTexture.NO_OVERLAY, 15728880, vector3f.x(), vector3f.y(), vector3f.z());
-      builder.vertex(vec2.x(), vec2.y(), vec2.z(), r, g, b, alpha, 1, (float) v2, OverlayTexture.NO_OVERLAY, 15728880, vector3f.x(), vector3f.y(), vector3f.z());
-      builder.vertex(vec3.x(), vec3.y(), vec3.z(), r, g, b, alpha, 0, (float) v2, OverlayTexture.NO_OVERLAY, 15728880, vector3f.x(), vector3f.y(), vector3f.z());
-      builder.vertex(vec4.x(), vec4.y(), vec4.z(), r, g, b, alpha, 0, (float) v1, OverlayTexture.NO_OVERLAY, 15728880, vector3f.x(), vector3f.y(), vector3f.z());
+      builder.addVertex(vec1.x(), vec1.y(), vec1.z()).setColor(r, g, b, alpha).setUv(1, (float) v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(vector3f.x(), vector3f.y(), vector3f.z());
+      builder.addVertex(vec2.x(), vec2.y(), vec2.z()).setColor(r, g, b, alpha).setUv(1, (float) v2).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(vector3f.x(), vector3f.y(), vector3f.z());
+      builder.addVertex(vec3.x(), vec3.y(), vec3.z()).setColor(r, g, b, alpha).setUv(0, (float) v2).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(vector3f.x(), vector3f.y(), vector3f.z());
+      builder.addVertex(vec4.x(), vec4.y(), vec4.z()).setColor(r, g, b, alpha).setUv(0, (float) v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(vector3f.x(), vector3f.y(), vector3f.z());
     }
     else {
-      builder.vertex(vec1.x(), vec1.y(), vec1.z(), r, g, b, alpha, 1, (float) v1, OverlayTexture.NO_OVERLAY, 15728880, vector3f.x(), vector3f.y(), vector3f.z());
-      builder.vertex(vec2.x(), vec2.y(), vec2.z(), r, g, b, alpha, 1, (float) v2, OverlayTexture.NO_OVERLAY, 15728880, vector3f.x(), vector3f.y(), vector3f.z());
-      builder.vertex(vec3.x(), vec3.y(), vec3.z(), r, g, b, alpha, 0, (float) v2, OverlayTexture.NO_OVERLAY, 15728880, vector3f.x(), vector3f.y(), vector3f.z());
-      builder.vertex(vec4.x(), vec4.y(), vec4.z(), r, g, b, alpha, 0, (float) v1, OverlayTexture.NO_OVERLAY, 15728880, vector3f.x(), vector3f.y(), vector3f.z());
+      builder.addVertex(vec1.x(), vec1.y(), vec1.z()).setColor(r, g, b, alpha).setUv(1, (float) v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(vector3f.x(), vector3f.y(), vector3f.z());
+      builder.addVertex(vec2.x(), vec2.y(), vec2.z()).setColor(r, g, b, alpha).setUv(1, (float) v2).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(vector3f.x(), vector3f.y(), vector3f.z());
+      builder.addVertex(vec3.x(), vec3.y(), vec3.z()).setColor(r, g, b, alpha).setUv(0, (float) v2).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(vector3f.x(), vector3f.y(), vector3f.z());
+      builder.addVertex(vec4.x(), vec4.y(), vec4.z()).setColor(r, g, b, alpha).setUv(0, (float) v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(vector3f.x(), vector3f.y(), vector3f.z());
       //Rendering a 2nd time to allow you to see both sides in multiplayer, shouldn't be necessary with culling disabled but here we are....
-      builder.vertex(vec4.x(), vec4.y(), vec4.z(), r, g, b, alpha, 0, (float) v1, OverlayTexture.NO_OVERLAY, 15728880, vector3f.x(), vector3f.y(), vector3f.z());
-      builder.vertex(vec3.x(), vec3.y(), vec3.z(), r, g, b, alpha, 0, (float) v2, OverlayTexture.NO_OVERLAY, 15728880, vector3f.x(), vector3f.y(), vector3f.z());
-      builder.vertex(vec2.x(), vec2.y(), vec2.z(), r, g, b, alpha, 1, (float) v2, OverlayTexture.NO_OVERLAY, 15728880, vector3f.x(), vector3f.y(), vector3f.z());
-      builder.vertex(vec1.x(), vec1.y(), vec1.z(), r, g, b, alpha, 1, (float) v1, OverlayTexture.NO_OVERLAY, 15728880, vector3f.x(), vector3f.y(), vector3f.z());
+      builder.addVertex(vec4.x(), vec4.y(), vec4.z()).setColor(r, g, b, alpha).setUv(0, (float) v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(vector3f.x(), vector3f.y(), vector3f.z());
+      builder.addVertex(vec3.x(), vec3.y(), vec3.z()).setColor(r, g, b, alpha).setUv(0, (float) v2).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(vector3f.x(), vector3f.y(), vector3f.z());
+      builder.addVertex(vec2.x(), vec2.y(), vec2.z()).setColor(r, g, b, alpha).setUv(1, (float) v2).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(vector3f.x(), vector3f.y(), vector3f.z());
+      builder.addVertex(vec1.x(), vec1.y(), vec1.z()).setColor(r, g, b, alpha).setUv(1, (float) v1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(vector3f.x(), vector3f.y(), vector3f.z());
     }
   }
 }

@@ -44,7 +44,7 @@ public record PacketSyncEnergy(
 ) implements PacketFlib {
 
   public static final CustomPacketPayload.Type<PacketSyncEnergy> TYPE = new CustomPacketPayload.Type<>(FutureLibMod.rl( "sync_energy"));
-  public static final StreamCodec<ByteBuf, PacketSyncEnergy> STREAM_CODEC = StreamCodec.composite(
+  public static final StreamCodec<net.minecraft.network.RegistryFriendlyByteBuf, PacketSyncEnergy> STREAM_CODEC = StreamCodec.composite(
           BlockPos.STREAM_CODEC, PacketSyncEnergy::pos,
           ByteBufCodecs.INT, PacketSyncEnergy::energy,
           PacketSyncEnergy::new

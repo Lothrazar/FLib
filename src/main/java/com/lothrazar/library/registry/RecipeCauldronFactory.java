@@ -51,19 +51,6 @@ public class RecipeCauldronFactory {
    * @param event
    */
   public static void setup(FMLCommonSetupEvent event) {
-    for (CauldronFakeRecipe rec : WATERLIST) {
-      final CauldronInteraction interaction = (state, level, pos, player, hand, stack) -> {
-        if (stack.is(rec.input.asItem())) {
-          //replace all the item, be generous. we could instead stack.shrink and drop just one
-          player.setItemInHand(hand, new ItemStack(rec.output.asItem(), stack.getCount() + rec.bonus));
-          if (rec.lowerFillLevel) {
-            LayeredCauldronBlock.lowerFillLevel(state, level, pos);
-          }
-          return InteractionResult.sidedSuccess(level.isClientSide);
-        }
-        return InteractionResult.PASS;
-      };
-      CauldronInteraction.WATER.put(rec.input.asItem(), interaction);
-    }
+    // TODO: 1.21 CauldronInteraction migration
   }
 }

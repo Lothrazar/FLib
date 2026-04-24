@@ -42,7 +42,7 @@ public class LevelWorldUtil {
     if (blockHere.getBlock() instanceof BucketPickup) {
       BucketPickup block = (BucketPickup) blockHere.getBlock();
       //
-      ItemStack res = block.pickupBlock(world, pos, blockHere);
+      ItemStack res = block.pickupBlock(null, world, pos, blockHere);
       if (!res.isEmpty()) {
         // flowing block
         return world.setBlock(pos, Blocks.AIR.defaultBlockState(), 18);

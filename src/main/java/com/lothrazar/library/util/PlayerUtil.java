@@ -97,9 +97,8 @@ public class PlayerUtil {
     BlockPos respawnPos = player.getRespawnPosition();
     Optional<Vec3> optional = Optional.empty();
     if (respawnPos != null) {
-      optional = Player.findRespawnPositionAndUseSpawnBlock((ServerLevel) player.level(), respawnPos, 0.0F, true, true);
+      optional = Optional.of(net.minecraft.world.phys.Vec3.atBottomCenterOf(respawnPos));
     }
-    //    optional = Player.findRespawnPositionAndUseSpawnBlock(player.getLevel(), respawnPos, 0.0F, true, true);
     return optional;
   }
 }

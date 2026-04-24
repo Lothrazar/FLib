@@ -14,12 +14,15 @@ public class PacketRegistry {
 
 //  private static final String PROTOCOL_VERSION = Integer.toString(1);
 //
-//  @SubscribeEvent
-//  public static void register(final RegisterPayloadHandlerEvent event) {
-//    final IPayloadRegistrar registrar = event.registrar("my_mod")
-//            .versioned("1.2.3")
-//            .optional();
-//  }
+  public static void register(final net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent event) {
+    final net.neoforged.neoforge.network.registration.PayloadRegistrar registrar = event.registrar(FutureLibMod.MODID)
+            .versioned("1.0.0");
+    registrar.playToServer(PacketPlayerFalldamage.TYPE, PacketPlayerFalldamage.STREAM_CODEC, PacketPlayerFalldamage::handle);
+    registrar.playToServer(com.lothrazar.library.packet.PacketItemToggle.TYPE, com.lothrazar.library.packet.PacketItemToggle.STREAM_CODEC, com.lothrazar.library.packet.PacketItemToggle::handle);
+    registrar.playToServer(com.lothrazar.library.packet.PacketRotateBlock.TYPE, com.lothrazar.library.packet.PacketRotateBlock.STREAM_CODEC, com.lothrazar.library.packet.PacketRotateBlock::handle);
+    registrar.playToClient(com.lothrazar.library.packet.PacketSyncEnergy.TYPE, com.lothrazar.library.packet.PacketSyncEnergy.STREAM_CODEC, com.lothrazar.library.packet.PacketSyncEnergy::handle);
+    registrar.playToClient(com.lothrazar.library.packet.PacketSyncFluid.TYPE, com.lothrazar.library.packet.PacketSyncFluid.STREAM_CODEC, com.lothrazar.library.packet.PacketSyncFluid::handle);
+  }
 public static final PacketRegistry INSTANCE = new PacketRegistry();
 
 

@@ -187,3 +187,13 @@ idea {
         downloadJavadoc = true
     }
 }
+tasks.register("printPlayerMethods") {
+    doLast {
+        def cl = Class.forName("net.minecraft.world.entity.player.Player", true, Thread.currentThread().getContextClassLoader())
+        for (def m : cl.getMethods()) {
+            if (m.getName().toLowerCase().contains("respawn")) {
+                println m
+            }
+        }
+    }
+}

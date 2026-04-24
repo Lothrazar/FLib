@@ -44,13 +44,7 @@ public abstract class AbstractSingleQuadParticle extends SingleQuadParticle {
     textureManager.bindForSetup(getTexture());
     RenderSystem.enableBlend();
     RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-    //    RenderSystem.alphaFunc(516, 0.003921569F);
-    //    Tesselator.getInstance().getBuilder().begin(7, DefaultVertexFormat.PARTICLE);
-    RenderSystem.setShader(GameRenderer::getParticleShader);
-    RenderSystem.setShaderTexture(0, getTexture());
-    Tesselator.getInstance().getBuilder().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE); // QUADS == tuess
     super.render(buffer, entityIn, partialTicks);
-    Tesselator.getInstance().end();
   }
 
   @Override

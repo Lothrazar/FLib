@@ -41,7 +41,7 @@ public record PacketSyncFluid(
 
   public static final CustomPacketPayload.Type<PacketSyncFluid> TYPE = new CustomPacketPayload.Type<>(FutureLibMod.rl( "sync_fluid"));
 
-  public static final StreamCodec<? extends ByteBuf, PacketSyncFluid> STREAM_CODEC = StreamCodec.composite(
+  public static final StreamCodec<net.minecraft.network.RegistryFriendlyByteBuf, PacketSyncFluid> STREAM_CODEC = StreamCodec.composite(
           BlockPos.STREAM_CODEC, PacketSyncFluid::pos,
           FluidStack.STREAM_CODEC, PacketSyncFluid::fluid,
           PacketSyncFluid::new

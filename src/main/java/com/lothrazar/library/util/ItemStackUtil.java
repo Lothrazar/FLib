@@ -2,9 +2,6 @@ package com.lothrazar.library.util;
 
 import java.util.List;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
@@ -14,67 +11,30 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.registries.*;
+
 public class ItemStackUtil {
 
   public static final String NBT_LORE = "Lore";
   public static final String NBT_DISPLAY = "display";
-  //  IItemRenderProperties is IClientBlockExtensions now. 
-  //hasContainerItem() is hasCraftingRemainingItem() 
-  //and getContainerItem() is getCraftingRemainingItem() now
 
-  /**
-   * example
-   * 
-   * "display": { "Lore": [ "[{\"text\":\"item.enchantingrunes.rune_a\",\"color\":\"gold\"}]" ] },
-   * 
-   * @param crafting
-   * @param lore
-   * @param color
-   */
   public static void addLoreToStack(ItemStack crafting, String lore, String color) {
-    CompoundTag displayTag = new CompoundTag();
-    ListTag tagList = new ListTag();
-    if (color == null) {
-      color = "gold";
-    }
-    String escaped = "{\"text\":\"" + lore + "\",\"color\":\"" + color + "\"}";
-    tagList.add(StringTag.valueOf(escaped));
-    displayTag.put(NBT_LORE, tagList);
-    crafting.getTag().put(NBT_DISPLAY, displayTag);
+    net.minecraft.world.item.component.ItemLore itemLore = crafting.getOrDefault(net.minecraft.core.component.DataComponents.LORE, net.minecraft.world.item.component.ItemLore.EMPTY);
+    java.util.List<net.minecraft.network.chat.Component> newLore = new java.util.ArrayList<>(itemLore.lines());
+    newLore.add(net.minecraft.network.chat.Component.literal(lore).withStyle(net.minecraft.ChatFormatting.getByCode(color.charAt(0))));
+    crafting.set(net.minecraft.core.component.DataComponents.LORE, new net.minecraft.world.item.component.ItemLore(newLore));
   }
 
   public static void applyRandomEnch(RandomSource random, ItemStack crafting) {
-    crafting = EnchantmentHelper.enchantItem(random, crafting, 1, false);
+    // TODO: 1.21 EnchantmentHelper needs RegistryAccess
   }
 
   public static void applyRandomEnch(RandomSource random, ItemStack crafting, int level, boolean allowTreasure) {
     applyRandomEnch(random, crafting);
   }
-  //  private void merge(Map<Enchantment, Integer> oldEnch, ItemStack crafting) {
-  //    Map<Enchantment, Integer> newEnch = EnchantmentHelper.getEnchantments(crafting);
-  //    //anything in new thats also in old, merge it over
-  //    for (Entry<Enchantment, Integer> newEntry : newEnch.entrySet()) {
-  //      //
-  //      //if this exists in the old list, merge into new
-  //      if (oldEnch.containsKey(newEntry.getKey())) {
-  //        //take max of each
-  //        newEnch.put(newEntry.getKey(), Math.max(newEntry.getValue(), oldEnch.get(newEntry.getKey())));
-  //      }
-  //    }
-  //    //anything in old thats NOT in new
-  //    for (Entry<Enchantment, Integer> oldEntry : oldEnch.entrySet()) {
-  //      if (!newEnch.containsKey(oldEntry.getKey())) {
-  //        //new list does NOT hvae this thing from old
-  //        newEnch.put(oldEntry.getKey(), oldEntry.getValue());
-  //      }
-  //    }
-  //    EnchantmentHelper.setEnchantments(newEnch, crafting);
-  //  }
 
   public static int countEmptySlots(IItemHandler handler) {
     if (handler == null) {
@@ -90,7 +50,7 @@ public class ItemStackUtil {
   }
 
   public static ItemStack findItem(String id) {
-    Item head = NeoForgeRegistries.ITEMS.getValue(ResourceLocation.tryParse(id));
+    Item head = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(id));
     if (head != null) {
       return new ItemStack(head);
     }
@@ -120,20 +80,11 @@ public class ItemStackUtil {
 
   public static void damageItem(LivingEntity player, ItemStack stack, InteractionHand hand) {
     if (!stack.isDamageableItem()) {
-      //unbreakable
       return;
     }
-    if (player == null) {
-      stack.setDamageValue(stack.getDamageValue() + 1);
-    }
-    else {
-      stack.hurtAndBreak(1, player, (p) -> {
-        p.broadcastBreakEvent(InteractionHand.MAIN_HAND);
-      });
-    }
+    stack.setDamageValue(stack.getDamageValue() + 1);
     if (stack.getDamageValue() >= stack.getMaxDamage()) {
       stack.shrink(1);
-      stack = ItemStack.EMPTY;
     }
   }
 
@@ -156,9 +107,8 @@ public class ItemStackUtil {
   }
 
   public static boolean matches(ItemStack current, ItemStack in) {
-    //first one fails if size is off
     return ItemStack.matches(current, in)
-        && ItemStack.isSameItemSameTags(current, in);
+        && ItemStack.isSameItemSameComponents(current, in);
   }
 
   public static void shrink(Player player, ItemStack stac) {
@@ -179,31 +129,15 @@ public class ItemStackUtil {
     }
     if (world.isClientSide == false) {
       ItemEntity entityItem = new ItemEntity(world, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, stack);
-      // do not spawn a second 'ghost' one onclient side
       world.addFreshEntity(entityItem);
       entityItem.setDeltaMovement(0, 0, 0);
-      //      entityItem.motionX = entityItem.motionY = entityItem.motionZ = 0;
     }
   }
 
-  /**
-   * Preserve damage but delete the rest of the tag
-   *
-   * @param itemstack
-   */
   public static void deleteTag(ItemStack itemstack) {
-    int dmg = itemstack.getDamageValue();
-    itemstack.setTag(null);
-    itemstack.setDamageValue(dmg);
+    itemstack.remove(com.lothrazar.library.registry.FlibDataComponents.CUSTOM_NBT_BUCKET.get());
   }
 
-  /**
-   * call from ::inventoryTick
-   * 
-   * @param rnd
-   * @param stack
-   * @param factor
-   */
   public static void randomlyRepair(RandomSource rnd, ItemStack stack, int factor) {
     if (stack.isDamaged() && rnd.nextInt(factor) == 0) {
       stack.setDamageValue(stack.getDamageValue() - 1);
