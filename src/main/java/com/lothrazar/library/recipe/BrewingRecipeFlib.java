@@ -17,6 +17,9 @@ public class BrewingRecipeFlib extends BrewingRecipe {
 
   @Override
   public boolean isInput(ItemStack stack) {
-    return super.isInput(stack) && PotionContents.getPotion(stack) == PotionContents.getPotion(inputStack);
+    return super.isInput(stack) && java.util.Objects.equals(
+        stack.get(net.minecraft.core.component.DataComponents.POTION_CONTENTS),
+        inputStack.get(net.minecraft.core.component.DataComponents.POTION_CONTENTS)
+    );
   }
 }

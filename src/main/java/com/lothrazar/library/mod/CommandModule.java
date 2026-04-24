@@ -463,8 +463,11 @@ public class CommandModule extends EventFlib {
   public static int executePrintNbt(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
     ServerPlayer player = ctx.getSource().getPlayerOrException();
     ItemStack held = player.getMainHandItem();
-    if (held.hasTag()) {
-      ChatUtil.sendFeedback(ctx, held.getTag().toString());
+    if (!held.isEmpty()) {
+      net.minecraft.core.component.DataComponentMap map = held.getComponents();
+      for (net.minecraft.core.component.TypedDataComponent<?> component : map) {
+        ChatUtil.sendFeedback(ctx, component.type().toString() + " = " + component.value().toString());
+      }
     }
     else {
       ChatUtil.sendFeedback(ctx, "command.flib.nbtprint.null");

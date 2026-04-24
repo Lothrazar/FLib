@@ -45,7 +45,7 @@ public record  PacketRotateBlock(
         InteractionHand hand
 ) implements PacketFlib {
 
-  public static final CustomPacketPayload.Type<PacketPlayerFalldamage> TYPE = new CustomPacketPayload.Type<>(FutureLibMod.rl( "rotate_block"));
+  public static final CustomPacketPayload.Type<PacketRotateBlock> TYPE = new CustomPacketPayload.Type<>(FutureLibMod.rl( "rotate_block"));
   public static final StreamCodec<ByteBuf, PacketRotateBlock> STREAM_CODEC = StreamCodec.composite(
           BlockPos.STREAM_CODEC, PacketRotateBlock::pos,
           DIRECTION_SLOT_STREAM_CODEC, PacketRotateBlock::side,

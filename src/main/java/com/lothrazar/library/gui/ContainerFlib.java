@@ -31,24 +31,22 @@ public abstract class ContainerFlib extends AbstractContainerMenu {
   private BlockCapabilityCache<IEnergyStorage, Direction> capCache;
 
   protected void trackEnergy(BlockEntity tile) {
-    // Later, for example in `onLoad` for a block entity:
-    this.capCache = BlockCapabilityCache.create(
-            Capabilities.EnergyStorage.BLOCK, // capability to cache
-            (ServerLevel) tile.getLevel(), // level
-            tile.getBlockPos(), // target position
-            Direction.NORTH // context
-    );
+    if (tile.getLevel() instanceof ServerLevel sl) {
+      this.capCache = BlockCapabilityCache.create(
+              Capabilities.EnergyStorage.BLOCK, // capability to cache
+              sl, // level
+              tile.getBlockPos(), // target position
+              Direction.NORTH // context
+      );
+    }
 
     addDataSlot(new DataSlot() {
 
       @Override
       public int get() {
-        //  Capabilities.EnergyStorage.BLOCK,
-
-      var energy =         capCache.getCapability();
-
+        if (capCache == null) return 0;
+        var energy = capCache.getCapability();
         return (energy == null) ? 0 : energy.getEnergyStored();
-//        return tile.getCapability(ForgeCapabilities.ENERGY).map(IEnergyStorage::getEnergyStored).orElse(0);
       }
 
       @Override

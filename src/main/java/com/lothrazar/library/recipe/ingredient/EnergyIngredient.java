@@ -16,6 +16,17 @@ public class EnergyIngredient {
     setTicks(ticks);
   }
 
+  public static final com.mojang.serialization.MapCodec<EnergyIngredient> CODEC = com.mojang.serialization.codecs.RecordCodecBuilder.mapCodec(instance -> instance.group(
+      com.mojang.serialization.Codec.INT.optionalFieldOf("rfpertick", RFPT_DEFAULT).forGetter(EnergyIngredient::getRfPertick),
+      com.mojang.serialization.Codec.INT.optionalFieldOf("ticks", TICKS_DEFAULT).forGetter(EnergyIngredient::getTicks)
+  ).apply(instance, EnergyIngredient::new));
+
+  public static final net.minecraft.network.codec.StreamCodec<io.netty.buffer.ByteBuf, EnergyIngredient> STREAM_CODEC = net.minecraft.network.codec.StreamCodec.composite(
+      net.minecraft.network.codec.ByteBufCodecs.INT, EnergyIngredient::getRfPertick,
+      net.minecraft.network.codec.ByteBufCodecs.INT, EnergyIngredient::getTicks,
+      EnergyIngredient::new
+  );
+
   public EnergyIngredient(final JsonObject recipeJson) {
     parseData(recipeJson);
   }

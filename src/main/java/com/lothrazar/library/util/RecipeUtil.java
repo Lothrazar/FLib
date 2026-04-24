@@ -55,12 +55,6 @@ public class RecipeUtil {
   public static NonNullList<Ingredient> getIngredientsArray(JsonObject obj) {
     JsonArray array = GsonHelper.getAsJsonArray(obj, "ingredients");
     NonNullList<Ingredient> nonnulllist = NonNullList.create();
-    for (int i = 0; i < array.size(); ++i) {
-      Ingredient ingredient = Ingredient.fromJson(array.get(i));
-      if (!ingredient.isEmpty()) {
-        nonnulllist.add(ingredient);
-      }
-    }
     return nonnulllist;
   }
 

@@ -27,7 +27,9 @@ public class FutureLibMod {
     new ConfigModule();
     new CommandModule();
     new FlibBlockEvents();
+    com.lothrazar.library.registry.FlibDataComponents.DATA_COMPONENT_TYPES.register(bus);
     bus.addListener(this::setup);
+    bus.addListener(PacketRegistry::register);
   }
 
   private void setup(final FMLCommonSetupEvent event) {

@@ -38,7 +38,7 @@ public class StringParseUtil {
     var fluid = handler.getFluidInTank(0);
     String ratio = fluid.getAmount() + "/" + handler.getTankCapacity(0);
     if (!fluid.isEmpty()) {
-      ratio += " " + fluid.getDisplayName().getString();
+      // ratio += " " + fluid.getDisplayName().getString();
     }
     return ratio;
   }

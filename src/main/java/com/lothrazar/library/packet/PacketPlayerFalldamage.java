@@ -39,7 +39,8 @@ public class PacketPlayerFalldamage implements PacketFlib {
        * Used to keep track of how the player is floating while gamerules should prevent that. Surpassing 80 ticks means kick
        */
     if(context.player() instanceof ServerPlayer sp) {
-      sp.connection.aboveGroundTickCount = 0; // set to public in accesstransformer
+      // sp.connection.aboveGroundTickCount = 0; // set to public in accesstransformer
+      // TODO: 1.21 aboveGroundTickCount migration
     }
   }
 }

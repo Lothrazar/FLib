@@ -2,7 +2,6 @@ package com.lothrazar.library.util;
 
 import java.util.Collection;
 import java.util.Random;
-import java.util.UUID;
 import com.lothrazar.library.FutureLibMod;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;
@@ -11,50 +10,48 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.NeoForgeMod;
 
 public class AttributesUtil {
 
   static final Random RAND = new Random();
-  public static final UUID DEFAULT_ID = UUID.fromString("06d30aa2-eff2-4a81-b92b-a1cb95f115c6");
-  public static final UUID MULT_ID = UUID.fromString("c6d30aa2-eff2-4a81-b92b-a1cb95f115cd");
-  public static final UUID ID_STEP_HEIGHT = UUID.fromString("66d30aa2-eaa2-4a81-b92b-a1cb95f115ca");
+  public static final ResourceLocation DEFAULT_ID = ResourceLocation.fromNamespaceAndPath(FutureLibMod.MODID, "default_id");
+  public static final ResourceLocation MULT_ID = ResourceLocation.fromNamespaceAndPath(FutureLibMod.MODID, "mult_id");
+  public static final ResourceLocation ID_STEP_HEIGHT = ResourceLocation.fromNamespaceAndPath(FutureLibMod.MODID, "step_height");
   static final float VANILLA = 0.6F;
 
-  //    player.maxUpStep = 0.6F; // LivingEntity.class constructor defaults to this
   public static void disableStepHeight(Player player) {
-
-
     AttributeInstance attr = player.getAttribute(Attributes.STEP_HEIGHT);
-    attr.removeModifier(ID_STEP_HEIGHT);
+    if(attr != null) attr.removeModifier(ID_STEP_HEIGHT);
   }
 
   public static void enableStepHeight(Player player) {
     float newVal;
     if (player.isCrouching()) {
-      //make sure that, when sneaking, dont fall off!!
       newVal = 0.9F - VANILLA;
     }
     else {
-      newVal = 1.0F + (1F / 16F) - VANILLA; //PATH BLOCKS etc are 1/16th downif MY feature turns this on, then do it
+      newVal = 1.0F + (1F / 16F) - VANILLA;
     }
-    //    player.maxUpStep = newVal; // Deprecated
     AttributeInstance attr = player.getAttribute(Attributes.STEP_HEIGHT);
+    if(attr == null) return;
 
     AttributeModifier oldModifier = attr.getModifier(AttributesUtil.ID_STEP_HEIGHT);
-    double old = oldModifier == null ? 0 : oldModifier.getAmount();
+    double old = oldModifier == null ? 0 : oldModifier.amount();
     if (newVal != old) {
       AttributesUtil.setStepHeightInternal(player, newVal);
     }
   }
 
   private static void setStepHeightInternal(Player player, double newVal) {
-    //    player.maxUpStep = 0.6F; // LivingEntity.class constructor defaults to this
-    AttributeInstance attr = player.getAttribute(ForgeMod.STEP_HEIGHT_ADDITION.get());
-    attr.removeModifier(ID_STEP_HEIGHT);
-    if (newVal != 0) {
-      AttributeModifier healthModifier = new AttributeModifier(ID_STEP_HEIGHT, FutureLibMod.MODID, newVal, AttributeModifier.Operation.ADDITION);
-      attr.addPermanentModifier(healthModifier);
+    AttributeInstance attr = player.getAttribute(Attributes.STEP_HEIGHT);
+    if(attr != null) {
+      attr.removeModifier(ID_STEP_HEIGHT);
+      if (newVal != 0) {
+        AttributeModifier healthModifier = new AttributeModifier(ID_STEP_HEIGHT, newVal, AttributeModifier.Operation.ADD_VALUE);
+        attr.addPermanentModifier(healthModifier);
+      }
     }
   }
 
@@ -82,51 +79,49 @@ public class AttributesUtil {
   public static int reset(Holder<Attribute> attribute, Collection<ServerPlayer> players) {
     for (ServerPlayer playerIn : players) {
       AttributeInstance attr = playerIn.getAttribute(attribute);
-
-      attr.removeModifier(DEFAULT_ID);
-      attr.removeModifier(MULT_ID);
+      if(attr != null) {
+        attr.removeModifier(DEFAULT_ID);
+        attr.removeModifier(MULT_ID);
+      }
     }
     return 0;
   }
 
-  //ench
-  public static void removePlayerReach(UUID id, Player player) {
+  public static void removePlayerReach(ResourceLocation id, Player player) {
     AttributeInstance attr = player.getAttribute(Attributes.BLOCK_INTERACTION_RANGE);
-    attr.removeModifier(id);
+    if(attr != null) attr.removeModifier(id);
   }
 
-  // ench
-  public static void setPlayerReach(UUID id, Player player, int reachBoost) {
+  public static void setPlayerReach(ResourceLocation id, Player player, int reachBoost) {
     removePlayerReach(id, player);
     AttributeInstance attr = player.getAttribute(Attributes.BLOCK_INTERACTION_RANGE);
-    //vanilla is 5, so +11 it becomes 16
-    AttributeModifier enchantment = new AttributeModifier(id, "ReachFLIB", reachBoost, AttributeModifier.Operation.ADDITION);
-    attr.addPermanentModifier(enchantment);
+    if(attr != null) {
+      AttributeModifier enchantment = new AttributeModifier(id, reachBoost, AttributeModifier.Operation.ADD_VALUE);
+      attr.addPermanentModifier(enchantment);
+    }
   }
 
-  public static void updateAttrModifierBy(Holder<Attribute> attr, UUID id, Player playerIn, int value) {
+  public static void updateAttrModifierBy(Holder<Attribute> attr, ResourceLocation id, Player playerIn, int value) {
     AttributeInstance healthAttribute = playerIn.getAttribute(attr);
+    if(healthAttribute == null) return;
     AttributeModifier oldHealthModifier = healthAttribute.getModifier(id);
-    //what is our value
-    double old = oldHealthModifier == null ? 0 : oldHealthModifier.getAmount();
+    double old = oldHealthModifier == null ? 0 : oldHealthModifier.amount();
     double newVal = value + old;
     healthAttribute.removeModifier(id);
-    AttributeModifier healthModifier = new AttributeModifier(id, "Bonus", newVal, AttributeModifier.Operation.ADDITION);
+    AttributeModifier healthModifier = new AttributeModifier(id, newVal, AttributeModifier.Operation.ADD_VALUE);
     healthAttribute.addPermanentModifier(healthModifier);
-    if (attr == Attributes.MAX_HEALTH
-        && playerIn.getHealth() > healthAttribute.getValue()) {
+    if (attr == Attributes.MAX_HEALTH && playerIn.getHealth() > healthAttribute.getValue()) {
       playerIn.setHealth((float) healthAttribute.getValue());
     }
   }
 
   public static void multiplyAttrModifierBy(Holder<Attribute> attr, Player playerIn, double value) {
     AttributeInstance healthAttribute = playerIn.getAttribute(attr);
-    //what is our value 
+    if(healthAttribute == null) return;
     healthAttribute.removeModifier(MULT_ID);
-    AttributeModifier healthModifier = new AttributeModifier(MULT_ID, "Bonus from Cyclic", value, AttributeModifier.Operation.MULTIPLY_BASE);
+    AttributeModifier healthModifier = new AttributeModifier(MULT_ID, value, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
     healthAttribute.addPermanentModifier(healthModifier);
-    if (attr == Attributes.MAX_HEALTH
-        && playerIn.getHealth() > healthAttribute.getValue()) {
+    if (attr == Attributes.MAX_HEALTH && playerIn.getHealth() > healthAttribute.getValue()) {
       playerIn.setHealth((float) healthAttribute.getValue());
     }
   }
@@ -141,9 +136,9 @@ public class AttributesUtil {
   private static void setHearts(int finalHearts, ServerPlayer playerIn) {
     int modifiedHearts = finalHearts - 10;
     AttributeInstance healthAttribute = playerIn.getAttribute(Attributes.MAX_HEALTH);
+    if(healthAttribute == null) return;
     healthAttribute.removeModifier(DEFAULT_ID);
-    //just remove and replace the modifier
-    AttributeModifier healthModifier = new AttributeModifier(DEFAULT_ID, "HP Bonus from Cyclic", (modifiedHearts * 2), AttributeModifier.Operation.ADDITION);
+    AttributeModifier healthModifier = new AttributeModifier(DEFAULT_ID, (modifiedHearts * 2), AttributeModifier.Operation.ADD_VALUE);
     healthAttribute.addPermanentModifier(healthModifier);
     if (playerIn.getHealth() > healthAttribute.getValue()) {
       playerIn.setHealth((float) healthAttribute.getValue());

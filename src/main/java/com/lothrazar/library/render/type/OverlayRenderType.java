@@ -34,10 +34,10 @@ public class OverlayRenderType extends RenderType {
     RenderType.CompositeState state = RenderType.CompositeState.builder()
         .setTextureState(new RenderStateShard.TextureStateShard(resourceLocation, false, false))
         .setCullState(RenderStateShard.NO_CULL)
-        .setShaderState(RenderStateShard.POSITION_COLOR_TEX_SHADER)
+        .setShaderState(RenderStateShard.RENDERTYPE_TEXT_SHADER)
         .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
         .setOutputState(RenderStateShard.TRANSLUCENT_TARGET)
         .createCompositeState(true);
-    return create(id, DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, true, false, state);
+    return create(id, DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, true, false, state);
   }
 }

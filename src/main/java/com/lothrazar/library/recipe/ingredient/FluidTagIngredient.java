@@ -45,18 +45,9 @@ public class FluidTagIngredient {
       return List.of(fluid.getFluid());
     }
     TagKey<Fluid> ft = FluidTags.create(ResourceLocation.parse(tag));
-    if (ft != null) {
-      TagKey<Fluid> key = BuiltInRegistries.FLUID.tags().createTagKey(ResourceLocation.parse(tag));
-      return NeoForgeRegistries.FLUIDS.tags().getTag(key).stream().toList();
-    }
-    return null;
+    return BuiltInRegistries.FLUID.getTag(ft).map(named -> named.stream().map(net.minecraft.core.Holder::value).toList()).orElse(List.of());
   }
 
-  /**
-   * create fluidstacks for all fluids matching the tag. if hastag
-   * 
-   * @return
-   */
   public List<FluidStack> getMatchingFluids() {
     List<Fluid> fluids = list();
     List<FluidStack> me = new ArrayList<>();
@@ -66,14 +57,25 @@ public class FluidTagIngredient {
     return me;
   }
 
-  public static FluidTagIngredient readFromPacket(FriendlyByteBuf buffer) {
-    return new FluidTagIngredient(FluidStack.readFromPacket(buffer), buffer.readUtf(), buffer.readInt());
+  public static final com.mojang.serialization.MapCodec<FluidTagIngredient> CODEC = com.mojang.serialization.codecs.RecordCodecBuilder.mapCodec(instance -> instance.group(
+      FluidStack.CODEC.optionalFieldOf("fluid", FluidStack.EMPTY).forGetter(FluidTagIngredient::getFluidStack),
+      com.mojang.serialization.Codec.STRING.optionalFieldOf("tag", "").forGetter(FluidTagIngredient::getTag),
+      com.mojang.serialization.Codec.INT.optionalFieldOf("count", 1000).forGetter(FluidTagIngredient::getAmount)
+  ).apply(instance, FluidTagIngredient::new));
+
+  public static final net.minecraft.network.codec.StreamCodec<net.minecraft.network.RegistryFriendlyByteBuf, FluidTagIngredient> STREAM_CODEC = net.minecraft.network.codec.StreamCodec.composite(
+      FluidStack.STREAM_CODEC, i -> i.fluid,
+      net.minecraft.network.codec.ByteBufCodecs.STRING_UTF8, i -> i.tag,
+      net.minecraft.network.codec.ByteBufCodecs.INT, i -> i.amount,
+      FluidTagIngredient::new
+  );
+
+  public static FluidTagIngredient readFromPacket(net.minecraft.network.RegistryFriendlyByteBuf buffer) {
+    return STREAM_CODEC.decode(buffer);
   }
 
-  public void writeToPacket(FriendlyByteBuf buffer) {
-    fluid.writeToPacket(buffer);
-    buffer.writeUtf(tag);
-    buffer.writeInt(amount);
+  public void writeToPacket(net.minecraft.network.RegistryFriendlyByteBuf buffer) {
+    STREAM_CODEC.encode(buffer, this);
   }
 
   public int getAmount() {

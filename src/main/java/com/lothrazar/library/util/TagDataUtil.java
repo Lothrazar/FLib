@@ -15,24 +15,25 @@ public class TagDataUtil {
   }
 
   public static ItemStack buildNamedPlayerSkull(String displayNameString) {
-    CompoundTag t = new CompoundTag();
-    t.putString(SKULLOWNER, displayNameString);
-    return buildSkullFromTag(t);
+    ItemStack skull = new ItemStack(Items.PLAYER_HEAD);
+    skull.set(net.minecraft.core.component.DataComponents.PROFILE, new net.minecraft.world.item.component.ResolvableProfile(new com.mojang.authlib.GameProfile(net.minecraft.Util.NIL_UUID, displayNameString)));
+    return skull;
   }
 
   public static ItemStack buildSkullFromTag(CompoundTag player) {
-    ItemStack skull = new ItemStack(Items.PLAYER_HEAD);
-    skull.setTag(player);
-    return skull;
+    if (player.contains(SKULLOWNER)) {
+      return buildNamedPlayerSkull(player.getString(SKULLOWNER));
+    }
+    return new ItemStack(Items.PLAYER_HEAD);
   }
 
   public static void setItemStackBlockPos(ItemStack item, BlockPos pos) {
     if (pos == null || item.isEmpty()) {
       return;
     }
-    TagDataUtil.setItemStackNBTVal(item, "xpos", pos.getX());
-    TagDataUtil.setItemStackNBTVal(item, "ypos", pos.getY());
-    TagDataUtil.setItemStackNBTVal(item, "zpos", pos.getZ());
+    setItemStackNBTVal(item, "xpos", pos.getX());
+    setItemStackNBTVal(item, "ypos", pos.getY());
+    setItemStackNBTVal(item, "zpos", pos.getZ());
   }
 
   public static void putBlockPos(CompoundTag tag, BlockPos pos) {
@@ -42,10 +43,10 @@ public class TagDataUtil {
   }
 
   public static BlockPos getItemStackBlockPos(ItemStack item) {
-    if (item.isEmpty() || item.getTag() == null || !item.getTag().contains("xpos")) {
+    CompoundTag tag = getItemStackNBT(item);
+    if (!tag.contains("xpos")) {
       return null;
     }
-    CompoundTag tag = item.getOrCreateTag();
     return getBlockPos(tag);
   }
 
@@ -57,10 +58,12 @@ public class TagDataUtil {
     if (item.isEmpty()) {
       return;
     }
-    item.getOrCreateTag().putInt(prop, value);
+    CompoundTag tag = getItemStackNBT(item);
+    tag.putInt(prop, value);
+    item.set(com.lothrazar.library.registry.FlibDataComponents.CUSTOM_NBT_BUCKET.get(), tag);
   }
 
   public static CompoundTag getItemStackNBT(ItemStack held) {
-    return held.getOrCreateTag();
+    return held.getOrDefault(com.lothrazar.library.registry.FlibDataComponents.CUSTOM_NBT_BUCKET.get(), new CompoundTag());
   }
 }

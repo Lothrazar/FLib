@@ -18,7 +18,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record PacketItemToggle(int slot) implements PacketFlib {
 
-  public static final CustomPacketPayload.Type<PacketPlayerFalldamage> TYPE =
+  public static final CustomPacketPayload.Type<PacketItemToggle> TYPE =
           new CustomPacketPayload.Type<>(FutureLibMod.rl( "item_toggle"));
   public static final StreamCodec<ByteBuf, PacketItemToggle> STREAM_CODEC = StreamCodec.composite(
           ByteBufCodecs.INT, PacketItemToggle::slot,
