@@ -2,6 +2,12 @@
 
 A Library/core mod built on the Minecraft & the Forge API [https://files.minecraftforge.net/](https://files.minecraftforge.net)
 
+> [!WARNING]  
+> **Disclaimer:** This NeoForge 1.21.1 port was developed and compiled with the assistance of an AI agent. While the library successfully builds and runs alongside dependent mods, it has **not** been thoroughly tested across all possible edge cases. Proceed with caution.
+
+## ⚠️ 1.21.1 Port Notes
+This branch is specifically updated for **NeoForge 1.21.1** (tested on `21.1.115+`).
+*(Note: This library will **NOT** work on `1.21.2+` or `1.21.4` due to major core API and Data Component changes introduced by Mojang in newer versions)*
 
 [![](http://cf.way2muchnoise.eu/661261.svg)](https://www.curseforge.com/minecraft/mc-mods/flib) 
 [![](http://cf.way2muchnoise.eu/versions/661261.svg)](https://www.curseforge.com/minecraft/mc-mods/flib)
