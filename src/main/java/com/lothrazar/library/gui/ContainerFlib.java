@@ -10,8 +10,8 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
 public abstract class ContainerFlib extends AbstractContainerMenu {
 
@@ -30,7 +30,10 @@ public abstract class ContainerFlib extends AbstractContainerMenu {
 
       @Override
       public int get() {
-        return tile.getCapability(ForgeCapabilities.ENERGY).map(IEnergyStorage::getEnergyStored).orElse(0);
+        IEnergyStorage storage = tile.getLevel() != null
+            ? tile.getLevel().getCapability(Capabilities.EnergyStorage.BLOCK, tile.getBlockPos(), tile.getBlockState(), tile, null)
+            : null;
+        return storage != null ? storage.getEnergyStored() : 0;
       }
 
       @Override

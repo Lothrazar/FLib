@@ -1,16 +1,15 @@
 package com.lothrazar.library.util;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 
 public class EnchantUtil {
 
@@ -31,9 +30,8 @@ public class EnchantUtil {
   }
 
   public static List<MobEffect> getEffects(MobEffectCategory effectType) {
-    Collection<MobEffect> effects = ForgeRegistries.MOB_EFFECTS.getValues();
     List<MobEffect> effectsList = new ArrayList<>();
-    for (MobEffect effect : effects) {
+    for (MobEffect effect : BuiltInRegistries.MOB_EFFECT) {
       if (effectType == null || effect.getCategory() == effectType) {
         effectsList.add(effect);
       }
@@ -45,8 +43,8 @@ public class EnchantUtil {
     Item item1 = stack1.getItem();
     Item item2 = stack2.getItem();
     if (item1 == Items.ENCHANTED_BOOK && item2 == Items.ENCHANTED_BOOK) {
-      ListTag ench1 = EnchantedBookItem.getEnchantments(stack1);
-      ListTag ench2 = EnchantedBookItem.getEnchantments(stack2);
+      ItemEnchantments ench1 = stack1.get(DataComponents.STORED_ENCHANTMENTS);
+      ItemEnchantments ench2 = stack2.get(DataComponents.STORED_ENCHANTMENTS);
       if (ench1 == null || ench2 == null) {
         return false;
       }

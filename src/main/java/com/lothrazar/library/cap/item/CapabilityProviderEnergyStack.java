@@ -1,43 +1,33 @@
 package com.lothrazar.library.cap.item;
 
 import com.lothrazar.library.cap.CustomEnergyStorage;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
 
-public class CapabilityProviderEnergyStack implements ICapabilitySerializable<CompoundTag> {
+/**
+ * Simple energy storage wrapper for items.
+ * In NeoForge 1.21+, attach this to an item via RegisterCapabilitiesEvent:
+ *   event.registerItem(Capabilities.EnergyStorage.ITEM,
+ *       (stack, ctx) -> new CapabilityProviderEnergyStack(maxEnergy).getEnergyStorage(), myItem);
+ */
+public class CapabilityProviderEnergyStack {
 
   private static final String NBTENERGY = "energy";
-  CustomEnergyStorage energy;
-  private LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(() -> energy);
+  private final CustomEnergyStorage energy;
 
   public CapabilityProviderEnergyStack(int max) {
     energy = new CustomEnergyStorage(max, max);
-    energyCap = LazyOptional.of(() -> energy);
   }
 
-  @Override
-  public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
-    if (cap == ForgeCapabilities.ENERGY) {
-      return energyCap.cast();
-    }
-    return LazyOptional.empty();
+  public CustomEnergyStorage getEnergyStorage() {
+    return energy;
   }
 
-  @Override
   public CompoundTag serializeNBT() {
-    CompoundTag tag = new CompoundTag();
-    tag.put(NBTENERGY, energy.serializeNBT());
-    return tag;
+    return energy.saveToTag();
   }
 
-  @Override
   public void deserializeNBT(CompoundTag nbt) {
-    energy.deserializeNBT(nbt.getCompound(NBTENERGY));
+    energy.loadFromTag(nbt);
   }
 
   @Override

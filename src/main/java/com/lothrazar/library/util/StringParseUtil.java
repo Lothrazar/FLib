@@ -26,7 +26,7 @@ package com.lothrazar.library.util;
 import java.util.List;
 import com.lothrazar.library.FutureLibMod;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 public class StringParseUtil {
 
@@ -37,7 +37,7 @@ public class StringParseUtil {
   public static String getFluidRatioName(IFluidHandler handler) {
     String ratio = handler.getFluidInTank(0).getAmount() + "/" + handler.getTankCapacity(0);
     if (!handler.getFluidInTank(0).isEmpty()) {
-      ratio += " " + handler.getFluidInTank(0).getDisplayName().getString();
+      ratio += " " + handler.getFluidInTank(0).getHoverName().getString();
     }
     return ratio;
   }

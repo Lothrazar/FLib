@@ -3,8 +3,10 @@ package com.lothrazar.library.data;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -93,7 +95,8 @@ public class RelativeShape {
   }
 
   public static RelativeShape read(ItemStack item) {
-    CompoundTag tag = item.getTag();
+    CustomData data = item.get(DataComponents.CUSTOM_DATA);
+    CompoundTag tag = data != null ? data.copyTag() : null;
     return read(tag);
   }
 
@@ -113,8 +116,9 @@ public class RelativeShape {
   }
 
   public void write(ItemStack shapeCard) {
-    CompoundTag tag = shapeCard.getOrCreateTag();
+    CompoundTag tag = shapeCard.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
     write(tag);
+    shapeCard.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
   }
 
   public void setShape(List<BlockPos> list) {

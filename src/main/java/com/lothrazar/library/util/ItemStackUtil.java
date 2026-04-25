@@ -1,24 +1,25 @@
 package com.lothrazar.library.util;
 
 import java.util.List;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.items.IItemHandler;
 
 public class ItemStackUtil {
 
@@ -38,24 +39,18 @@ public class ItemStackUtil {
    * @param color
    */
   public static void addLoreToStack(ItemStack crafting, String lore, String color) {
-    CompoundTag displayTag = new CompoundTag();
-    ListTag tagList = new ListTag();
     if (color == null) {
       color = "gold";
     }
-    String escaped = "{\"text\":\"" + lore + "\",\"color\":\"" + color + "\"}";
-    tagList.add(StringTag.valueOf(escaped));
-    displayTag.put(NBT_LORE, tagList);
-    crafting.getTag().put(NBT_DISPLAY, displayTag);
+    ChatFormatting fmt = ChatFormatting.getByName(color);
+    Component loreText = fmt != null
+        ? Component.literal(lore).withStyle(fmt)
+        : Component.literal(lore);
+    crafting.set(DataComponents.LORE, new ItemLore(List.of(loreText)));
   }
 
-  public static void applyRandomEnch(RandomSource random, ItemStack crafting) {
-    crafting = EnchantmentHelper.enchantItem(random, crafting, 1, false);
-  }
-
-  public static void applyRandomEnch(RandomSource random, ItemStack crafting, int level, boolean allowTreasure) {
-    applyRandomEnch(random, crafting);
-  }
+  // NOTE: EnchantmentHelper.enchantItem signature changed in 1.21 - now requires HolderLookup.Provider.
+  // Call EnchantmentHelper.enchantItem(random, stack, level, registries, Optional.empty()) directly from your code.
   //  private void merge(Map<Enchantment, Integer> oldEnch, ItemStack crafting) {
   //    Map<Enchantment, Integer> newEnch = EnchantmentHelper.getEnchantments(crafting);
   //    //anything in new thats also in old, merge it over
@@ -91,7 +86,7 @@ public class ItemStackUtil {
   }
 
   public static ItemStack findItem(String id) {
-    Item head = ForgeRegistries.ITEMS.getValue(ResourceLocation.tryParse(id));
+    Item head = BuiltInRegistries.ITEM.getOptional(ResourceLocation.tryParse(id)).orElse(null);
     if (head != null) {
       return new ItemStack(head);
     }
@@ -128,9 +123,11 @@ public class ItemStackUtil {
       stack.setDamageValue(stack.getDamageValue() + 1);
     }
     else {
-      stack.hurtAndBreak(1, player, (p) -> {
-        p.broadcastBreakEvent(InteractionHand.MAIN_HAND);
-      });
+      final Item item = stack.getItem();
+      stack.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
+//          (p) -> {
+//        p.broadcastBreakEvent(EquipmentSlot.MAINHAND);
+//      });
     }
     if (stack.getDamageValue() >= stack.getMaxDamage()) {
       stack.shrink(1);
@@ -158,8 +155,7 @@ public class ItemStackUtil {
 
   public static boolean matches(ItemStack current, ItemStack in) {
     //first one fails if size is off
-    return ItemStack.matches(current, in)
-        && ItemStack.isSameItemSameTags(current, in);
+    return ItemStack.isSameItemSameComponents(current, in);
   }
 
   public static void shrink(Player player, ItemStack stac) {
@@ -194,7 +190,7 @@ public class ItemStackUtil {
    */
   public static void deleteTag(ItemStack itemstack) {
     int dmg = itemstack.getDamageValue();
-    itemstack.setTag(null);
+    itemstack.remove(DataComponents.CUSTOM_DATA);
     itemstack.setDamageValue(dmg);
   }
 
@@ -209,5 +205,13 @@ public class ItemStackUtil {
     if (stack.isDamaged() && rnd.nextInt(factor) == 0) {
       stack.setDamageValue(stack.getDamageValue() - 1);
     }
+  }
+
+  /**
+   * true if item is edible. replaces old item.isEdible().  based on FoodProperties
+   * @return
+   */
+  public static boolean isEdible(ItemStack s) {
+    return (s.getItem().getFoodProperties(s,null) != null);
   }
 }

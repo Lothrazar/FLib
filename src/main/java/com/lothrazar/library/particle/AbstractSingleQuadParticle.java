@@ -2,26 +2,21 @@ package com.lothrazar.library.particle;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Camera;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SingleQuadParticle;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.world.phys.Vec3;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 /**
  * used by ParticleCasting
- * 
- * @author lothr
  *
+ * @author lothr
  */
 @OnlyIn(Dist.CLIENT)
 public abstract class AbstractSingleQuadParticle extends SingleQuadParticle {
@@ -38,19 +33,14 @@ public abstract class AbstractSingleQuadParticle extends SingleQuadParticle {
 
   @Override
   public void render(VertexConsumer buffer, Camera entityIn, float partialTicks) {
-    TextureManager textureManager = Minecraft.getInstance().textureManager;
-    //    Lighting.turnOff();
+    // For CUSTOM render type, we set up the texture/blend state then delegate to super.
+    // The VertexConsumer writes into the buffer provided by the particle engine.
+    RenderSystem.setShaderTexture(0, getTexture());
     RenderSystem.depthMask(false);
-    textureManager.bindForSetup(getTexture());
     RenderSystem.enableBlend();
     RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-    //    RenderSystem.alphaFunc(516, 0.003921569F);
-    //    Tesselator.getInstance().getBuilder().begin(7, DefaultVertexFormat.PARTICLE);
-    RenderSystem.setShader(GameRenderer::getParticleShader);
-    RenderSystem.setShaderTexture(0, getTexture());
-    Tesselator.getInstance().getBuilder().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE); // QUADS == tuess
     super.render(buffer, entityIn, partialTicks);
-    Tesselator.getInstance().end();
+    RenderSystem.depthMask(true);
   }
 
   @Override

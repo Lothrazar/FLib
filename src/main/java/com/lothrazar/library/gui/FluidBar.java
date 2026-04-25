@@ -2,6 +2,8 @@ package com.lothrazar.library.gui;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.lothrazar.library.FutureLibMod;
 import com.lothrazar.library.render.FluidRenderMap;
 import com.lothrazar.library.render.FluidRenderMap.FluidFlow;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -11,11 +13,11 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class FluidBar {
 
-  public static final ResourceLocation FLUID_WIDGET = new ResourceLocation("flib", "textures/gui/fluid.png");
+  public static final ResourceLocation FLUID_WIDGET = ResourceLocation.fromNamespaceAndPath(FutureLibMod.MODID, "textures/gui/fluid.png");
   public String emtpyTooltip = "0";
   private Font font;
   private int x;
@@ -112,7 +114,7 @@ public class FluidBar {
   public void renderTooltip(GuiGraphics gg, int mouseX, int mouseY, FluidStack current) {
     String tt = emtpyTooltip;
     if (current != null && !current.isEmpty()) {
-      tt = current.getAmount() + "/" + getCapacity() + " " + current.getDisplayName().getString();
+      tt = current.getAmount() + "/" + getCapacity() + " " + current.getHoverName().getString(); // getDisplayName() -> getHoverName()
     }
     List<Component> list = new ArrayList<>();
     list.add(Component.translatable(tt));

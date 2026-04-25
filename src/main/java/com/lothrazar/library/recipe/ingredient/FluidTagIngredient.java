@@ -2,13 +2,16 @@ package com.lothrazar.library.recipe.ingredient;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class FluidTagIngredient {
 
@@ -42,12 +45,10 @@ public class FluidTagIngredient {
     if (!hasTag()) {
       return List.of(fluid.getFluid());
     }
-    TagKey<Fluid> ft = FluidTags.create(new ResourceLocation(tag));
-    if (ft != null) {
-      TagKey<Fluid> key = ForgeRegistries.FLUIDS.tags().createTagKey(new ResourceLocation(tag));
-      return ForgeRegistries.FLUIDS.tags().getTag(key).stream().toList();
-    }
-    return null;
+    TagKey<Fluid> key = TagKey.create(Registries.FLUID, ResourceLocation.parse(tag));
+    return BuiltInRegistries.FLUID.getTag(key)
+        .map(set -> set.stream().map(Holder::value).collect(java.util.stream.Collectors.toList()))
+        .orElseGet(List::of);
   }
 
   /**
@@ -65,11 +66,20 @@ public class FluidTagIngredient {
   }
 
   public static FluidTagIngredient readFromPacket(FriendlyByteBuf buffer) {
-    return new FluidTagIngredient(FluidStack.readFromPacket(buffer), buffer.readUtf(), buffer.readInt());
+    ResourceLocation fluidId = buffer.readResourceLocation();
+    int fluidAmount = buffer.readInt();
+    String tagStr = buffer.readUtf();
+    int cnt = buffer.readInt();
+    Fluid fluid = BuiltInRegistries.FLUID.getOptional(fluidId).orElse(Fluids.EMPTY);
+    FluidStack stack = fluid == Fluids.EMPTY ? FluidStack.EMPTY : new FluidStack(fluid, fluidAmount);
+    return new FluidTagIngredient(stack, tagStr, cnt);
   }
 
   public void writeToPacket(FriendlyByteBuf buffer) {
-    fluid.writeToPacket(buffer);
+    ResourceKey<Fluid> key = BuiltInRegistries.FLUID.getResourceKey(fluid.getFluid())
+        .orElseThrow(() -> new IllegalStateException("Unknown fluid: " + fluid.getFluid()));
+    buffer.writeResourceLocation(key.location());
+    buffer.writeInt(fluid.getAmount());
     buffer.writeUtf(tag);
     buffer.writeInt(amount);
   }

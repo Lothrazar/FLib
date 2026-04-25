@@ -1,20 +1,23 @@
 package com.lothrazar.library.mod;
 
+import com.lothrazar.library.FutureLibMod;
 import com.lothrazar.library.recipe.conditions.EntityExistsCondition;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegisterEvent;
+import com.mojang.serialization.MapCodec;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class FlibRegistrations {
 
-  public static final EntityExistsCondition.Serializer ENTITY_EXISTS = new EntityExistsCondition.Serializer();
+  private static final DeferredRegister<MapCodec<? extends ICondition>> CONDITIONS =
+      DeferredRegister.create(NeoForgeRegistries.Keys.CONDITION_CODECS, FutureLibMod.MODID);
 
-  @SubscribeEvent
-  public static void onRegistry(RegisterEvent event) {
-    event.register(ForgeRegistries.Keys.RECIPE_SERIALIZERS,
-        helper -> CraftingHelper.register(ENTITY_EXISTS));
+  static {
+    CONDITIONS.register("entity_exists", () -> EntityExistsCondition.CODEC);
+  }
+
+  public static void register(IEventBus modBus) {
+    CONDITIONS.register(modBus);
   }
 }

@@ -1,14 +1,15 @@
 package com.lothrazar.library.cap;
 
-import java.util.stream.Stream;
-import javax.annotation.Nullable;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
+
+import java.util.stream.Stream;
 
 /**
  * Wraps two {@link ItemStackHandler}s: Input and Output. Input's slots come first then the Output's slots come after. Items can only be inserted into Input. Items can only be extracted from Output.
@@ -93,17 +94,17 @@ public class ItemStackHandlerWrapper implements IItemHandler, IItemHandlerModifi
   }
 
   @Override
-  public CompoundTag serializeNBT() {
+  public CompoundTag serializeNBT(HolderLookup.Provider provider) {
     CompoundTag cmp = new CompoundTag();
-    cmp.put(NBT_INPUT, input.serializeNBT());
-    cmp.put(NBT_OUTPUT, output.serializeNBT());
+    cmp.put(NBT_INPUT, input.serializeNBT(provider));
+    cmp.put(NBT_OUTPUT, output.serializeNBT(provider));
     return cmp;
   }
 
   @Override
-  public void deserializeNBT(CompoundTag nbt) {
-    input.deserializeNBT(nbt.getCompound(NBT_INPUT));
-    output.deserializeNBT(nbt.getCompound(NBT_OUTPUT));
+  public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+    input.deserializeNBT(provider, nbt.getCompound(NBT_INPUT));
+    output.deserializeNBT(provider, nbt.getCompound(NBT_OUTPUT));
   }
 
   @FunctionalInterface
@@ -130,7 +131,7 @@ public class ItemStackHandlerWrapper implements IItemHandler, IItemHandlerModifi
   /**
    * Support for non-capability interfaces like hoppers to support in-only and out-only. For use with WorldlyContainer.java
    */
-  public boolean canPlaceItemThroughFace(int i, ItemStack itemStack, @Nullable Direction direction) {
+  public boolean canPlaceItemThroughFace(int i, ItemStack itemStack, Direction direction) {
     return i < this.input.getSlots();
   }
 

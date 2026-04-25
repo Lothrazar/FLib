@@ -17,8 +17,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.RenderHighlightEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.RenderHighlightEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 
 /**
  * Copyright (c) 2015 Vorquel (modified by Lothrazar 2016-2023)
@@ -225,8 +225,8 @@ public class RenderBlockOverlay {
   }
 
   private void addVertex(VertexConsumer buffer, Matrix4f matrix, double u, double v, int i) {
-    buffer.vertex(matrix, (float) vs[i].x, (float) vs[i].y, (float) vs[i].z)
-        .color(1.0f, 1.0f, 1.0f, 0.375f)
-        .uv((float) u, (float) v).endVertex();
+    buffer.addVertex(matrix, (float) vs[i].x, (float) vs[i].y, (float) vs[i].z)
+        .setColor(1.0f, 1.0f, 1.0f, 0.375f)
+        .setUv((float) u, (float) v);
   }
 }

@@ -34,11 +34,9 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
-import net.minecraft.world.scores.Objective;
-import net.minecraft.world.scores.Score;
-import net.minecraft.world.scores.Scoreboard;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraft.world.scores.*;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 
 public class CommandModule extends EventFlib {
 
@@ -229,7 +227,7 @@ public class CommandModule extends EventFlib {
                     .then(Commands.argument(ARG_MIN, IntegerArgumentType.integer())
                         .then(Commands.argument(ARG_MAX, IntegerArgumentType.integer())
                             .then(Commands.argument(ARG_OBJECTIVE, StringArgumentType.greedyString())
-                                .executes(x -> {
+                                .executes(x -> { // TODO: fix ScoreHolder instead of x as string
                                   return CommandScoreboard.scoreboardRng(x, ScoreHolderArgument.getNamesWithDefaultWildcard(x, ARG_TARGETS),
                                       ObjectiveArgument.getObjective(x, ARG_OBJECTIVE),
                                       IntegerArgumentType.getInteger(x, ARG_MIN),
@@ -272,25 +270,25 @@ public class CommandModule extends EventFlib {
                     .then(Commands.argument(ARG_PLAYER, EntityArgument.players())
                         .then(Commands.argument(ARG_VALUE, IntegerArgumentType.integer(-10000, 10000))
                             .executes(x -> {
-                              return AttributesUtil.add(ResourceArgument.getAttribute(x, ARG_ATTR).get(), EntityArgument.getPlayers(x, ARG_PLAYER), IntegerArgumentType.getInteger(x, ARG_VALUE));
+                              return AttributesUtil.add(ResourceArgument.getAttribute(x, ARG_ATTR), EntityArgument.getPlayers(x, ARG_PLAYER), IntegerArgumentType.getInteger(x, ARG_VALUE));
                             }))))
                 .then(Commands.literal(FORK_RANDOM)
                     .then(Commands.argument(ARG_PLAYER, EntityArgument.players())
                         .then(Commands.argument(ARG_MIN, IntegerArgumentType.integer(-10000, 10000))
                             .then(Commands.argument(ARG_MAX, IntegerArgumentType.integer(-10000, 10000))
                                 .executes(x -> {
-                                  return AttributesUtil.addRandom(ResourceArgument.getAttribute(x, ARG_ATTR).get(), EntityArgument.getPlayers(x, ARG_PLAYER), IntegerArgumentType.getInteger(x, ARG_MIN), IntegerArgumentType.getInteger(x, ARG_MAX));
+                                  return AttributesUtil.addRandom(ResourceArgument.getAttribute(x, ARG_ATTR), EntityArgument.getPlayers(x, ARG_PLAYER), IntegerArgumentType.getInteger(x, ARG_MIN), IntegerArgumentType.getInteger(x, ARG_MAX));
                                 })))))
                 .then(Commands.literal(FORK_FACTOR)
                     .then(Commands.argument(ARG_PLAYER, EntityArgument.players())
                         .then(Commands.argument(ARG_VALUE, DoubleArgumentType.doubleArg(0, 100))
                             .executes(x -> {
-                              return AttributesUtil.multiply(ResourceArgument.getAttribute(x, ARG_ATTR).get(), EntityArgument.getPlayers(x, ARG_PLAYER), DoubleArgumentType.getDouble(x, ARG_VALUE));
+                              return AttributesUtil.multiply(ResourceArgument.getAttribute(x, ARG_ATTR), EntityArgument.getPlayers(x, ARG_PLAYER), DoubleArgumentType.getDouble(x, ARG_VALUE));
                             }))))
                 .then(Commands.literal(FORK_RESET)
                     .then(Commands.argument(ARG_PLAYER, EntityArgument.players())
                         .executes(x -> {
-                          return AttributesUtil.reset(ResourceArgument.getAttribute(x, ARG_ATTR).get(), EntityArgument.getPlayers(x, ARG_PLAYER));
+                          return AttributesUtil.reset(ResourceArgument.getAttribute(x, ARG_ATTR), EntityArgument.getPlayers(x, ARG_PLAYER));
                         })))))
     //new commands here
     );
@@ -369,43 +367,41 @@ public class CommandModule extends EventFlib {
 
   public static class CommandScoreboard {
 
-    public static int scoreboardRngTest(CommandContext<CommandSourceStack> x, Collection<String> scoreHolderTargets, Objective objective) {
+    public static int scoreboardRngTest(CommandContext<CommandSourceStack> x, Collection<ScoreHolder> scoreHolderTargets, Objective objective) {
       Scoreboard scoreboard = x.getSource().getServer().getScoreboard();
       int i = 0;
-      for (String s : scoreHolderTargets) {
-        Score score = scoreboard.getOrCreatePlayerScore(s, objective);
-        //        ModCyclic.LOGGER.error("[test cmd]" + score.getScore());
-        i += score.getScore();
+      for (ScoreHolder s : scoreHolderTargets) {
+        ScoreAccess score = scoreboard.getOrCreatePlayerScore(s, objective);
+        i += score.get();
       }
       return i;
     }
 
-    public static int scoreboardAdd(CommandContext<CommandSourceStack> x, Collection<String> scoreHolderTargets, Objective objective, int integer) {
+    public static int scoreboardAdd(CommandContext<CommandSourceStack> x, Collection<ScoreHolder> scoreHolderTargets, Objective objective, int integer) {
       Scoreboard scoreboard = x.getSource().getServer().getScoreboard();
       int i = 0;
-      for (String s : scoreHolderTargets) {
-        Score score = scoreboard.getOrCreatePlayerScore(s, objective);
+      for (ScoreHolder s : scoreHolderTargets) {
+        ScoreAccess score = scoreboard.getOrCreatePlayerScore(s, objective);
         score.add(integer);
-        //        ModCyclic.LOGGER.info("objective add " + score.getScore());
-        i += score.getScore();
+        i += score.get();
       }
       return i;
     }
 
-    public static int scoreboardRng(CommandContext<CommandSourceStack> x, Collection<String> scoreHolderTargets, Objective objective, int min, int max) {
+    public static int scoreboardRng(CommandContext<CommandSourceStack> x, Collection<ScoreHolder> scoreHolderTargets, Objective objective, int min, int max) {
       Scoreboard scoreboard = x.getSource().getServer().getScoreboard();
       int i = 0;
-      for (String s : scoreHolderTargets) {
-        Score score = scoreboard.getOrCreatePlayerScore(s, objective);
+      for (ScoreHolder s : scoreHolderTargets) {  // TODO: s used to be a string
+        ScoreAccess score = scoreboard.getOrCreatePlayerScore(s, objective);
         if (min < max) {
-          score.setScore(RAND.nextInt(min, max));
+          score.set(RAND.nextInt(min, max));
         }
         else {
           //either equal, or max is lower than min
-          score.setScore(min);
+          score.set(min);
         }
         //        ModCyclic.LOGGER.info("objective rng " + score.getScore());
-        i += score.getScore();
+        i += score.get();
       }
       return i;
     }
@@ -461,10 +457,10 @@ public class CommandModule extends EventFlib {
   public static int executePrintNbt(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
     ServerPlayer player = ctx.getSource().getPlayerOrException();
     ItemStack held = player.getMainHandItem();
-    if (held.hasTag()) {
-      ChatUtil.sendFeedback(ctx, held.getTag().toString());
-    }
-    else {
+    net.minecraft.world.item.component.CustomData customData = held.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+    if (customData != null) {
+      ChatUtil.sendFeedback(ctx, customData.copyTag().toString());
+    } else {
       ChatUtil.sendFeedback(ctx, "command.flib.nbtprint.null");
     }
     return 0;

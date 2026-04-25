@@ -5,7 +5,10 @@ import com.lothrazar.library.util.LevelWorldUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import com.google.gson.JsonParser;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -46,8 +49,13 @@ public class BlockPosDim {
       //
       CompoundTag displayTag = stackTag.getCompound("display");
       if (displayTag != null && displayTag.contains("Name", 8)) {
-        //
-        Component namec = Component.Serializer.fromJson(displayTag.getString("Name"));
+        String nameJson = displayTag.getString("Name");
+        Component namec = ComponentSerialization.CODEC
+            .parse(JsonOps.INSTANCE, JsonParser.parseString(nameJson))
+            .result()
+            .orElseGet(() -> Component.literal(nameJson));
+        // TODO: is this a waste of overcomplication? should it just be name string?
+//        this.name = displayTag.getString("Name");
         this.name = namec.getString();
       }
     }

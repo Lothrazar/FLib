@@ -1,63 +1,75 @@
 package com.lothrazar.library.cap.item;
 
-import com.lothrazar.library.cap.CustomEnergyStorage;
-import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraft.world.item.component.CustomData;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
-public class EnergyCapabilityItemStack implements ICapabilityProvider {
+/**
+ * IEnergyStorage that reads/writes energy to an ItemStack's CustomData component.
+ * In NeoForge 1.21+, register this via RegisterCapabilitiesEvent:
+ *   event.registerItem(Capabilities.EnergyStorage.ITEM,
+ *       (stack, ctx) -> new EnergyCapabilityItemStack(stack, maxEnergy), myItem);
+ */
+public class EnergyCapabilityItemStack implements IEnergyStorage {
 
   public static final String NBTENERGY = "energy";
-  private LazyOptional<IEnergyStorage> energy = LazyOptional.of(this::createEnergy);
-  //  private ItemStack stack;
-  private int max;
-  private ItemStack stack;
-
-  private IEnergyStorage createEnergy() {
-    return new CustomEnergyStorage(max, max / 4) {
-
-      @Override
-      public int getEnergyStored() {
-        if (stack.hasTag()) {
-          return stack.getTag().getInt(NBTENERGY);
-        }
-        else {
-          return super.getEnergyStored();
-        }
-      }
-
-      @Override
-      public void setEnergy(int energy) {
-        if (!stack.hasTag()) {
-          stack.setTag(new CompoundTag());
-        }
-        stack.getTag().putInt(NBTENERGY, energy);
-        super.setEnergy(energy);
-      }
-    };
-  }
+  private final ItemStack stack;
+  private final int max;
 
   public EnergyCapabilityItemStack(final ItemStack stack, int capacity) {
-    this.max = capacity;
     this.stack = stack;
-    energy = LazyOptional.of(this::createEnergy);
+    this.max = capacity;
+  }
+
+  @Override
+  public int receiveEnergy(int maxReceive, boolean simulate) {
+    if (!canReceive()) return 0;
+    int stored = getEnergyStored();
+    int received = Math.min(max - stored, Math.min(max / 4, maxReceive));
+    if (!simulate) setEnergyStored(stored + received);
+    return received;
+  }
+
+  @Override
+  public int extractEnergy(int maxExtract, boolean simulate) {
+    if (!canExtract()) return 0;
+    int stored = getEnergyStored();
+    int extracted = Math.min(stored, maxExtract);
+    if (!simulate) setEnergyStored(stored - extracted);
+    return extracted;
+  }
+
+  @Override
+  public int getEnergyStored() {
+    CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+    return data != null ? data.copyTag().getInt(NBTENERGY) : 0;
+  }
+
+  @Override
+  public int getMaxEnergyStored() {
+    return max;
+  }
+
+  @Override
+  public boolean canExtract() {
+    return true;
+  }
+
+  @Override
+  public boolean canReceive() {
+    return true;
+  }
+
+  private void setEnergyStored(int value) {
+    CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+    tag.putInt(NBTENERGY, Math.max(0, Math.min(value, max)));
+    stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
   }
 
   @Override
   public String toString() {
-    return "EnergyCapabilityItemStack [energy=" + energy + ", max=" + max + "]";
-  }
-
-  @Override
-  public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction facing) {
-    if (ForgeCapabilities.ENERGY == capability) {
-      return energy.cast();
-    }
-    return LazyOptional.empty();
+    return "EnergyCapabilityItemStack [energy=" + getEnergyStored() + ", max=" + max + "]";
   }
 }

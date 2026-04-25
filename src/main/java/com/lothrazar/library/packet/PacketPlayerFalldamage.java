@@ -1,36 +1,36 @@
 package com.lothrazar.library.packet;
 
-import java.util.function.Supplier;
+import com.lothrazar.library.FutureLibMod;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 /**
- * Used by: Fan block; Launch enchant; Air charm; Climbing Glove; Scaffolding Block
+ * Sent client→server to reset fall distance (used by climbing, fan blocks, etc.).
  */
-public class PacketPlayerFalldamage extends PacketFlib {
+public class PacketPlayerFalldamage extends PacketFlib implements CustomPacketPayload {
 
-  public static final int TICKS_FALLDIST_SYNC = 22; //tick every so often
+  public static final int TICKS_FALLDIST_SYNC = 22;
 
-  public static void handle(PacketPlayerFalldamage message, Supplier<NetworkEvent.Context> ctx) {
-    ctx.get().enqueueWork(() -> {
-      ServerPlayer player = ctx.get().getSender();
-      /**
-       * if fall damage gets high, they take damage on landing
-       */
+  public static final CustomPacketPayload.Type<PacketPlayerFalldamage> TYPE =
+      new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(FutureLibMod.MODID, "fall_damage"));
+
+  public static final StreamCodec<FriendlyByteBuf, PacketPlayerFalldamage> STREAM_CODEC =
+      StreamCodec.unit(new PacketPlayerFalldamage());
+
+  @Override
+  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    return TYPE;
+  }
+
+  public static void handle(PacketPlayerFalldamage msg, IPayloadContext context) {
+    context.enqueueWork(() -> {
+      ServerPlayer player = (ServerPlayer) context.player();
       player.fallDistance = 0.0F;
-      /**
-       * Used to keep track of how the player is floating while gamerules should prevent that. Surpassing 80 ticks means kick
-       */
       player.connection.aboveGroundTickCount = 0;
     });
-    message.done(ctx);
   }
-
-  public static PacketPlayerFalldamage decode(FriendlyByteBuf buf) {
-    PacketPlayerFalldamage message = new PacketPlayerFalldamage();
-    return message;
-  }
-
-  public static void encode(PacketPlayerFalldamage msg, FriendlyByteBuf buf) {}
 }

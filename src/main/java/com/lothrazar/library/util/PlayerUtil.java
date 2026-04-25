@@ -1,9 +1,8 @@
 package com.lothrazar.library.util;
 
 import java.util.Optional;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -120,12 +119,21 @@ public class PlayerUtil {
     return item;
   }
 
+  /**
+   * Teleport player to a specific location in a different dimension
+   *
+   * Also see EndPortalBlock.java  getPortalDestination
+   * and PlayerList.java respawn
+   *
+   *
+   * @param player
+   * @return optional vec3 respawn position
+   */
   public static Optional<Vec3> getPlayerHome(ServerPlayer player) {
-    BlockPos respawnPos = player.getRespawnPosition();
-    Optional<Vec3> optional = Optional.empty();
-    if (respawnPos != null) {
-      optional = Player.findRespawnPositionAndUseSpawnBlock((ServerLevel) player.level(), respawnPos, 0.0F, true, true);
+    if (player.getRespawnPosition() == null) { // TODO: is this redundant? player method has its own null check
+      return Optional.empty();
     }
-    return optional;
+    DimensionTransition dt = player.findRespawnPositionAndUseSpawnBlock(false, DimensionTransition.DO_NOTHING);
+    return Optional.of(dt.pos());
   }
 }

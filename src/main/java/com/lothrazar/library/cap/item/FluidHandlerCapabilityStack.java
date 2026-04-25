@@ -1,29 +1,28 @@
 package com.lothrazar.library.cap.item;
 
-import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
-import net.minecraftforge.fluids.capability.templates.FluidHandlerItemStack;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 
-public class FluidHandlerCapabilityStack implements IFluidHandlerItem, ICapabilityProvider {
+/**
+ * IFluidHandlerItem that reads/writes a single fluid to an ItemStack's CustomData component.
+ * In NeoForge 1.21+, register this via RegisterCapabilitiesEvent:
+ *   event.registerItem(Capabilities.FluidHandler.ITEM,
+ *       (stack, ctx) -> new FluidHandlerCapabilityStack(stack, capacity), myItem);
+ */
+public class FluidHandlerCapabilityStack implements IFluidHandlerItem {
 
-  public static final String FLUID_NBT_KEY = FluidHandlerItemStack.FLUID_NBT_KEY;
-  private final LazyOptional<IFluidHandlerItem> holder = LazyOptional.of(() -> this);
+  public static final String FLUID_NBT_KEY = "Fluid";
   protected ItemStack container;
   protected int capacity;
 
-  /**
-   * @param container
-   *          The container itemStack, data is stored on it directly as NBT.
-   * @param capacity
-   *          The maximum capacity of this fluid tank.
-   */
   public FluidHandlerCapabilityStack(ItemStack container, int capacity) {
     this.container = container;
     this.capacity = capacity;
@@ -34,21 +33,39 @@ public class FluidHandlerCapabilityStack implements IFluidHandlerItem, ICapabili
     return container;
   }
 
+  private CompoundTag getContainerTag() {
+    return container.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+  }
+
+  private void setContainerTag(CompoundTag tag) {
+    container.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+  }
+
   public FluidStack getFluid() {
-    CompoundTag tagCompound = container.getTag();
-    if (tagCompound == null || !tagCompound.contains(FLUID_NBT_KEY)) {
+    CompoundTag tag = getContainerTag();
+    if (!tag.contains(FLUID_NBT_KEY)) {
       return FluidStack.EMPTY;
     }
-    return FluidStack.loadFluidStackFromNBT(tagCompound.getCompound(FLUID_NBT_KEY));
+    CompoundTag fluidTag = tag.getCompound(FLUID_NBT_KEY);
+    ResourceLocation fluidId = ResourceLocation.tryParse(fluidTag.getString("id"));
+    int amount = fluidTag.getInt("amount");
+    if (fluidId == null) return FluidStack.EMPTY;
+    Fluid fluid = BuiltInRegistries.FLUID.getOptional(fluidId).orElse(null);
+    if (fluid == null || fluid == Fluids.EMPTY) return FluidStack.EMPTY;
+    return new FluidStack(fluid, amount);
   }
 
   public void setFluid(FluidStack fluid) {
-    if (!container.hasTag()) {
-      container.setTag(new CompoundTag());
+    CompoundTag tag = getContainerTag();
+    if (fluid.isEmpty()) {
+      tag.remove(FLUID_NBT_KEY);
+    } else {
+      CompoundTag fluidTag = new CompoundTag();
+      fluidTag.putString("id", BuiltInRegistries.FLUID.getKey(fluid.getFluid()).toString());
+      fluidTag.putInt("amount", fluid.getAmount());
+      tag.put(FLUID_NBT_KEY, fluidTag);
     }
-    CompoundTag fluidTag = new CompoundTag();
-    fluid.writeToNBT(fluidTag);
-    container.getTag().put(FLUID_NBT_KEY, fluidTag);
+    setContainerTag(tag);
   }
 
   @Override
@@ -85,9 +102,8 @@ public class FluidHandlerCapabilityStack implements IFluidHandlerItem, ICapabili
         setFluid(filled);
       }
       return fillAmount;
-    }
-    else {
-      if (contained.isFluidEqual(resource)) {
+    } else {
+      if (FluidStack.isSameFluidSameComponents(contained, resource)) {
         int fillAmount = Math.min(capacity - contained.getAmount(), resource.getAmount());
         if (doFill.execute() && fillAmount > 0) {
           contained.grow(fillAmount);
@@ -101,7 +117,7 @@ public class FluidHandlerCapabilityStack implements IFluidHandlerItem, ICapabili
 
   @Override
   public FluidStack drain(FluidStack resource, FluidAction action) {
-    if (container.getCount() != 1 || resource.isEmpty() || !resource.isFluidEqual(getFluid())) {
+    if (container.getCount() != 1 || resource.isEmpty() || !FluidStack.isSameFluidSameComponents(resource, getFluid())) {
       return FluidStack.EMPTY;
     }
     return drain(resource.getAmount(), action);
@@ -123,8 +139,7 @@ public class FluidHandlerCapabilityStack implements IFluidHandlerItem, ICapabili
       contained.shrink(drainAmount);
       if (contained.isEmpty()) {
         setContainerToEmpty();
-      }
-      else {
+      } else {
         setFluid(contained);
       }
     }
@@ -139,19 +154,10 @@ public class FluidHandlerCapabilityStack implements IFluidHandlerItem, ICapabili
     return true;
   }
 
-  /**
-   * Override this method for special handling. Can be used to swap out or destroy the container.
-   */
   protected void setContainerToEmpty() {
-    container.removeTagKey(FLUID_NBT_KEY);
-  }
-
-  @Override
-  public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction facing) {
-    if (ForgeCapabilities.FLUID_HANDLER_ITEM == capability) {
-      return holder.cast();
-    }
-    return LazyOptional.empty();
+    CompoundTag tag = getContainerTag();
+    tag.remove(FLUID_NBT_KEY);
+    setContainerTag(tag);
   }
 
   @Override

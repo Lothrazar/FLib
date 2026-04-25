@@ -27,9 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 import com.lothrazar.library.core.BlockPosDim;
 import com.lothrazar.library.core.Vector3;
-import com.lothrazar.library.dim.DimensionTransit;
-import com.lothrazar.library.mod.PacketRegistry;
+import com.lothrazar.library.portal.DimensionTransitionWrapper;
 import com.lothrazar.library.packet.PacketPlayerFalldamage;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -51,7 +51,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayer;
 
 public class EntityUtil {
 
@@ -350,7 +350,7 @@ public class EntityUtil {
   public static List<Villager> getVillagers(Level world, BlockPos p, int r) {
     BlockPos start = p.offset(-r, -r, -r);
     BlockPos end = p.offset(r, r, r);
-    return world.getEntitiesOfClass(Villager.class, new AABB(start, end));
+    return world.getEntitiesOfClass(Villager.class, AABB.encapsulatingFullBlocks(start, end));
   }
 
   public static LivingEntity getClosestEntity(Level world, Player player, List<? extends LivingEntity> list) {
@@ -449,11 +449,11 @@ public class EntityUtil {
   }
 
   public static Attribute getAttributeJump(Horse ahorse) {
-    return Attributes.JUMP_STRENGTH; //was reflection lol
+    return Attributes.JUMP_STRENGTH.value();
   }
 
   public static void eatingHorse(Horse ahorse) {
-    ahorse.eating(); // requires accesstransformer.cfg 
+    ahorse.eating(); // requires accesstransformer.cfg
   }
 
   public static void tryMakeEntityClimb(Level worldIn, LivingEntity entity, double climbSpeed) {
@@ -465,7 +465,7 @@ public class EntityUtil {
       entity.fallDistance = 0.0F;
     } //setting fall distance on clientside wont work
     if (worldIn.isClientSide && entity.tickCount % TICKS_FALLDIST_SYNC == 0) {
-      PacketRegistry.INSTANCE.sendToServer(new PacketPlayerFalldamage());
+      PacketDistributor.sendToServer(new PacketPlayerFalldamage());
     }
   }
 
@@ -473,13 +473,13 @@ public class EntityUtil {
     if (player instanceof FakePlayer) {
       return;
     }
-    if (!player.canChangeDimensions()) {
+    if (!player.canChangeDimensions(player.getCommandSenderWorld(), world)) {
       return;
     }
     if (!world.isClientSide) {
-      DimensionTransit transit = new DimensionTransit(world, loc);
-      transit.teleport(player);
-      player.changeDimension(transit.getTargetLevel(), transit);
+      DimensionTransitionWrapper transit = new DimensionTransitionWrapper(world, loc);
+      transit.applyPreTeleportEffects(player);
+      player.changeDimension(transit.buildTransition(player));
     }
   }
 }

@@ -2,6 +2,7 @@ package com.lothrazar.library.render.type;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
@@ -34,10 +35,10 @@ public class OverlayRenderType extends RenderType {
     RenderType.CompositeState state = RenderType.CompositeState.builder()
         .setTextureState(new RenderStateShard.TextureStateShard(resourceLocation, false, false))
         .setCullState(RenderStateShard.NO_CULL)
-        .setShaderState(RenderStateShard.POSITION_COLOR_TEX_SHADER)
+        .setShaderState(new RenderStateShard.ShaderStateShard(GameRenderer::getPositionTexColorShader))// was POSITION_COLOR_TEX_SHADER
         .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
         .setOutputState(RenderStateShard.TRANSLUCENT_TARGET)
         .createCompositeState(true);
-    return create(id, DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, true, false, state);
+    return create(id, DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, 256, true, false, state);
   }
 }
