@@ -31,6 +31,6 @@
 	,"0.0.15":"Add worldlycontainer interface sided support for io itemstack handler (interface used by mojang hoppers)"
   },
   "1.21.1": {
-    "1.0.0": "Ported"
+    "0.1.0": "Ported to Minecraft 1.21"
   }
 }
