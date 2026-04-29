@@ -40,7 +40,7 @@ EOF
 
   echo "✓  mod.properties not found, template created"
 
-  grep -E "^(mod_version|mod_id|mod_name|mod_license|mod_authors|mod_description|mod_group_id|curse_id|curse_slug)=" "$TARGET_DIR/gradle.properties" >> "$MOD_PROPS" || true
+  grep -E "^(mod_version|mod_id|mod_name|mod_license|mod_authors|mod_description|mod_group_id|curse_id|curse_slug|modrinth_id)=" "$TARGET_DIR/gradle.properties" >> "$MOD_PROPS" || true
 
   echo "✓  Moved mod-specific properties into $MOD_PROPS"
 
