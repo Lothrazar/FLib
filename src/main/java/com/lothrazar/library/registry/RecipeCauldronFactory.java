@@ -33,6 +33,7 @@ public class RecipeCauldronFactory {
   }
 
   private static List<CauldronFakeRecipe> WATERLIST = new ArrayList<>();
+  private static List<CauldronFakeRecipe> LAVALIST = new ArrayList<>();
 
   public static void addWater(ItemLike input, ItemLike output) {
     addWater(new RecipeCauldronFactory.CauldronFakeRecipe(input, output));
@@ -45,7 +46,19 @@ public class RecipeCauldronFactory {
   public static void addWater(CauldronFakeRecipe rec) {
     WATERLIST.add(rec);
   }
+  public static void addLava(CauldronFakeRecipe rec) {
+    LAVALIST.add(rec);
+  }
 
+  /**
+   * Returns a copy of the list, useful for JEI plugins
+   */
+  public static List<CauldronFakeRecipe> getWaterRecipes() {
+    return List.copyOf(WATERLIST);
+  }
+  public static List<CauldronFakeRecipe> geLavaRecipes() {
+    return List.copyOf(LAVALIST);
+  }
   /**
    * If your mod adds recipes, this must be called
    * 
@@ -65,6 +78,20 @@ public class RecipeCauldronFactory {
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
       };
       CauldronInteraction.WATER.map().put(rec.input.asItem(), interaction);
+    }
+    for (CauldronFakeRecipe rec : LAVALIST) {
+      final CauldronInteraction interaction = (state,  level, pos, player, hand, stack) -> {
+        if (stack.is(rec.input.asItem())) {
+          //replace all the item, be generous. we could instead stack.shrink and drop just one
+          player.setItemInHand(hand, new ItemStack(rec.output.asItem(), stack.getCount() + rec.bonus));
+          if (rec.lowerFillLevel) {
+            LayeredCauldronBlock.lowerFillLevel(state, level, pos);
+          }
+          return ItemInteractionResult.sidedSuccess(level.isClientSide);
+        }
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+      };
+      CauldronInteraction.LAVA.map().put(rec.input.asItem(), interaction);
     }
   }
 }
