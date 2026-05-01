@@ -17,7 +17,7 @@ TARGET_DIR="/c/Users/USER/MyFiles/mc121/$REPONAME"
 GIT_URL="git@github.com:${GITHUB}/${REPONAME}.git"
 MOD_PROPS="$TARGET_DIR/mod.properties"
 DEPLOY_PROPS="$TARGET_DIR/deploy.properties"
-FLIB_VERSION="1.0.0-SNAPSHOT"
+FLIB_VERSION="0.1.1"
 
 echo
 git clone "$GIT_URL" "$TARGET_DIR"
@@ -92,11 +92,9 @@ EOF
 fi
 
 
-
 mkdir -p "$TARGET_DIR/libs"
-cp     "/c/temp/flib-$MC-$FLIB_VERSION.jar"  "$TARGET_DIR/libs/flib-$MC-$FLIB_VERSION.jar"
-
-echo "✓  Default library copied from temp"
+#cp     "/c/temp/flib-$MC-$FLIB_VERSION.jar"  "$TARGET_DIR/libs/flib-$MC-$FLIB_VERSION.jar"
+#echo "✓  Default library copied from temp"
 
 echo "✓  Source branch $(git rev-parse --abbrev-ref HEAD)"
 
