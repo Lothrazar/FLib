@@ -4,7 +4,7 @@
     "1.18.2-latest": "0.0.2",
     "1.19.2-latest": "0.0.3",
     "1.19.4-latest": "0.0.3",
-    "1.20.1-latest": "0.0.15"
+    "1.20.1-latest": "0.0.16"
   },
   "1.18.2": {
     "0.0.1": "First",
@@ -29,9 +29,11 @@
   	,"0.0.13":"Updated to latest neoforge.  Four PlayerUtil functions added; fix crash error with dependency CustomGameRules"
   	,"0.0.14":"Fix compatibility with old-forge v47.1.47+ (STEP_HEIGHT crash). "
 	,"0.0.15":"Add worldlycontainer interface sided support for io itemstack handler (interface used by mojang hoppers)"
+  ,"0.0.16": "Fix default value in GameRuleFactory createBoolean"
   },
   "1.21.1": {
     "0.1.0": "Ported to Minecraft 1.21",
-    "0.1.1": "Add TintedVertexConsumer.  Add Helper methods to RecipeCauldronFactory for use with several things including dependent-mod JEI plugins"
+    "0.1.1": "Add TintedVertexConsumer.  Add Helper methods to RecipeCauldronFactory for use with several things including dependent-mod JEI plugins",
+    "0.1.2": "Fix default value in GameRuleFactory createBoolean"
   }
 }
