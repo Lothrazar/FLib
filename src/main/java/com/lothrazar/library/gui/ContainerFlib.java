@@ -26,6 +26,7 @@ public abstract class ContainerFlib extends AbstractContainerMenu {
   }
 
   protected void trackEnergy(BlockEntity tile) {
+    // TODO? use cache  BlockCapabilityCache.create( insetad of getCapability?
     addDataSlot(new DataSlot() {
 
       @Override

@@ -2,11 +2,12 @@ package com.lothrazar.library.data;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -28,7 +29,27 @@ public class RelativeShape {
   public RelativeShape() {
     shape = new ArrayList<>();
   }
+  public static final Codec<RelativeShape> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+      Codec.STRING.optionalFieldOf("structure", "").forGetter(s -> s.structure != null ? s.structure : ""),
+      BlockPos.CODEC.listOf().fieldOf("shape")
+          .forGetter(RelativeShape::getShape))
+      .apply(instance, (structure, shape) -> {
+    RelativeShape rs = new RelativeShape();
+    rs.setStructure(structure.isEmpty() ? null : structure);
+    rs.setShape(shape);
+    return rs;
+  }));
 
+  public static final net.minecraft.network.codec.StreamCodec<io.netty.buffer.ByteBuf, RelativeShape> STREAM_CODEC = net.minecraft.network.codec.StreamCodec.composite(
+      net.minecraft.network.codec.ByteBufCodecs.STRING_UTF8, s -> s.structure != null ? s.structure : "",
+      BlockPos.STREAM_CODEC.apply(net.minecraft.network.codec.ByteBufCodecs.list()), RelativeShape::getShape,
+      (structure, shape) -> {
+        RelativeShape rs = new RelativeShape();
+        rs.setStructure(structure.isEmpty() ? null : structure);
+        rs.setShape(shape);
+        return rs;
+      }
+  );
   public void merge(RelativeShape other) {
     shape.addAll(other.shape);
     count = shape.size();
@@ -95,9 +116,7 @@ public class RelativeShape {
   }
 
   public static RelativeShape read(ItemStack item) {
-    CustomData data = item.get(DataComponents.CUSTOM_DATA);
-    CompoundTag tag = data != null ? data.copyTag() : null;
-    return read(tag);
+    return item.get(DataComponentsFlib.RELATIVE_SHAPE.get());
   }
 
   public CompoundTag write(CompoundTag tag) {
@@ -116,9 +135,7 @@ public class RelativeShape {
   }
 
   public void write(ItemStack shapeCard) {
-    CompoundTag tag = shapeCard.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-    write(tag);
-    shapeCard.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+    shapeCard.set(DataComponentsFlib.RELATIVE_SHAPE.get(), this);
   }
 
   public void setShape(List<BlockPos> list) {

@@ -1,5 +1,7 @@
 package com.lothrazar.library.util;
 
+import com.mojang.authlib.GameProfile;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -7,6 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.ResolvableProfile;
 
 public class TagDataUtil {
 
@@ -17,14 +20,10 @@ public class TagDataUtil {
   }
 
   public static ItemStack buildNamedPlayerSkull(String displayNameString) {
-    CompoundTag t = new CompoundTag();
-    t.putString(SKULLOWNER, displayNameString);
-    return buildSkullFromTag(t);
-  }
 
-  public static ItemStack buildSkullFromTag(CompoundTag player) {
     ItemStack skull = new ItemStack(Items.PLAYER_HEAD);
-    skull.set(DataComponents.CUSTOM_DATA, CustomData.of(player));
+
+    skull.set(DataComponents.PROFILE, new ResolvableProfile(new GameProfile(Util.NIL_UUID, displayNameString)));
     return skull;
   }
 

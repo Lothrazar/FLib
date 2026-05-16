@@ -34,6 +34,6 @@
   "1.21.1": {
     "0.1.0": "Ported to Minecraft 1.21",
     "0.1.1": "Add TintedVertexConsumer.  Add Helper methods to RecipeCauldronFactory for use with several things including dependent-mod JEI plugins",
-    "0.1.2": "Fix default value in GameRuleFactory createBoolean"
+    "0.1.2": "Fix default value in GameRuleFactory createBoolean.   @Deprecated FluidTagIngredient bedcause a version has been merged into neoforge, see SizedFluidIngredient.   Added DataComponentsFlib.   Added Codec and StreamCodec to RelativeShape, EnergyIngredient, and RandomizedOutputIngredient for 1.21 data-component support.   Since enchantments are data driven now, removed EnchantmentFlib class; its helpers (getCurrentLevelTool, getCurrentArmorLevel/Slot, getLevelAll, getFirstArmorStackWithEnchant) were merged into EnchantUtil.   TagDataUtil.buildNamedPlayerSkull now uses DataComponents.PROFILE / ResolvableProfile instead of the legacy SkullOwner CustomData tag (buildSkullFromTag removed).   ItemStackUtil.addLoreToStack now appends to existing lore instead of overwriting it.   Render types updated 1.21 compatibility.  "
   }
 }

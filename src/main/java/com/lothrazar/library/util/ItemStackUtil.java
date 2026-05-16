@@ -42,35 +42,21 @@ public class ItemStackUtil {
     if (color == null) {
       color = "gold";
     }
-    ChatFormatting fmt = ChatFormatting.getByName(color);
-    Component loreText = fmt != null
-        ? Component.literal(lore).withStyle(fmt)
-        : Component.literal(lore);
-    crafting.set(DataComponents.LORE, new ItemLore(List.of(loreText)));
+
+    var loreDefault = crafting.getOrDefault( DataComponents.LORE, ItemLore.EMPTY);
+
+    List<Component> newLore = new java.util.ArrayList<>(loreDefault.lines());
+
+    newLore.add(Component.literal(lore).withStyle(ChatFormatting.getByName(color))); // TODO: color test
+    //then set overwrite
+    crafting.set( DataComponents.LORE, new ItemLore(newLore));
+//    ChatFormatting fmt = ChatFormatting.getByName(color);
+//    Component loreText = fmt != null
+//        ? Component.literal(lore).withStyle(fmt)
+//        : Component.literal(lore);
+//    crafting.set(DataComponents.LORE, new ItemLore(List.of(loreText)));
   }
 
-  // NOTE: EnchantmentHelper.enchantItem signature changed in 1.21 - now requires HolderLookup.Provider.
-  // Call EnchantmentHelper.enchantItem(random, stack, level, registries, Optional.empty()) directly from your code.
-  //  private void merge(Map<Enchantment, Integer> oldEnch, ItemStack crafting) {
-  //    Map<Enchantment, Integer> newEnch = EnchantmentHelper.getEnchantments(crafting);
-  //    //anything in new thats also in old, merge it over
-  //    for (Entry<Enchantment, Integer> newEntry : newEnch.entrySet()) {
-  //      //
-  //      //if this exists in the old list, merge into new
-  //      if (oldEnch.containsKey(newEntry.getKey())) {
-  //        //take max of each
-  //        newEnch.put(newEntry.getKey(), Math.max(newEntry.getValue(), oldEnch.get(newEntry.getKey())));
-  //      }
-  //    }
-  //    //anything in old thats NOT in new
-  //    for (Entry<Enchantment, Integer> oldEntry : oldEnch.entrySet()) {
-  //      if (!newEnch.containsKey(oldEntry.getKey())) {
-  //        //new list does NOT hvae this thing from old
-  //        newEnch.put(oldEntry.getKey(), oldEntry.getValue());
-  //      }
-  //    }
-  //    EnchantmentHelper.setEnchantments(newEnch, crafting);
-  //  }
 
   public static int countEmptySlots(IItemHandler handler) {
     if (handler == null) {
@@ -185,6 +171,11 @@ public class ItemStackUtil {
 
   /**
    * Preserve damage but delete the rest of the tag
+   *
+   * Its better to not use this shared method and instsead just remove your component one by one
+   *
+   * example:
+   *   itemstack.remove(CUSTOM_NBT_BUCKET.get());
    *
    * @param itemstack
    */

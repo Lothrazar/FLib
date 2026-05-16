@@ -1,5 +1,6 @@
 package com.lothrazar.library;
 
+import com.lothrazar.library.data.DataComponentsFlib;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.lothrazar.library.cap.player.PlayerCapProvider;
@@ -18,12 +19,13 @@ public class FutureLibMod {
   public static final String MODID = "flib";
   public static final Logger LOGGER = LogManager.getLogger();
 
-  public FutureLibMod(IEventBus modEventBus, ModContainer modContainer) {
+  public FutureLibMod(IEventBus bus, ModContainer modContainer) {
     new ConfigModule(modContainer);
     new CommandModule();
     new FlibBlockEvents();
-    PlayerCapProvider.ATTACHMENT_TYPES.register(modEventBus);
-    FlibRegistrations.register(modEventBus);
-    modEventBus.addListener(PacketRegistry::onRegisterPayloads);
+    DataComponentsFlib.DATA_COMPONENT_TYPES.register(bus);
+    PlayerCapProvider.ATTACHMENT_TYPES.register(bus);
+    FlibRegistrations.register(bus);
+    bus.addListener(PacketRegistry::onRegisterPayloads);
   }
 }

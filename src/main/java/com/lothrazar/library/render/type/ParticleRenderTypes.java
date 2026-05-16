@@ -3,10 +3,7 @@ package com.lothrazar.library.render.type;
 import com.mojang.blaze3d.platform.GlStateManager.DestFactor;
 import com.mojang.blaze3d.platform.GlStateManager.SourceFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
-import com.mojang.blaze3d.vertex.MeshData;
-import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -24,36 +21,22 @@ import net.minecraft.client.renderer.texture.TextureManager;
 @Deprecated
 public class ParticleRenderTypes {
 
+  public static final ParticleRenderType MAGIC_RENDER = new ParticleRenderType() {
 
+    @SuppressWarnings("deprecation")
+    @Override
+    public BufferBuilder begin(Tesselator tesselator, TextureManager textureManager) {
+      RenderSystem.enableBlend();
+      RenderSystem.enableCull();
+      RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_PARTICLES);
+      RenderSystem.depthMask(false);
+      RenderSystem.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
+      return tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
+    }
 
-//  public static final ParticleRenderType MAGIC_RENDER = new ParticleRenderType() {
-//
-//    @Override
-//    public void begin(BufferBuilder buffer, TextureManager textureManager) {
-//      RenderSystem.enableBlend();
-//      RenderSystem.enableCull();
-//      RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_PARTICLES);
-//      RenderSystem.depthMask(false);
-//      RenderSystem.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
-//      // Note: do NOT call buffer.begin() here - the ParticleEngine already started
-//      // the buffer via Tesselator.begin(Mode, Format) before calling this method.
-//    }
-//
-//    @Override
-//    public void end(Tesselator tessellator) {
-//      MeshData meshData = tessellator.end();
-//      if (meshData != null) {
-//        BufferUploader.drawWithShader(meshData);
-//      }
-//      RenderSystem.enableDepthTest();
-//      RenderSystem.depthMask(true);
-//      RenderSystem.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
-//      RenderSystem.disableCull();
-//    }
-//
-//    @Override
-//    public String toString() {
-//      return "rootsclassic:magic";
-//    }
-//  };
+    @Override
+    public String toString() {
+      return "rootsclassic:magic"; // TODO: refactor or remove this maybe
+    }
+  };
 }

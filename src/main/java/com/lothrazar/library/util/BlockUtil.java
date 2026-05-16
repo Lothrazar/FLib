@@ -24,7 +24,8 @@ public class BlockUtil {
   public static Block.Properties wrap(Block.Properties propIn, Block blockIn) {
     return propIn
         .sound(blockIn.soundType)
-        .strength(blockIn.defaultBlockState().destroySpeed);
+        .strength(blockIn.defaultBlockState().destroySpeed); // TODO: maybe  blockIn.defaultDestroyTime()
+
   }
 
   public static boolean rotateBlockValidState(Level world, BlockPos pos, Direction side) {

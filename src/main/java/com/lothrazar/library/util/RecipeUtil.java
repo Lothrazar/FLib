@@ -15,25 +15,24 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 public class RecipeUtil {
-
+  /**
+   * @Deprecated, as this is no longer required because a version has been merged into neoforge.
+   *
+   *  @code SizedFluidIngredient.NESTED_CODEC
+   *  @see net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient
+   */
+  @Deprecated(forRemoval = true, since = "1.21.1-0.2.0")
   public static boolean matchFluid(FluidStack tileFluid, FluidTagIngredient ing) {
-    if (tileFluid == null || tileFluid.isEmpty()) {
-      return false;
-    }
-    if (ing.hasFluid() && tileFluid.getFluid() == ing.getFluidStack().getFluid()) {
-      return true;
-    }
-    //either recipe has no fluid or didnt match, try for tag
-    if (ing.hasTag()) {
-      //see /data/<id>/tags/fluids/
-      TagKey<Fluid> ft = FluidTags.create(ResourceLocation.parse(ing.getTag()));
-      if (FluidHelpersUtil.matches(tileFluid.getFluid(), ft)) {
-        return true;
-      }
-    }
+
     return false;
   }
-
+  /**
+   * @Deprecated, as this is no longer required because a version has been merged into neoforge.
+   *
+   *  @code SizedFluidIngredient.NESTED_CODEC
+   *  @see net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient
+   */
+  @Deprecated(forRemoval = true, since = "1.21.1-0.2.0")
   public static FluidTagIngredient parseFluid(JsonObject json, String key) {
     JsonObject mix = json.get(key).getAsJsonObject();
     int count = mix.get("count").getAsInt();

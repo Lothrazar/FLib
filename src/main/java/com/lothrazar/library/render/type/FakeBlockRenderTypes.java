@@ -36,11 +36,12 @@ public class FakeBlockRenderTypes extends RenderType {
       RenderSystem::disableBlend);
 
   public final static ResourceLocation BEAM = ResourceLocation.fromNamespaceAndPath(FutureLibMod.MODID, "textures/effect/beam.png");
+
   public static final RenderType LASER_MAIN_BEAM = create(FutureLibMod.MODID + ":mininglasermainbeam",
-      DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, BUFFERSIZE, CRUMBLING, SORT,
+      DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, BUFFERSIZE, CRUMBLING, SORT,
       RenderType.CompositeState.builder()
           .setTextureState(new TextureStateShard(BEAM, BLUR, MIPMAP))
-          .setShaderState(new RenderStateShard.ShaderStateShard(GameRenderer::getPositionTexColorShader)) // was POSITION_COLOR_TEX_SHADER
+          .setShaderState(RENDERTYPE_TEXT_SHADER) // was POSITION_COLOR_TEX_SHADER
           .setLayeringState(VIEW_OFFSET_Z_LAYERING)
           .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
           .setDepthTestState(NO_DEPTH_TEST)
@@ -53,7 +54,7 @@ public class FakeBlockRenderTypes extends RenderType {
    *
    */
   public static final RenderType FAKE_BLOCK = create(FutureLibMod.MODID + ":fakeblock",
-      DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, BUFFERSIZE, CRUMBLING, SORT,
+      DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, BUFFERSIZE, CRUMBLING, SORT,
       RenderType.CompositeState.builder()
           .setShaderState(RENDERTYPE_SOLID_SHADER) //1.17 was -   BLOCK_SHADER
           .setLayeringState(POLYGON_OFFSET_LAYERING) // VIEW_OFFSET_Z_LAYERING)
@@ -68,7 +69,7 @@ public class FakeBlockRenderTypes extends RenderType {
    * used by EventRender -> RenderWorldLastEvent by most held items that pick locations, such as cyclic:location_data
    */
   public static final RenderType TRANSPARENT_COLOUR = create(FutureLibMod.MODID + ":transparentcolour",
-      DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, BUFFERSIZE, CRUMBLING, SORT,
+      DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, BUFFERSIZE, CRUMBLING, SORT,
       RenderType.CompositeState.builder()
           .setShaderState(RENDERTYPE_LINES_SHADER)
           .setLayeringState(VIEW_OFFSET_Z_LAYERING)
@@ -86,7 +87,7 @@ public class FakeBlockRenderTypes extends RenderType {
    *
    */
   public static final RenderType SOLID_COLOUR = create(FutureLibMod.MODID + ":solidcolour",
-      DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, BUFFERSIZE, CRUMBLING, SORT,
+      DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, BUFFERSIZE, CRUMBLING, SORT,
       RenderType.CompositeState.builder()
           .setShaderState(RENDERTYPE_LINES_SHADER)
           .setLayeringState(VIEW_OFFSET_Z_LAYERING)
@@ -102,7 +103,7 @@ public class FakeBlockRenderTypes extends RenderType {
    * Used by cyclic:prospector
    */
   public static final RenderType TOMB_LINES = create(FutureLibMod.MODID + ":tomb_lines",
-      DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.LINES, BUFFERSIZE, CRUMBLING, SORT,
+      DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.LINES, BUFFERSIZE, CRUMBLING, SORT,
       RenderType.CompositeState.builder()
           .setShaderState(RENDERTYPE_LINES_SHADER)
           .setLineState(new LineStateShard(OptionalDouble.of(2.5D)))

@@ -2,6 +2,9 @@ package com.lothrazar.library.recipe.ingredient;
 
 import com.google.gson.JsonObject;
 import com.lothrazar.library.FutureLibMod;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public class EnergyIngredient {
 
@@ -19,6 +22,18 @@ public class EnergyIngredient {
   public EnergyIngredient(final JsonObject recipeJson) {
     parseData(recipeJson);
   }
+
+
+  public static final MapCodec<EnergyIngredient> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+      Codec.INT.optionalFieldOf("rfpertick", RFPT_DEFAULT).forGetter(EnergyIngredient::getRfPertick),
+      Codec.INT.optionalFieldOf("ticks", TICKS_DEFAULT).forGetter(EnergyIngredient::getTicks)
+  ).apply(instance, EnergyIngredient::new));
+
+  public static final net.minecraft.network.codec.StreamCodec<io.netty.buffer.ByteBuf, EnergyIngredient> STREAM_CODEC = net.minecraft.network.codec.StreamCodec.composite(
+      net.minecraft.network.codec.ByteBufCodecs.INT, EnergyIngredient::getRfPertick,
+      net.minecraft.network.codec.ByteBufCodecs.INT, EnergyIngredient::getTicks,
+      EnergyIngredient::new
+  );
 
   private void parseData(final JsonObject recipeJson) {
     if (!recipeJson.has(KEY_ENERGY)) {
