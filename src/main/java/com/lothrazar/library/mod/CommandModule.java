@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Random;
 import java.util.stream.Collectors;
 import com.lothrazar.library.FutureLibMod;
-import com.lothrazar.library.core.BlockPosDim;
+import com.lothrazar.library.data.BlockPosDim;
 import com.lothrazar.library.events.EventFlib;
 import com.lothrazar.library.util.AttributesUtil;
 import com.lothrazar.library.util.ChatUtil;

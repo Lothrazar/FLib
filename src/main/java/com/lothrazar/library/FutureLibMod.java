@@ -1,6 +1,6 @@
 package com.lothrazar.library;
 
-import com.lothrazar.library.data.DataComponentsFlib;
+import com.lothrazar.library.mod.DataComponentsFlib;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.lothrazar.library.cap.player.PlayerCapProvider;

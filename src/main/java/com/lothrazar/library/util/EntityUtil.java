@@ -25,8 +25,8 @@ package com.lothrazar.library.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.lothrazar.library.core.BlockPosDim;
-import com.lothrazar.library.core.Vector3;
+import com.lothrazar.library.data.BlockPosDim;
+import com.lothrazar.library.data.Vector3;
 import com.lothrazar.library.portal.DimensionTransitionWrapper;
 import com.lothrazar.library.packet.PacketPlayerFalldamage;
 import net.neoforged.neoforge.network.PacketDistributor;

@@ -3,6 +3,7 @@ package com.lothrazar.library.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.lothrazar.library.mod.DataComponentsFlib;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;

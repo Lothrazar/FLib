@@ -1,6 +1,5 @@
 package com.lothrazar.library.gui;
 
-import com.lothrazar.library.entity.BlockEntityFlib;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -44,26 +43,6 @@ public abstract class ContainerFlib extends AbstractContainerMenu {
     });
   }
 
-  protected void trackAllIntFields(BlockEntityFlib tile, int fieldCount) {
-    for (int f = 0; f < fieldCount; f++) {
-      trackIntField(tile, f);
-    }
-  }
-
-  protected void trackIntField(BlockEntityFlib tile, int fieldOrdinal) {
-    addDataSlot(new DataSlot() {
-
-      @Override
-      public int get() {
-        return tile.getField(fieldOrdinal);
-      }
-
-      @Override
-      public void set(int value) {
-        tile.setField(fieldOrdinal, value);
-      }
-    });
-  }
 
   @Override
   public ItemStack quickMoveStack(Player playerIn, int index) {

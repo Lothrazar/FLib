@@ -1,6 +1,6 @@
 package com.lothrazar.library.cap.item;
 
-import com.lothrazar.library.cap.CustomEnergyStorage;
+import com.lothrazar.library.cap.EnergyStorageWrapper;
 import net.minecraft.nbt.CompoundTag;
 
 /**
@@ -12,13 +12,13 @@ import net.minecraft.nbt.CompoundTag;
 public class CapabilityProviderEnergyStack {
 
   private static final String NBTENERGY = "energy";
-  private final CustomEnergyStorage energy;
+  private final EnergyStorageWrapper energy;
 
   public CapabilityProviderEnergyStack(int max) {
-    energy = new CustomEnergyStorage(max, max);
+    energy = new EnergyStorageWrapper(max, max);
   }
 
-  public CustomEnergyStorage getEnergyStorage() {
+  public EnergyStorageWrapper getEnergyStorage() {
     return energy;
   }
 

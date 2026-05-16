@@ -1,9 +1,9 @@
-package com.lothrazar.library.data;
+package com.lothrazar.library.mod;
 
 import com.lothrazar.library.FutureLibMod;
+import com.lothrazar.library.data.RelativeShape;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;

@@ -1,4 +1,4 @@
-package com.lothrazar.library.core;
+package com.lothrazar.library.data;
 
 import java.util.HashMap;
 import java.util.HashSet;

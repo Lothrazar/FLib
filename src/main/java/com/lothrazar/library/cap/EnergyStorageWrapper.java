@@ -11,11 +11,11 @@ import net.neoforged.neoforge.energy.EnergyStorage;
  *
  * @see cyclic
  */
-public class CustomEnergyStorage extends EnergyStorage {
+public class EnergyStorageWrapper extends EnergyStorage {
 
   public static final String NBTENERGY = "energy";
 
-  public CustomEnergyStorage(int capacity, int maxTransfer) {
+  public EnergyStorageWrapper(int capacity, int maxTransfer) {
     super(capacity, maxTransfer);
   }
 

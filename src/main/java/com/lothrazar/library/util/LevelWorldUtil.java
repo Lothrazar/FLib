@@ -2,7 +2,7 @@ package com.lothrazar.library.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.lothrazar.library.core.BlockPosDim;
+import com.lothrazar.library.data.BlockPosDim;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;

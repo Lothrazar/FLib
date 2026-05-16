@@ -1,4 +1,4 @@
-package com.lothrazar.library.core;
+package com.lothrazar.library.data;
 
 import java.util.Objects;
 import com.lothrazar.library.util.LevelWorldUtil;
