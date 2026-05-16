@@ -6,6 +6,8 @@ import java.util.List;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -16,6 +18,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 public class EnchantUtil {
@@ -61,13 +64,21 @@ public class EnchantUtil {
     }
     return false;
   }
+  public static Holder<Enchantment> holder(ResourceKey<Enchantment> key, Level level) {
+    return level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(key);
+  }
 
+  public static Holder<Enchantment> holder(ResourceKey<Enchantment> key, LivingEntity entity) {
+    return holder(key, entity.level());
+  }
 
   public static int getCurrentLevelTool(Holder<Enchantment> enchantment, ItemStack stack) {
     if (stack.isEmpty() || stack.getItem() == Items.ENCHANTED_BOOK) return -1;
     return EnchantmentHelper.getTagEnchantmentLevel(enchantment, stack);
   }
-
+  public static int getCurrentArmorLevel(ResourceKey<Enchantment> key, LivingEntity entity) {
+    return getCurrentArmorLevel(holder(key, entity), entity);
+  }
   public static int getCurrentArmorLevelSlot(Holder<Enchantment> enchantment, LivingEntity entity, EquipmentSlot type) {
     ItemStack armor = entity.getItemBySlot(type);
     if (armor.isEmpty()) return 0;
