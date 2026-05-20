@@ -12,6 +12,5 @@ import net.neoforged.neoforge.fluids.FluidStack;
 public class FluidTagIngredient {
 
 
-  public FluidTagIngredient(FluidStack fluidstack, String ftag, int count) {
-  }
+
 }
