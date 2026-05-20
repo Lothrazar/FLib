@@ -24,7 +24,7 @@ public class PacketSyncFluid extends PacketFlib implements CustomPacketPayload {
   public static final StreamCodec<RegistryFriendlyByteBuf, PacketSyncFluid> STREAM_CODEC =
       StreamCodec.composite(
           BlockPos.STREAM_CODEC, PacketSyncFluid::getPos,
-          FluidStack.STREAM_CODEC, PacketSyncFluid::getFluid,
+          FluidStack.OPTIONAL_STREAM_CODEC, PacketSyncFluid::getFluid,
           PacketSyncFluid::new);
 
   private final BlockPos pos;
