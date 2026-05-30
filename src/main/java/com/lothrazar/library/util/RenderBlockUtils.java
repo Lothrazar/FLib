@@ -16,6 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.player.LocalPlayer;
 
+import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
@@ -30,6 +31,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
@@ -99,7 +101,7 @@ public class RenderBlockUtils {
         g = 1f;
         b = 1f;
       }
-      //      addVertexData 
+      //      addVertexData
       boolean readExistingColor = false;
       builder.putBulkData(matrixEntry, bakedquad, r, g, b, alpha, combinedLights, combinedOverlay, readExistingColor);
     }
@@ -174,7 +176,7 @@ public class RenderBlockUtils {
 
   /**
    * Call from TESR perspective
-   * 
+   *
    * @param level
    */
   public static void renderAsBlock(Level level, final BlockPos centerPos, final List<BlockPos> shape, PoseStack matrix, ItemStack stack, float alpha, float scale) {
@@ -184,9 +186,9 @@ public class RenderBlockUtils {
 
   /**
    * Render this BLOCK right here in the world, start with alpha and scale near 1. Call from TESR perspective
-   * 
+   *
    * used by cyclic:light_camo
-   * 
+   *
    */
   public static void renderAsBlock(Level world, final BlockPos centerPos, final List<BlockPos> shape, PoseStack matrix, BlockState renderBlockState, float alpha, float scale) {
 
@@ -222,7 +224,7 @@ public class RenderBlockUtils {
         for (Direction direction : Direction.values()) {
           RenderBlockUtils.renderModelBrightnessColorQuads(matrix.last(), builder, red, green, blue, alpha,
               ibakedmodel.getQuads(renderBlockState, direction, world.random,
-                  ibakedmodel.getModelData(world, centerPos, renderBlockState, null), FakeBlockRenderTypes.FAKE_BLOCK), // EmptyModelData.INSTANCE 
+                  ibakedmodel.getModelData(world, centerPos, renderBlockState, null), FakeBlockRenderTypes.FAKE_BLOCK), // EmptyModelData.INSTANCE
               combinedLights, combinedOverlay);
         }
       }
@@ -243,7 +245,7 @@ public class RenderBlockUtils {
 
   /**
    * Used by TESRs
-   * 
+   *
    * View can be tile entity position, or player pos depending on context mc.gameRenderer.getMainCamera().getPosition();
    */
   public static void renderOutline(BlockPos view, List<BlockPos> coords, PoseStack matrix, float scale, Color color) {
@@ -273,7 +275,7 @@ public class RenderBlockUtils {
 
   /**
    * Create your own PoseStack and view perspective and use the method that does not depend on forge events
-   * 
+   *
    * @param evt
    * @param coords
    * @param alpha
@@ -327,6 +329,8 @@ public class RenderBlockUtils {
   public static void createBox(MultiBufferSource.BufferSource bufferSource, Vec3 cameraPosition, PoseStack poseStack, float x, float y, float z, float offset) {
     //rainbow magic
     float[] color = getRandomColour();
+    final float red = color[0], green = color[1], blue = color[2], alpha = 1.0F;
+
     // get a closer pos if too far
     Vec3 vec = new Vec3(x, y, z).subtract(cameraPosition);
     if (vec.distanceTo(Vec3.ZERO) > 200d) { // could be 300
@@ -335,36 +339,28 @@ public class RenderBlockUtils {
       y += vec.y;
       z += vec.z;
     }
+
+    poseStack.pushPose();
+    poseStack.translate(
+            x - cameraPosition.x,
+            y - cameraPosition.y,
+            z - cameraPosition.z
+    );
+
     RenderSystem.disableDepthTest();
-    VertexConsumer vertexConsumer = bufferSource.getBuffer(FakeBlockRenderTypes.TOMB_LINES);
-    poseStack.translate(-cameraPosition.x, -cameraPosition.y, -cameraPosition.z);
-    Matrix4f pose = poseStack.last().pose();
-    vertexConsumer.addVertex(pose, x, y, z).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x + offset, y, z).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x, y, z).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x, y + offset, z).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x, y, z).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x, y, z + offset).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x + offset, y + offset, z + offset).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x, y + offset, z + offset).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x + offset, y + offset, z + offset).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x + offset, y, z + offset).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x + offset, y + offset, z + offset).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x + offset, y + offset, z).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x, y + offset, z).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x, y + offset, z + offset).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x, y + offset, z).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x + offset, y + offset, z).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x + offset, y, z).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x + offset, y, z + offset).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x + offset, y, z).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x + offset, y + offset, z).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x, y, z + offset).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x + offset, y, z + offset).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x, y, z + offset).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x, y + offset, z + offset).setColor(color[0], color[1], color[2], 1.0F);
+    VertexConsumer lines = bufferSource.getBuffer(FakeBlockRenderTypes.TOMB_LINES);
+
+    // Renders the outline of a single block
+    LevelRenderer.renderLineBox(
+            poseStack,
+            lines,
+            new AABB(0, 0, 0, 1, 1, 1), // Local AABB (origin = block corner)
+            red, green, blue, alpha
+    );
+
     bufferSource.endBatch(FakeBlockRenderTypes.TOMB_LINES);
     RenderSystem.enableDepthTest();
+    poseStack.popPose();
   }
 
   public static float[] getRandomColour() {
