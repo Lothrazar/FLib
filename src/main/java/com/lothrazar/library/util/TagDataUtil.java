@@ -11,6 +11,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.ResolvableProfile;
 
+import java.util.function.Consumer;
+
 public class TagDataUtil {
 
   public static final String SKULLOWNER = "SkullOwner";
@@ -62,11 +64,23 @@ public class TagDataUtil {
   }
 
   public static void setItemStackNBTVal(ItemStack item, String prop, int value) {
+    setItemStackNBTVal(item, tag -> tag.putInt(prop, value));
+  }
+
+  public static void setItemStackNBTVal(ItemStack item, String prop, String value) {
+    setItemStackNBTVal(item, tag -> tag.putString(prop, value));
+  }
+
+  public static void setItemStackNBTVal(ItemStack item, String prop, double value) {
+    setItemStackNBTVal(item, tag -> tag.putDouble(prop, value));
+  }
+
+  private static void setItemStackNBTVal(ItemStack item, Consumer<CompoundTag> writer) {
     if (item.isEmpty()) {
       return;
     }
     CompoundTag tag = item.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-    tag.putInt(prop, value);
+    writer.accept(tag);
     item.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
   }
 
