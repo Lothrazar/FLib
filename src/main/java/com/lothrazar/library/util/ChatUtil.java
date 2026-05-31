@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class ChatUtil {
 
@@ -45,6 +46,10 @@ public class ChatUtil {
     if (player.level().isClientSide) {
       player.displayClientMessage(nameTextComponent, true);
     }
+  }
+
+  public static void statusMessage(Player player, BlockState bs) {
+    ChatUtil.sendStatusMessage(player, Component.translatable(bs.getBlock().getName().getString()));
   }
 
   public static String lang(String message) {

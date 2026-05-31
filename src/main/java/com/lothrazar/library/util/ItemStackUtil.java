@@ -29,6 +29,23 @@ public class ItemStackUtil {
   //hasContainerItem() is hasCraftingRemainingItem() 
   //and getContainerItem() is getCraftingRemainingItem() now
 
+
+  public static void addOrMergeIntoList(List<ItemStack> list, ItemStack stackToAdd) {
+    boolean added = false;
+    for (ItemStack stack : list) {
+      if (ItemStack.isSameItemSameComponents(stackToAdd, stack)) {
+        stack.setCount(stack.getCount() + stackToAdd.getCount());
+        added = true;
+        break;
+      }
+    }
+    if (!added) {
+      list.add(stackToAdd);
+    }
+  }
+
+
+
   /**
    * example
    * 
