@@ -18,8 +18,16 @@ public class PacketPlayerFalldamage extends PacketFlib implements CustomPacketPa
   public static final CustomPacketPayload.Type<PacketPlayerFalldamage> TYPE =
       new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(FutureLibMod.MODID, "fall_damage"));
 
-  public static final StreamCodec<FriendlyByteBuf, PacketPlayerFalldamage> STREAM_CODEC =
-      StreamCodec.unit(new PacketPlayerFalldamage());
+  public static final StreamCodec<FriendlyByteBuf, PacketPlayerFalldamage> STREAM_CODEC = StreamCodec.of(
+      PacketPlayerFalldamage::encode,
+      PacketPlayerFalldamage::decode
+  );
+
+  public static PacketPlayerFalldamage decode(FriendlyByteBuf buf) {
+    return new PacketPlayerFalldamage();
+  }
+
+  public static void encode(FriendlyByteBuf buf, PacketPlayerFalldamage packet) {}
 
   @Override
   public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
