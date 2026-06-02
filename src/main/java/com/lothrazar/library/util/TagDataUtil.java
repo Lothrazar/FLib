@@ -75,6 +75,10 @@ public class TagDataUtil {
     setItemStackNBTVal(item, tag -> tag.putDouble(prop, value));
   }
 
+  public static void setItemStackNBTVal(ItemStack item, String prop, long value) {
+    setItemStackNBTVal(item, tag -> tag.putLong(prop, value));
+  }
+
   private static void setItemStackNBTVal(ItemStack item, Consumer<CompoundTag> writer) {
     if (item.isEmpty()) {
       return;
