@@ -14,7 +14,7 @@ if (deployFile.exists()) {
 
 tasks.register('deployLocal') {
     description = 'Copies build jar to all destinations in deploy.properties'
-    group = 'distribution'
+    group = 'publishing'
     dependsOn 'jar'
 
     def jarFile = layout.buildDirectory.file("libs/${base.archivesName.get()}-${version}.jar")

@@ -34,5 +34,6 @@
     "0.2.0": "Fix default value in GameRuleFactory createBoolean.   @Deprecated FluidTagIngredient bedcause a version has been merged into neoforge, see SizedFluidIngredient.   Added DataComponentsFlib.   Added Codec and StreamCodec to RelativeShape, EnergyIngredient, and RandomizedOutputIngredient for 1.21 data-component support.   Since enchantments are data driven now, removed EnchantmentFlib class; its helpers (getCurrentLevelTool, getCurrentArmorLevel/Slot, getLevelAll, getFirstArmorStackWithEnchant) were merged into EnchantUtil.   TagDataUtil.buildNamedPlayerSkull now uses DataComponents.PROFILE / ResolvableProfile instead of the legacy SkullOwner CustomData tag (buildSkullFromTag removed). Add BucketItemFlib to assist modded fluids.  ItemStackUtil.addLoreToStack now appends to existing lore instead of overwriting it.   Render types updated 1.21 compatibility.  ",
     "0.2.1": "Add ItemStackUtil:addOrMergeIntoList and ChatUtil:statusMessage for blockstate to assist Storage Network.  Add data/OpCompareType and gui/TileableTexture"
     ,"0.2.2": "Patch fall_damage packet"
+    ,"0.2.3": "Fix cube vertex rendering"
   }
 }

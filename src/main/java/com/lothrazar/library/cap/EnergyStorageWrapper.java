@@ -56,8 +56,14 @@ public class EnergyStorageWrapper extends EnergyStorage {
   public void deserializeNBT(HolderLookup.Provider provider, Tag nbt) {
     if (nbt instanceof IntTag intNbt) {
       setEnergy(intNbt.getAsInt());
-    } else {
-      throw new IllegalArgumentException("Can not deserialize to an instance that isn't the default implementation");
+    }
+    //legacy fallback: vanilla EnergyStorage used to serialize as a CompoundTag with an
+    //"energy" key. Worlds saved before the IntTag switch still arrive in that shape.
+    else if (nbt instanceof CompoundTag compoundNbt) {
+      setEnergy(compoundNbt.getInt(NBTENERGY));
+    }
+    else if (nbt != null) {
+      throw new IllegalArgumentException("Can not deserialize EnergyStorageWrapper from " + nbt.getClass().getSimpleName());
     }
   }
 }

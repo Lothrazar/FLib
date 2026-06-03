@@ -48,36 +48,43 @@ public class RenderBlockUtils {
   public static void renderCube(Matrix4f matrix, VertexConsumer builder, BlockPos pos, Color color, float alpha) {
     float red = color.getRed() / 255f, green = color.getGreen() / 255f, blue = color.getBlue() / 255f;
     float startX = 0, startY = 0, startZ = -1, endX = 1, endY = 1, endZ = 0;
+    //RenderTypes used here (FakeBlockRenderTypes.SOLID_COLOUR / TOMB_LINES) declare
+    //POSITION_COLOR_TEX_LIGHTMAP, so each vertex must also supply UV0 + UV2 or BufferBuilder
+    //rejects it with "Missing elements in vertex: UV0, UV2".
     //down
-    builder.addVertex(matrix,startX, startY, startZ).setColor(red, green, blue, alpha);
-    builder.addVertex(matrix,endX, startY, startZ).setColor(red, green, blue, alpha);
-    builder.addVertex(matrix,endX, startY, endZ).setColor(red, green, blue, alpha);
-    builder.addVertex(matrix,startX, startY, endZ).setColor(red, green, blue, alpha);
+    addCubeVertex(builder, matrix, startX, startY, startZ, red, green, blue, alpha);
+    addCubeVertex(builder, matrix, endX, startY, startZ, red, green, blue, alpha);
+    addCubeVertex(builder, matrix, endX, startY, endZ, red, green, blue, alpha);
+    addCubeVertex(builder, matrix, startX, startY, endZ, red, green, blue, alpha);
     //up
-    builder.addVertex(matrix,startX, endY, startZ).setColor(red, green, blue, alpha);
-    builder.addVertex(matrix,startX, endY, endZ).setColor(red, green, blue, alpha);
-    builder.addVertex(matrix,endX, endY, endZ).setColor(red, green, blue, alpha);
-    builder.addVertex(matrix,endX, endY, startZ).setColor(red, green, blue, alpha);
+    addCubeVertex(builder, matrix, startX, endY, startZ, red, green, blue, alpha);
+    addCubeVertex(builder, matrix, startX, endY, endZ, red, green, blue, alpha);
+    addCubeVertex(builder, matrix, endX, endY, endZ, red, green, blue, alpha);
+    addCubeVertex(builder, matrix, endX, endY, startZ, red, green, blue, alpha);
     //east
-    builder.addVertex(matrix,startX, startY, startZ).setColor(red, green, blue, alpha);
-    builder.addVertex(matrix,startX, endY, startZ).setColor(red, green, blue, alpha);
-    builder.addVertex(matrix,endX, endY, startZ).setColor(red, green, blue, alpha);
-    builder.addVertex(matrix,endX, startY, startZ).setColor(red, green, blue, alpha);
+    addCubeVertex(builder, matrix, startX, startY, startZ, red, green, blue, alpha);
+    addCubeVertex(builder, matrix, startX, endY, startZ, red, green, blue, alpha);
+    addCubeVertex(builder, matrix, endX, endY, startZ, red, green, blue, alpha);
+    addCubeVertex(builder, matrix, endX, startY, startZ, red, green, blue, alpha);
     //west
-    builder.addVertex(matrix,startX, startY, endZ).setColor(red, green, blue, alpha);
-    builder.addVertex(matrix,endX, startY, endZ).setColor(red, green, blue, alpha);
-    builder.addVertex(matrix,endX, endY, endZ).setColor(red, green, blue, alpha);
-    builder.addVertex(matrix,startX, endY, endZ).setColor(red, green, blue, alpha);
+    addCubeVertex(builder, matrix, startX, startY, endZ, red, green, blue, alpha);
+    addCubeVertex(builder, matrix, endX, startY, endZ, red, green, blue, alpha);
+    addCubeVertex(builder, matrix, endX, endY, endZ, red, green, blue, alpha);
+    addCubeVertex(builder, matrix, startX, endY, endZ, red, green, blue, alpha);
     //south
-    builder.addVertex(matrix,endX, startY, startZ).setColor(red, green, blue, alpha);
-    builder.addVertex(matrix,endX, endY, startZ).setColor(red, green, blue, alpha);
-    builder.addVertex(matrix,endX, endY, endZ).setColor(red, green, blue, alpha);
-    builder.addVertex(matrix,endX, startY, endZ).setColor(red, green, blue, alpha);
+    addCubeVertex(builder, matrix, endX, startY, startZ, red, green, blue, alpha);
+    addCubeVertex(builder, matrix, endX, endY, startZ, red, green, blue, alpha);
+    addCubeVertex(builder, matrix, endX, endY, endZ, red, green, blue, alpha);
+    addCubeVertex(builder, matrix, endX, startY, endZ, red, green, blue, alpha);
     //north
-    builder.addVertex(matrix,startX, startY, startZ).setColor(red, green, blue, alpha);
-    builder.addVertex(matrix,startX, startY, endZ).setColor(red, green, blue, alpha);
-    builder.addVertex(matrix,startX, endY, endZ).setColor(red, green, blue, alpha);
-    builder.addVertex(matrix,startX, endY, startZ).setColor(red, green, blue, alpha);
+    addCubeVertex(builder, matrix, startX, startY, startZ, red, green, blue, alpha);
+    addCubeVertex(builder, matrix, startX, startY, endZ, red, green, blue, alpha);
+    addCubeVertex(builder, matrix, startX, endY, endZ, red, green, blue, alpha);
+    addCubeVertex(builder, matrix, startX, endY, startZ, red, green, blue, alpha);
+  }
+
+  private static void addCubeVertex(VertexConsumer builder, Matrix4f matrix, float x, float y, float z, float r, float g, float b, float a) {
+    builder.addVertex(matrix, x, y, z).setColor(r, g, b, a).setUv(0, 0).setLight(FULL_LIGHT);
   }
 
   /**
@@ -339,30 +346,30 @@ public class RenderBlockUtils {
     VertexConsumer vertexConsumer = bufferSource.getBuffer(FakeBlockRenderTypes.TOMB_LINES);
     poseStack.translate(-cameraPosition.x, -cameraPosition.y, -cameraPosition.z);
     Matrix4f pose = poseStack.last().pose();
-    vertexConsumer.addVertex(pose, x, y, z).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x + offset, y, z).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x, y, z).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x, y + offset, z).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x, y, z).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x, y, z + offset).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x + offset, y + offset, z + offset).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x, y + offset, z + offset).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x + offset, y + offset, z + offset).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x + offset, y, z + offset).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x + offset, y + offset, z + offset).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x + offset, y + offset, z).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x, y + offset, z).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x, y + offset, z + offset).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x, y + offset, z).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x + offset, y + offset, z).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x + offset, y, z).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x + offset, y, z + offset).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x + offset, y, z).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x + offset, y + offset, z).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x, y, z + offset).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x + offset, y, z + offset).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x, y, z + offset).setColor(color[0], color[1], color[2], 1.0F);
-    vertexConsumer.addVertex(pose, x, y + offset, z + offset).setColor(color[0], color[1], color[2], 1.0F);
+    vertexConsumer.addVertex(pose, x, y, z).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
+    vertexConsumer.addVertex(pose, x + offset, y, z).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
+    vertexConsumer.addVertex(pose, x, y, z).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
+    vertexConsumer.addVertex(pose, x, y + offset, z).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
+    vertexConsumer.addVertex(pose, x, y, z).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
+    vertexConsumer.addVertex(pose, x, y, z + offset).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
+    vertexConsumer.addVertex(pose, x + offset, y + offset, z + offset).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
+    vertexConsumer.addVertex(pose, x, y + offset, z + offset).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
+    vertexConsumer.addVertex(pose, x + offset, y + offset, z + offset).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
+    vertexConsumer.addVertex(pose, x + offset, y, z + offset).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
+    vertexConsumer.addVertex(pose, x + offset, y + offset, z + offset).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
+    vertexConsumer.addVertex(pose, x + offset, y + offset, z).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
+    vertexConsumer.addVertex(pose, x, y + offset, z).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
+    vertexConsumer.addVertex(pose, x, y + offset, z + offset).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
+    vertexConsumer.addVertex(pose, x, y + offset, z).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
+    vertexConsumer.addVertex(pose, x + offset, y + offset, z).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
+    vertexConsumer.addVertex(pose, x + offset, y, z).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
+    vertexConsumer.addVertex(pose, x + offset, y, z + offset).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
+    vertexConsumer.addVertex(pose, x + offset, y, z).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
+    vertexConsumer.addVertex(pose, x + offset, y + offset, z).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
+    vertexConsumer.addVertex(pose, x, y, z + offset).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
+    vertexConsumer.addVertex(pose, x + offset, y, z + offset).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
+    vertexConsumer.addVertex(pose, x, y, z + offset).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
+    vertexConsumer.addVertex(pose, x, y + offset, z + offset).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
     bufferSource.endBatch(FakeBlockRenderTypes.TOMB_LINES);
     RenderSystem.enableDepthTest();
   }
