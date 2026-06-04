@@ -84,7 +84,9 @@ public class RenderBlockUtils {
   }
 
   private static void addCubeVertex(VertexConsumer builder, Matrix4f matrix, float x, float y, float z, float r, float g, float b, float a) {
-    builder.addVertex(matrix, x, y, z).setColor(r, g, b, a).setUv(0, 0).setLight(FULL_LIGHT);
+    //SOLID_COLOUR is QUADS with the lines shader; normal is required by the shader.
+    //For face quads a +Y normal is fine (faces are colored fills, not widened lines).
+    builder.addVertex(matrix, x, y, z).setColor(r, g, b, a).setNormal(0f, 1f, 0f);
   }
 
   /**
@@ -257,6 +259,11 @@ public class RenderBlockUtils {
     final Minecraft mc = Minecraft.getInstance();
     MultiBufferSource.BufferSource buffer = mc.renderBuffers().bufferSource();
     matrix.pushPose();
+    //This helper is for TESRs (BlockEntityRenderers). The TESR's PoseStack is translated by
+    //vanilla so its origin = the tile's block position. The caller passes `view = tilePos`,
+    //and we undo that translation here so the loop below can position cubes by absolute
+    //world coordinate. Do NOT call this from RenderLevelStageEvent — that pose is at the
+    //camera origin and subtracting the camera position double-shifts everything off-screen.
     matrix.translate(-view.getX(), -view.getY(), -view.getZ());
     VertexConsumer builder;
     builder = buffer.getBuffer(FakeBlockRenderTypes.SOLID_COLOUR);
@@ -304,6 +311,8 @@ public class RenderBlockUtils {
     final Minecraft mc = Minecraft.getInstance();
     MultiBufferSource.BufferSource buffer = mc.renderBuffers().bufferSource();
     matrix.pushPose();
+    //RenderLevelStageEvent pose has the camera ROTATION but not the camera TRANSLATION applied
+    //(in 1.21 same as 1.20). Subtract the camera so addVertex with world coords lands correctly.
     matrix.translate(-view.x(), -view.y(), -view.z());
     VertexConsumer builder = buffer.getBuffer(FakeBlockRenderTypes.TRANSPARENT_COLOUR);
     for (BlockPos posCurr : coords.keySet()) {
@@ -320,22 +329,36 @@ public class RenderBlockUtils {
     buffer.endBatch(FakeBlockRenderTypes.TRANSPARENT_COLOUR);
   }
 
+  /**
+   * 2-arg overload for use from {@link RenderLevelStageEvent} (e.g. OutlineRenderer). The pose
+   * has the camera ROTATION but not the camera TRANSLATION applied, so pass the camera position
+   * so the inner translate subtracts it and addVertex with absolute world coords lands at
+   * (world - camera) in eye space. For TESR callers use the 3-arg form below and pass the
+   * tile's world position so the TESR's vanilla translation gets undone instead.
+   */
   public static void createBox(PoseStack poseStack, BlockPos pos) {
     createBox(poseStack, pos, Minecraft.getInstance().gameRenderer.getMainCamera().getPosition());
   }
-  public static void createBox(PoseStack poseStack, BlockPos pos, Vec3 cameraPosition) {
+  public static void createBox(PoseStack poseStack, BlockPos pos, Vec3 poseOriginInWorld) {
     poseStack.pushPose();
     Minecraft mc = Minecraft.getInstance();
-    createBox(mc.renderBuffers().bufferSource(), cameraPosition, poseStack, pos.getX(), pos.getY(), pos.getZ(), 1.0F);
+    createBox(mc.renderBuffers().bufferSource(), poseOriginInWorld, poseStack, pos.getX(), pos.getY(), pos.getZ(), 1.0F);
     poseStack.popPose();
   }
 
 
-  public static void createBox(MultiBufferSource.BufferSource bufferSource, Vec3 cameraPosition, PoseStack poseStack, float x, float y, float z, float offset) {
+  /**
+   * @param poseOriginInWorld where the PoseStack's local origin lives in world space.
+   *   - For RenderLevelStageEvent in 1.21: PoseStack is camera-relative — pass Vec3.ZERO.
+   *   - For TESRs (BlockEntityRenderer): PoseStack origin is at the tile — pass the tile's pos.
+   *   We subtract this from the pose so subsequent draws can use absolute world coords.
+   */
+  public static void createBox(MultiBufferSource.BufferSource bufferSource, Vec3 poseOriginInWorld, PoseStack poseStack, float x, float y, float z, float offset) {
     //rainbow magic
     float[] color = getRandomColour();
-    // get a closer pos if too far
-    Vec3 vec = new Vec3(x, y, z).subtract(cameraPosition);
+    // distance-clamp far positions (use the real camera, not the pose-origin offset)
+    Vec3 camera = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+    Vec3 vec = new Vec3(x, y, z).subtract(camera);
     if (vec.distanceTo(Vec3.ZERO) > 200d) { // could be 300
       vec = vec.normalize().scale(200d);
       x += vec.x;
@@ -344,34 +367,42 @@ public class RenderBlockUtils {
     }
     RenderSystem.disableDepthTest();
     VertexConsumer vertexConsumer = bufferSource.getBuffer(FakeBlockRenderTypes.TOMB_LINES);
-    poseStack.translate(-cameraPosition.x, -cameraPosition.y, -cameraPosition.z);
-    Matrix4f pose = poseStack.last().pose();
-    vertexConsumer.addVertex(pose, x, y, z).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
-    vertexConsumer.addVertex(pose, x + offset, y, z).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
-    vertexConsumer.addVertex(pose, x, y, z).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
-    vertexConsumer.addVertex(pose, x, y + offset, z).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
-    vertexConsumer.addVertex(pose, x, y, z).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
-    vertexConsumer.addVertex(pose, x, y, z + offset).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
-    vertexConsumer.addVertex(pose, x + offset, y + offset, z + offset).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
-    vertexConsumer.addVertex(pose, x, y + offset, z + offset).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
-    vertexConsumer.addVertex(pose, x + offset, y + offset, z + offset).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
-    vertexConsumer.addVertex(pose, x + offset, y, z + offset).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
-    vertexConsumer.addVertex(pose, x + offset, y + offset, z + offset).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
-    vertexConsumer.addVertex(pose, x + offset, y + offset, z).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
-    vertexConsumer.addVertex(pose, x, y + offset, z).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
-    vertexConsumer.addVertex(pose, x, y + offset, z + offset).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
-    vertexConsumer.addVertex(pose, x, y + offset, z).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
-    vertexConsumer.addVertex(pose, x + offset, y + offset, z).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
-    vertexConsumer.addVertex(pose, x + offset, y, z).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
-    vertexConsumer.addVertex(pose, x + offset, y, z + offset).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
-    vertexConsumer.addVertex(pose, x + offset, y, z).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
-    vertexConsumer.addVertex(pose, x + offset, y + offset, z).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
-    vertexConsumer.addVertex(pose, x, y, z + offset).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
-    vertexConsumer.addVertex(pose, x + offset, y, z + offset).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
-    vertexConsumer.addVertex(pose, x, y, z + offset).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
-    vertexConsumer.addVertex(pose, x, y + offset, z + offset).setColor(color[0], color[1], color[2], 1.0F).setUv(0, 0).setLight(FULL_LIGHT);
+    //Translate so the PoseStack's local origin maps to world origin. After this, addVertex
+    //with absolute world coords (x, y, z) lands at the correct place.
+    poseStack.translate(-poseOriginInWorld.x, -poseOriginInWorld.y, -poseOriginInWorld.z);
+    PoseStack.Pose pose = poseStack.last();
+    float r = color[0], g = color[1], b = color[2];
+    //12 edges of the cube. The lines shader uses the vertex NORMAL as the line direction
+    //(transformed through the pose's normal matrix) to compute screen-space widening —
+    //without it the line collapses to ~0px and is invisible.
+    //bottom 4 edges
+    line(vertexConsumer, pose, x, y, z,                 x + offset, y, z,                 r, g, b, 1f, 0f, 0f);
+    line(vertexConsumer, pose, x + offset, y, z,        x + offset, y, z + offset,        r, g, b, 0f, 0f, 1f);
+    line(vertexConsumer, pose, x + offset, y, z + offset, x, y, z + offset,               r, g, b, -1f, 0f, 0f);
+    line(vertexConsumer, pose, x, y, z + offset,        x, y, z,                          r, g, b, 0f, 0f, -1f);
+    //top 4 edges
+    line(vertexConsumer, pose, x, y + offset, z,        x + offset, y + offset, z,        r, g, b, 1f, 0f, 0f);
+    line(vertexConsumer, pose, x + offset, y + offset, z, x + offset, y + offset, z + offset, r, g, b, 0f, 0f, 1f);
+    line(vertexConsumer, pose, x + offset, y + offset, z + offset, x, y + offset, z + offset, r, g, b, -1f, 0f, 0f);
+    line(vertexConsumer, pose, x, y + offset, z + offset, x, y + offset, z,                r, g, b, 0f, 0f, -1f);
+    //4 vertical edges
+    line(vertexConsumer, pose, x, y, z,                  x, y + offset, z,                 r, g, b, 0f, 1f, 0f);
+    line(vertexConsumer, pose, x + offset, y, z,         x + offset, y + offset, z,        r, g, b, 0f, 1f, 0f);
+    line(vertexConsumer, pose, x + offset, y, z + offset, x + offset, y + offset, z + offset, r, g, b, 0f, 1f, 0f);
+    line(vertexConsumer, pose, x, y, z + offset,         x, y + offset, z + offset,         r, g, b, 0f, 1f, 0f);
     bufferSource.endBatch(FakeBlockRenderTypes.TOMB_LINES);
     RenderSystem.enableDepthTest();
+  }
+
+  private static void line(VertexConsumer vc, PoseStack.Pose pose,
+      float x1, float y1, float z1, float x2, float y2, float z2,
+      float r, float g, float b, float nx, float ny, float nz) {
+    //Use the PoseStack.Pose overloads of addVertex and setNormal so the position goes through
+    //the pose matrix AND the normal goes through the normal matrix — matches vanilla's
+    //LevelRenderer.renderLineBox pattern. Bare setNormal(float, float, float) writes the raw
+    //model-space normal which the lines shader misinterprets, collapsing widening to ~0.
+    vc.addVertex(pose, x1, y1, z1).setColor(r, g, b, 1.0F).setNormal(pose, nx, ny, nz);
+    vc.addVertex(pose, x2, y2, z2).setColor(r, g, b, 1.0F).setNormal(pose, nx, ny, nz);
   }
 
   public static float[] getRandomColour() {

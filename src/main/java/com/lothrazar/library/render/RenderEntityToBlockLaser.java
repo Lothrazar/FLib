@@ -10,6 +10,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -33,13 +34,28 @@ public class RenderEntityToBlockLaser {
   }
 
   public static void renderLaser(RenderLevelStageEvent event, Player player, float ticks, ItemStack stack, InteractionHand hand) {
-    renderLaser(event, player, ticks, stack, hand, 18, -0.02F); // default range, default speed 
+    renderLaser(event, player, ticks, stack, hand, 18, -0.02F); // default range, default speed
+  }
+
+  /**
+   * Overload with default range/speed and configurable main beam color (RGB, each 0.0-1.0).
+   */
+  public static void renderLaser(RenderLevelStageEvent event, Player player, float ticks, ItemStack stack, InteractionHand hand, float r, float g, float b) {
+    renderLaser(event, player, ticks, stack, hand, 18, -0.02F, r, g, b);
   }
 
   public static void renderLaser(RenderLevelStageEvent event, Player player, float ticks, ItemStack stack, InteractionHand hand, final int range, float speedModifier) {
+    renderLaser(event, player, ticks, stack, hand, range, speedModifier, 100F / 255f, 0F / 255f, 2F / 255f);
+  }
+
+  /**
+   * Overload that allows the caller to specify the main beam color (RGB, each 0.0-1.0).
+   * The core beam color is derived as a darker variant of the main color.
+   */
+  public static void renderLaser(RenderLevelStageEvent event, Player player, float ticks, ItemStack stack, InteractionHand hand, final int range, float speedModifier, float r, float g, float b) {
     Vec3 playerPos = player.getEyePosition(ticks);
     HitResult trace = player.pick(range, 0.0F, false);
-    drawLasers(hand, stack, event, playerPos, trace, 0, 0, 0, 100F / 255f, 0F / 255f, 2F / 255f, 0.02f, player, ticks, speedModifier);
+    drawLasers(hand, stack, event, playerPos, trace, 0, 0, 0, r, g, b, r, g, b, 0.02f, player, ticks, speedModifier);
   }
 
   /**
@@ -50,14 +66,18 @@ public class RenderEntityToBlockLaser {
    *
    */
   public static void drawLasers(InteractionHand activeHand, ItemStack stack, RenderLevelStageEvent event, Vec3 from, HitResult trace, double xOffset, double yOffset, double zOffset, float r, float g, float b, float thickness, Player player, float ticks, float speedModifier) {
+    drawLasers(activeHand, stack, event, from, trace, xOffset, yOffset, zOffset, r, g, b, 100f / 255f, 0f / 255f, 10f / 255f, thickness, player, ticks, speedModifier);
+  }
+
+  /**
+   * Overload that allows the caller to specify both the main beam color (r,g,b) and the inner core beam color (beam2r,beam2g,beam2b).
+   */
+  public static void drawLasers(InteractionHand activeHand, ItemStack stack, RenderLevelStageEvent event, Vec3 from, HitResult trace, double xOffset, double yOffset, double zOffset, float r, float g, float b, float beam2r, float beam2g, float beam2b, float thickness, Player player, float ticks, float speedModifier) {
     VertexConsumer builder;
     double distance = Math.max(1, from.subtract(trace.getLocation()).length());
     long gameTime = player.level().getGameTime();
     double v = gameTime * speedModifier;
     float additiveThickness = (thickness * 3.5f) * calculateLaserFlickerModifier(gameTime);
-    float beam2r = 100f / 255f;
-    float beam2g = 0f / 255f;
-    float beam2b = 10f / 255f;
     Vec3 view = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
     MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
     PoseStack matrix = event.getPoseStack();
@@ -116,27 +136,28 @@ public class RenderEntityToBlockLaser {
     vec3.mul(positionMatrix);
     Vector4f vec4 = new Vector4f(startXOffset, thickness + startYOffset, startZOffset, 1.0F);
     vec4.mul(positionMatrix);
+    final int light = LightTexture.FULL_BRIGHT;
     if (hand == InteractionHand.MAIN_HAND) {
-      builder.addVertex(vec4.x(), vec4.y(), vec4.z()).setColor(r, g, b, alpha).setUv(0, (float) v1);
-      builder.addVertex(vec3.x(), vec3.y(), vec3.z()).setColor(r, g, b, alpha).setUv(0, (float) v2);
-      builder.addVertex(vec2.x(), vec2.y(), vec2.z()).setColor(r, g, b, alpha).setUv(1, (float) v2);
-      builder.addVertex(vec1.x(), vec1.y(), vec1.z()).setColor(r, g, b, alpha).setUv(1, (float) v1);
+      builder.addVertex(vec4.x(), vec4.y(), vec4.z()).setColor(r, g, b, alpha).setUv(0, (float) v1).setLight(light);
+      builder.addVertex(vec3.x(), vec3.y(), vec3.z()).setColor(r, g, b, alpha).setUv(0, (float) v2).setLight(light);
+      builder.addVertex(vec2.x(), vec2.y(), vec2.z()).setColor(r, g, b, alpha).setUv(1, (float) v2).setLight(light);
+      builder.addVertex(vec1.x(), vec1.y(), vec1.z()).setColor(r, g, b, alpha).setUv(1, (float) v1).setLight(light);
       //Rendering a 2nd time to allow you to see both sides in multiplayer, shouldn't be necessary with culling disabled but here we are....
-      builder.addVertex(vec1.x(), vec1.y(), vec1.z()).setColor(r, g, b, alpha).setUv(1, (float) v1);
-      builder.addVertex(vec2.x(), vec2.y(), vec2.z()).setColor(r, g, b, alpha).setUv(1, (float) v2);
-      builder.addVertex(vec3.x(), vec3.y(), vec3.z()).setColor(r, g, b, alpha).setUv(0, (float) v2);
-      builder.addVertex(vec4.x(), vec4.y(), vec4.z()).setColor(r, g, b, alpha).setUv(0, (float) v1);
+      builder.addVertex(vec1.x(), vec1.y(), vec1.z()).setColor(r, g, b, alpha).setUv(1, (float) v1).setLight(light);
+      builder.addVertex(vec2.x(), vec2.y(), vec2.z()).setColor(r, g, b, alpha).setUv(1, (float) v2).setLight(light);
+      builder.addVertex(vec3.x(), vec3.y(), vec3.z()).setColor(r, g, b, alpha).setUv(0, (float) v2).setLight(light);
+      builder.addVertex(vec4.x(), vec4.y(), vec4.z()).setColor(r, g, b, alpha).setUv(0, (float) v1).setLight(light);
     }
     else {
-      builder.addVertex(vec1.x(), vec1.y(), vec1.z()).setColor(r, g, b, alpha).setUv(1, (float) v1);
-      builder.addVertex(vec2.x(), vec2.y(), vec2.z()).setColor(r, g, b, alpha).setUv(1, (float) v2);
-      builder.addVertex(vec3.x(), vec3.y(), vec3.z()).setColor(r, g, b, alpha).setUv(0, (float) v2);
-      builder.addVertex(vec4.x(), vec4.y(), vec4.z()).setColor(r, g, b, alpha).setUv(0, (float) v1);
+      builder.addVertex(vec1.x(), vec1.y(), vec1.z()).setColor(r, g, b, alpha).setUv(1, (float) v1).setLight(light);
+      builder.addVertex(vec2.x(), vec2.y(), vec2.z()).setColor(r, g, b, alpha).setUv(1, (float) v2).setLight(light);
+      builder.addVertex(vec3.x(), vec3.y(), vec3.z()).setColor(r, g, b, alpha).setUv(0, (float) v2).setLight(light);
+      builder.addVertex(vec4.x(), vec4.y(), vec4.z()).setColor(r, g, b, alpha).setUv(0, (float) v1).setLight(light);
       //Rendering a 2nd time to allow you to see both sides in multiplayer, shouldn't be necessary with culling disabled but here we are....
-      builder.addVertex(vec4.x(), vec4.y(), vec4.z()).setColor(r, g, b, alpha).setUv(0, (float) v1);
-      builder.addVertex(vec3.x(), vec3.y(), vec3.z()).setColor(r, g, b, alpha).setUv(0, (float) v2);
-      builder.addVertex(vec2.x(), vec2.y(), vec2.z()).setColor(r, g, b, alpha).setUv(1, (float) v2);
-      builder.addVertex(vec1.x(), vec1.y(), vec1.z()).setColor(r, g, b, alpha).setUv(1, (float) v1);
+      builder.addVertex(vec4.x(), vec4.y(), vec4.z()).setColor(r, g, b, alpha).setUv(0, (float) v1).setLight(light);
+      builder.addVertex(vec3.x(), vec3.y(), vec3.z()).setColor(r, g, b, alpha).setUv(0, (float) v2).setLight(light);
+      builder.addVertex(vec2.x(), vec2.y(), vec2.z()).setColor(r, g, b, alpha).setUv(1, (float) v2).setLight(light);
+      builder.addVertex(vec1.x(), vec1.y(), vec1.z()).setColor(r, g, b, alpha).setUv(1, (float) v1).setLight(light);
     }
   }
 }

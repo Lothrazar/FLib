@@ -69,7 +69,7 @@ public class FakeBlockRenderTypes extends RenderType {
    * used by EventRender -> RenderWorldLastEvent by most held items that pick locations, such as cyclic:location_data
    */
   public static final RenderType TRANSPARENT_COLOUR = create(FutureLibMod.MODID + ":transparentcolour",
-      DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, BUFFERSIZE, CRUMBLING, SORT,
+      DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.QUADS, BUFFERSIZE, CRUMBLING, SORT,
       RenderType.CompositeState.builder()
           .setShaderState(RENDERTYPE_LINES_SHADER)
           .setLayeringState(VIEW_OFFSET_Z_LAYERING)
@@ -87,7 +87,7 @@ public class FakeBlockRenderTypes extends RenderType {
    *
    */
   public static final RenderType SOLID_COLOUR = create(FutureLibMod.MODID + ":solidcolour",
-      DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, BUFFERSIZE, CRUMBLING, SORT,
+      DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.QUADS, BUFFERSIZE, CRUMBLING, SORT,
       RenderType.CompositeState.builder()
           .setShaderState(RENDERTYPE_LINES_SHADER)
           .setLayeringState(VIEW_OFFSET_Z_LAYERING)
@@ -103,7 +103,7 @@ public class FakeBlockRenderTypes extends RenderType {
    * Used by cyclic:prospector
    */
   public static final RenderType TOMB_LINES = create(FutureLibMod.MODID + ":tomb_lines",
-      DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.LINES, BUFFERSIZE, CRUMBLING, SORT,
+      DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.LINES, BUFFERSIZE, CRUMBLING, SORT,
       RenderType.CompositeState.builder()
           .setShaderState(RENDERTYPE_LINES_SHADER)
           .setLineState(new LineStateShard(OptionalDouble.of(2.5D)))

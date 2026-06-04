@@ -35,7 +35,7 @@ public class LaserRenderType extends RenderType {
           .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
           .setDepthTestState(NO_DEPTH_TEST)
           .setCullState(NO_CULL)
-          .setLightmapState(NO_LIGHTMAP)
+          .setLightmapState(LIGHTMAP)
           .setWriteMaskState(COLOR_WRITE)
           .createCompositeState(false));
   public static final RenderType LASER_MAIN_ADDITIVE = create("MiningLaserAdditiveBeam",
@@ -46,7 +46,7 @@ public class LaserRenderType extends RenderType {
           .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
           .setDepthTestState(NO_DEPTH_TEST)
           .setCullState(NO_CULL)
-          .setLightmapState(NO_LIGHTMAP)
+          .setLightmapState(LIGHTMAP)
           .setWriteMaskState(COLOR_WRITE)
           .createCompositeState(false));
   public static final RenderType LASER_MAIN_CORE = create("MiningLaserCoreBeam",
@@ -57,7 +57,7 @@ public class LaserRenderType extends RenderType {
           .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
           .setDepthTestState(NO_DEPTH_TEST)
           .setCullState(NO_CULL)
-          .setLightmapState(NO_LIGHTMAP)
+          .setLightmapState(LIGHTMAP)
           .setWriteMaskState(COLOR_WRITE)
           .createCompositeState(false));
 }
