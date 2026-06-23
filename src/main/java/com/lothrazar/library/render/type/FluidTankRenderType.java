@@ -24,7 +24,7 @@ public class FluidTankRenderType extends RenderType {
           .setTextureState(new RenderStateShard.TextureStateShard(InventoryMenu.BLOCK_ATLAS, false, false))
           .setCullState(CULL)
           .setLightmapState(LIGHTMAP)
-          .setWriteMaskState(COLOR_WRITE)
+          .setWriteMaskState(COLOR_DEPTH_WRITE)
           .setLightmapState(LIGHTMAP)
           //          .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
           .createCompositeState(true));

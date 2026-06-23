@@ -21,11 +21,29 @@ public class PacketSyncFluid extends PacketFlib implements CustomPacketPayload {
   public static final CustomPacketPayload.Type<PacketSyncFluid> TYPE =
       new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(FutureLibMod.MODID, "sync_fluid"));
 
-  public static final StreamCodec<RegistryFriendlyByteBuf, PacketSyncFluid> STREAM_CODEC =
+  private static final StreamCodec<RegistryFriendlyByteBuf, PacketSyncFluid> INNER_CODEC =
       StreamCodec.composite(
           BlockPos.STREAM_CODEC, PacketSyncFluid::getPos,
           FluidStack.OPTIONAL_STREAM_CODEC, PacketSyncFluid::getFluid,
           PacketSyncFluid::new);
+
+  public static final StreamCodec<RegistryFriendlyByteBuf, PacketSyncFluid> STREAM_CODEC = StreamCodec.of(
+      (buf, msg) -> {
+//        int before = buf.writerIndex();
+        INNER_CODEC.encode(buf, msg);
+//        int wrote = buf.writerIndex() - before;
+//        FutureLibMod.LOGGER.debug("[PKT-DBG] encode PacketSyncFluid wrote={} fluid={} amount={} hasComponents={}",
+//            wrote, msg.getFluid().getFluid(), msg.getFluid().getAmount(),
+//            !msg.getFluid().getComponents().isEmpty());
+      },
+      buf -> {
+//        int before = buf.readableBytes();
+        PacketSyncFluid p = INNER_CODEC.decode(buf);
+//        int consumed = before - buf.readableBytes();
+//        FutureLibMod.LOGGER.debug("[PKT-DBG] decode PacketSyncFluid before={} consumed={} remaining={} fluid={} amount={}",
+//            before, consumed, buf.readableBytes(), p.getFluid().getFluid(), p.getFluid().getAmount());
+        return p;
+      });
 
   private final BlockPos pos;
   private final FluidStack fluid;

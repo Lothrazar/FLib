@@ -113,7 +113,6 @@ public class CommandModule extends EventFlib {
                         .then(Commands.argument("z", IntegerArgumentType.integer())
                             .then(Commands.argument("p", EntityArgument.players())
                                 .executes(x -> {
-                                  FutureLibMod.LOGGER.info("flib test " + x.getSource());
                                   CommandModule.tpx(x, DimensionArgument.getDimension(x, "dim"),
                                       new BlockPos(IntegerArgumentType.getInteger(x, "x"), IntegerArgumentType.getInteger(x, "y"), IntegerArgumentType.getInteger(x, "z")), EntityArgument.getPlayers(x, "p"));
                                   return 0; // CommandHome.executeTp(x, EntityArgument.getPlayers(x, ARG_PLAYER));

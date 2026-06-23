@@ -36,5 +36,6 @@
     ,"0.2.2": "Patch fall_damage packet"
     ,"0.2.3": "Fix cube vertex rendering"
     ,"0.2.4": "Fix renderLaser helpers. Fix some RenderTypes.  Fix client crash related to 'java.io.IOException: Packet play/clientbound/minecraft:custom_payload'.  Fix RenderBlockUtils::line()"
+    ,"0.2.5": "Update fluid rendering helpers to use COLOR_DEPTH_WRITE.  Cleaned up some 'flib test' logging"
   }
 }

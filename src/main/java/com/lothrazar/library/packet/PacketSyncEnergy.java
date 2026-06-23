@@ -20,11 +20,25 @@ public class PacketSyncEnergy extends PacketFlib implements CustomPacketPayload 
   public static final CustomPacketPayload.Type<PacketSyncEnergy> TYPE =
       new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(FutureLibMod.MODID, "sync_energy"));
 
-  public static final StreamCodec<FriendlyByteBuf, PacketSyncEnergy> STREAM_CODEC =
+  private static final StreamCodec<FriendlyByteBuf, PacketSyncEnergy> INNER_CODEC =
       StreamCodec.composite(
           BlockPos.STREAM_CODEC, PacketSyncEnergy::getPos,
           ByteBufCodecs.INT, PacketSyncEnergy::getEnergy,
           PacketSyncEnergy::new);
+
+  public static final StreamCodec<FriendlyByteBuf, PacketSyncEnergy> STREAM_CODEC = StreamCodec.of(
+      (buf, msg) -> {
+//        int before = buf.writerIndex();
+        INNER_CODEC.encode(buf, msg);
+       // FutureLibMod.LOGGER.debug("[PKT-DBG] encode PacketSyncEnergy wrote={}", buf.writerIndex() - before);
+      },
+      buf -> {
+//        int before = buf.readableBytes();
+        PacketSyncEnergy p = INNER_CODEC.decode(buf);
+//        FutureLibMod.LOGGER.debug("[PKT-DBG] decode PacketSyncEnergy before={} consumed={} remaining={}",
+//            before, before - buf.readableBytes(), buf.readableBytes());
+        return p;
+      });
 
   private final BlockPos pos;
   private final int energy;
