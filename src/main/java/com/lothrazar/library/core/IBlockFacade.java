@@ -5,10 +5,13 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public interface IBlockFacade {
+
+  BooleanProperty HAS_FACADE = BooleanProperty.create("has_facade");
 
   default VoxelShape getFacadeShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
     BlockState tfs = getFacadeState(state, level, pos);

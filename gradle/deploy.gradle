@@ -86,11 +86,14 @@ modrinth {
 tasks.named('modrinth').configure {
   notCompatibleWithConfigurationCache('Minotaur is not configuration-cache compatible')
 
+  def modVersion  = project.version
+  def modProjectId = modrinth_id
+
   doFirst {
     def versions = new groovy.json.JsonSlurper()
-        .parse(new URI("https://api.modrinth.com/v2/project/${modrinth_id}/version").toURL())
-    if (versions.any { it.version_number == project.version }) {
-      throw new GradleException("Modrinth version ${modrinth_id}-${project.version} already exists — bump mod_version before publishing.")
+        .parse(new URI("https://api.modrinth.com/v2/project/${modProjectId}/version").toURL())
+    if (versions.any { it.version_number == modVersion }) {
+      throw new GradleException("Modrinth version ${modProjectId}-${modVersion} already exists - bump mod_version before publishing.")
     }
   }
 }

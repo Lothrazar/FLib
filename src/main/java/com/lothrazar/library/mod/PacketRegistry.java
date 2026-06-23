@@ -1,10 +1,6 @@
 package com.lothrazar.library.mod;
 
-import com.lothrazar.library.packet.PacketItemToggle;
-import com.lothrazar.library.packet.PacketPlayerFalldamage;
-import com.lothrazar.library.packet.PacketRotateBlock;
-import com.lothrazar.library.packet.PacketSyncEnergy;
-import com.lothrazar.library.packet.PacketSyncFluid;
+import com.lothrazar.library.packet.*;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -23,5 +19,6 @@ public class PacketRegistry {
     registrar.playToServer(PacketRotateBlock.TYPE, PacketRotateBlock.STREAM_CODEC, PacketRotateBlock::handle);
     registrar.playToClient(PacketSyncEnergy.TYPE, PacketSyncEnergy.STREAM_CODEC, PacketSyncEnergy::handle);
     registrar.playToClient(PacketSyncFluid.TYPE, PacketSyncFluid.STREAM_CODEC, PacketSyncFluid::handle);
+    registrar.playToServer(BlockFacadeMessage.TYPE, BlockFacadeMessage.STREAM_CODEC, BlockFacadeMessage::handle);
   }
 }
