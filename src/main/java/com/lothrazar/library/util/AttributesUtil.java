@@ -3,7 +3,7 @@ package com.lothrazar.library.util;
 import java.util.Collection;
 import java.util.Random;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -17,9 +17,9 @@ public class AttributesUtil {
 
   static final Random RAND = new Random();
   // TODO: we should take id as input? instead of just hardcoding?
-  public static final ResourceLocation DEFAULT_ID =  ResourceLocation.fromNamespaceAndPath(MODID, "default");
-  public static final ResourceLocation MULT_ID =  ResourceLocation.fromNamespaceAndPath(MODID, "multi");
-  public static final ResourceLocation ID_STEP_HEIGHT = ResourceLocation.fromNamespaceAndPath(MODID, "step_height");
+  public static final Identifier DEFAULT_ID =  Identifier.fromNamespaceAndPath(MODID, "default");
+  public static final Identifier MULT_ID =  Identifier.fromNamespaceAndPath(MODID, "multi");
+  public static final Identifier ID_STEP_HEIGHT = Identifier.fromNamespaceAndPath(MODID, "step_height");
   static final float VANILLA = 0.6F;
 
   //    player.maxUpStep = 0.6F; // LivingEntity.class constructor defaults to this
@@ -86,14 +86,14 @@ public class AttributesUtil {
   }
 
   // this is block reach not entity reach
-  public static void removePlayerReach(ResourceLocation id, Player player) {
+  public static void removePlayerReach(Identifier id, Player player) {
 
     AttributeInstance attr = player.getAttribute(Attributes.BLOCK_INTERACTION_RANGE);
     attr.removeModifier(id);
   }
 
     // this is block reach not entity reach
-  public static void setPlayerReach(ResourceLocation id, Player player, int reachBoost) {
+  public static void setPlayerReach(Identifier id, Player player, int reachBoost) {
     removePlayerReach(id, player);
     AttributeInstance attr = player.getAttribute(Attributes.BLOCK_INTERACTION_RANGE);
     //vanilla is 5, so +11 it becomes 16
@@ -101,7 +101,7 @@ public class AttributesUtil {
     attr.addPermanentModifier(enchantment);
   }
 
-  public static void updateAttrModifierBy(Holder<Attribute> attr, ResourceLocation id, Player playerIn, int value) {
+  public static void updateAttrModifierBy(Holder<Attribute> attr, Identifier id, Player playerIn, int value) {
     AttributeInstance healthAttribute = playerIn.getAttribute(attr);
     AttributeModifier oldHealthModifier = healthAttribute.getModifier(id);
     //what is our value

@@ -49,7 +49,7 @@ public class LivingTileCache {
    *          for dimension key
    */
   public void unload(Level level, BlockPos pos) {
-    if (!level.isClientSide) {
+    if (!level.isClientSide()) {
       final String key = LevelWorldUtil.dimensionToString(level);
       boolean removed = remove(key, pos);
       if (removed) {
@@ -68,7 +68,7 @@ public class LivingTileCache {
    *          for dimension key
    */
   public void load(Level level, BlockPos pos) {
-    if (!level.isClientSide) {
+    if (!level.isClientSide()) {
       final String key = LevelWorldUtil.dimensionToString(level);
       boolean added = add(key, pos);
       if (added) {

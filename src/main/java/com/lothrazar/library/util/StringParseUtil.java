@@ -25,12 +25,12 @@ package com.lothrazar.library.util;
 
 import java.util.List;
 import com.lothrazar.library.FutureLibMod;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 public class StringParseUtil {
 
-  public static boolean isInList(final List<? extends String> list, ResourceLocation toMatch) {
+  public static boolean isInList(final List<? extends String> list, Identifier toMatch) {
     return isInList(list, toMatch, true);
   }
 
@@ -47,7 +47,7 @@ public class StringParseUtil {
    * <p>
    * If the list has "hc:*_sapling" and input is "hc:whatever_sapling" then match is true
    */
-  public static boolean isInList(final List<? extends String> list, ResourceLocation toMatch, boolean matchWildcard) {
+  public static boolean isInList(final List<? extends String> list, Identifier toMatch, boolean matchWildcard) {
     if (toMatch == null || list == null) {
       return false;
     }

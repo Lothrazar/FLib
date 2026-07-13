@@ -7,7 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -60,12 +60,12 @@ public class LevelWorldUtil {
 
   public static String dimensionToString(Level world) {
     //example: returns "minecraft:overworld" resource location
-    return world.dimension().location().toString();
-    //RegistryKey.create(Registry.WORLD_KEY, ResourceLocation.fromNamespaceAndPath("twilightforest", "twilightforest"));
+    return world.dimension().identifier().toString();
+    //RegistryKey.create(Registry.WORLD_KEY, Identifier.fromNamespaceAndPath("twilightforest", "twilightforest"));
   }
 
   public static ResourceKey<Level> stringToDimension(String key) {
-    return ResourceKey.create(Registries.DIMENSION, ResourceLocation.tryParse(key));
+    return ResourceKey.create(Registries.DIMENSION, Identifier.tryParse(key));
   }
 
   public static double distanceBetweenHorizontal(BlockPos start, BlockPos end) {
@@ -101,7 +101,7 @@ public class LevelWorldUtil {
       return null;
     }
     ItemEntity entityItem = new ItemEntity(world, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, stack);
-    if (world.isClientSide == false) {
+    if (world.isClientSide() == false) {
       world.addFreshEntity(entityItem);
     }
     return entityItem;
@@ -109,12 +109,12 @@ public class LevelWorldUtil {
 
   public static void dropItemStackRandomMotion(Level world, BlockPos pos, ItemStack itemStack, float motion) {
     ItemEntity entityitem = new ItemEntity(world,
-        pos.getX() + world.random.nextFloat() * 0.8F + 0.1F,
-        pos.getY() + world.random.nextFloat() * 0.8F + 0.1F,
-        pos.getZ() + world.random.nextFloat() * 0.8F + 0.1F, itemStack);
-    float motionX = (float) world.random.nextGaussian() * motion;
-    float motionY = (float) world.random.nextGaussian() * motion + 0.2F;
-    float motionZ = (float) world.random.nextGaussian() * motion;
+        pos.getX() + world.getRandom().nextFloat() * 0.8F + 0.1F,
+        pos.getY() + world.getRandom().nextFloat() * 0.8F + 0.1F,
+        pos.getZ() + world.getRandom().nextFloat() * 0.8F + 0.1F, itemStack);
+    float motionX = (float) world.getRandom().nextGaussian() * motion;
+    float motionY = (float) world.getRandom().nextGaussian() * motion + 0.2F;
+    float motionZ = (float) world.getRandom().nextGaussian() * motion;
     entityitem.setDeltaMovement(motionX, motionY, motionZ);
     world.addFreshEntity(entityitem);
   }
@@ -216,7 +216,7 @@ public class LevelWorldUtil {
     int zMax = (int) player.getZ() + radiusIn;
     int distance = 0, distanceClosest = radiusIn * radiusIn;
     BlockPos posCurrent = null;
-    Level world = player.getCommandSenderWorld();
+    Level world = player.level();
     for (int xLoop = xMin; xLoop <= xMax; xLoop++) {
       for (int yLoop = yMin; yLoop <= yMax; yLoop++) {
         for (int zLoop = zMin; zLoop <= zMax; zLoop++) {
@@ -263,7 +263,7 @@ public class LevelWorldUtil {
   public static BlockPos getFirstBlockAbove(Level world, BlockPos pos) {
     //similar to vanilla fn getTopSolidOrLiquidBlock
     BlockPos posCurrent = null;
-    for (int y = pos.getY() + 1; y < world.getMaxBuildHeight(); y++) {
+    for (int y = pos.getY() + 1; y < world.getMaxY(); y++) {
       posCurrent = new BlockPos(pos.getX(), y, pos.getZ());
       if (world.getBlockState(posCurrent).isAir() &&
           world.getBlockState(posCurrent.above()).isAir() &&
@@ -293,7 +293,7 @@ public class LevelWorldUtil {
     }
     BlockPos posCurrent;
     BlockPos posPrevious = pos;
-    for (int y = pos.getY(); y < world.getMaxBuildHeight() && y > 0; y += increment) {
+    for (int y = pos.getY(); y < world.getMaxY() && y > 0; y += increment) {
       posCurrent = new BlockPos(pos.getX(), y, pos.getZ());
       if (!world.isEmptyBlock(posCurrent)) {
         return posPrevious;

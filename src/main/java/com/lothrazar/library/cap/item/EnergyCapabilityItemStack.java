@@ -8,7 +8,9 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 
 /**
  * IEnergyStorage that reads/writes energy to an ItemStack's CustomData component.
- * In NeoForge 1.21+, register this via RegisterCapabilitiesEvent:
+ * TODO 26.1 port: the capability key moved to Capabilities.Energy.ITEM, which now expects a
+ * transactional EnergyHandler rather than IEnergyStorage - registration needs a fresh look.
+ * In NeoForge 1.21.x, this was registered via RegisterCapabilitiesEvent:
  *   event.registerItem(Capabilities.EnergyStorage.ITEM,
  *       (stack, ctx) -> new EnergyCapabilityItemStack(stack, maxEnergy), myItem);
  */
@@ -44,7 +46,7 @@ public class EnergyCapabilityItemStack implements IEnergyStorage {
   @Override
   public int getEnergyStored() {
     CustomData data = stack.get(DataComponents.CUSTOM_DATA);
-    return data != null ? data.copyTag().getInt(NBTENERGY) : 0;
+    return data != null ? data.copyTag().getIntOr(NBTENERGY, 0) : 0;
   }
 
   @Override

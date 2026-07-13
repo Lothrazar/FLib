@@ -31,11 +31,15 @@ public class TimeUtil {
    * @return hour
    */
   public static int getHourOfDay(Level level) {
-    return ((int) level.getDayTime()) / TimeUtil.TICKS_PER_HOUR;
+    return ((int) level.getOverworldClockTime()) / TimeUtil.TICKS_PER_HOUR;
   }
 
+  // TODO 26.1 port: Level#getSunAngle was removed with no direct replacement found - sky/sun angle
+  // now appears to be driven by the new world.clock/world.timeline system (net.minecraft.world.timeline.Timelines,
+  // net.minecraft.world.clock.WorldClock), which needs real research. Approximating with the classic
+  // dayTime-based day/night boundary (ticks 13000-23000) in the meantime.
   public static boolean isNight(Level level) {
-    float angle = level.getSunAngle(0.0F);
-    return angle >= 0.245F && angle <= 0.755F;
+    long dayTime = level.getOverworldClockTime() % TimeUtil.TICKS_PER_DAY;
+    return dayTime >= 13000L && dayTime <= 23000L;
   }
 }

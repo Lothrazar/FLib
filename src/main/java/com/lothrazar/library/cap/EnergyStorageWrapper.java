@@ -1,9 +1,8 @@
 package com.lothrazar.library.cap;
 
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.IntTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.energy.EnergyStorage;
 
 /**
@@ -43,27 +42,17 @@ public class EnergyStorageWrapper extends EnergyStorage {
    * Deserialize energy from a CompoundTag (e.g. from block entity NBT).
    */
   public void loadFromTag(CompoundTag tag) {
-    setEnergy(tag.getInt(NBTENERGY));
+    setEnergy(tag.getIntOr(NBTENERGY, 0));
   }
 
-  // Override INBTSerializable<IntTag> from EnergyStorage with provider signatures
+  // Override ValueIOSerializable from EnergyStorage
   @Override
-  public IntTag serializeNBT(HolderLookup.Provider provider) {
-    return IntTag.valueOf(getEnergyStored());
+  public void serialize(ValueOutput output) {
+    output.putInt(NBTENERGY, getEnergyStored());
   }
 
   @Override
-  public void deserializeNBT(HolderLookup.Provider provider, Tag nbt) {
-    if (nbt instanceof IntTag intNbt) {
-      setEnergy(intNbt.getAsInt());
-    }
-    //legacy fallback: vanilla EnergyStorage used to serialize as a CompoundTag with an
-    //"energy" key. Worlds saved before the IntTag switch still arrive in that shape.
-    else if (nbt instanceof CompoundTag compoundNbt) {
-      setEnergy(compoundNbt.getInt(NBTENERGY));
-    }
-    else if (nbt != null) {
-      throw new IllegalArgumentException("Can not deserialize EnergyStorageWrapper from " + nbt.getClass().getSimpleName());
-    }
+  public void deserialize(ValueInput input) {
+    setEnergy(input.getIntOr(NBTENERGY, 0));
   }
 }

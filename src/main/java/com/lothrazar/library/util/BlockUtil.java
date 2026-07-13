@@ -142,7 +142,7 @@ public class BlockUtil {
         //blockHere.getMaterial(stateHere)
         if (stateHere.liquid() == false) {
           boolean dropBlock = true;
-          if (world.isClientSide == false) {
+          if (world.isClientSide() == false) {
             world.destroyBlock(placePos, dropBlock);
           }
         }
@@ -155,7 +155,7 @@ public class BlockUtil {
     try {
       // flags specifies what to update, '3' means notify client & neighbors
       // isRemote to make sure we are in a server thread
-      if (world.isClientSide == false) {
+      if (world.isClientSide() == false) {
         success = world.setBlock(placePos, placeState, 3); // returns false when placement failed
       }
     }

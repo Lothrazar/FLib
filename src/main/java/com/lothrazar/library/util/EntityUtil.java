@@ -29,7 +29,7 @@ import com.lothrazar.library.data.BlockPosDim;
 import com.lothrazar.library.data.Vector3;
 import com.lothrazar.library.portal.DimensionTransitionWrapper;
 import com.lothrazar.library.packet.PacketPlayerFalldamage;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -42,12 +42,13 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.animal.horse.AbstractHorse;
-import net.minecraft.world.entity.animal.horse.Horse;
+import net.minecraft.world.entity.animal.equine.AbstractHorse;
+import net.minecraft.world.entity.animal.equine.Horse;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -68,14 +69,13 @@ public class EntityUtil {
 
   public static boolean isTamedByPlayer(Entity entity, Player player) {
     //TODO: do we care haveSameDimension(tamed, player) 
-    if (entity instanceof OwnableEntity tamed) { //TamableAnimal impl ownable 
-      return tamed.getOwnerUUID() != null &&
-          tamed.getOwnerUUID().equals(player.getUUID());
+    if (entity instanceof OwnableEntity tamed) { //TamableAnimal impl ownable
+      return tamed.getOwner() != null &&
+          tamed.getOwner().getUUID().equals(player.getUUID());
     }
-    else if (entity instanceof AbstractHorse) {
-      AbstractHorse horse = (AbstractHorse) entity;
-      return horse.getOwnerUUID() != null &&
-          horse.getOwnerUUID().equals(player.getUUID());
+    else if (entity instanceof AbstractHorse horse) {
+      return horse.getOwner() != null &&
+          horse.getOwner().getUUID().equals(player.getUUID());
     }
     return false;
   }
@@ -101,7 +101,7 @@ public class EntityUtil {
 
   private static void teleportWallSafe(LivingEntity player, Level world, double x, double y, double z) {
     BlockPos coords = BlockPos.containing(x, y, z);
-    world.getChunk(coords).setUnsaved(true);
+    world.getChunk(coords).markUnsaved();
     player.teleportTo(x, y, z);
     moveEntityWallSafe(player, world);
   }
@@ -445,7 +445,7 @@ public class EntityUtil {
   }
 
   public static void setCooldownItem(Player player, Item item, int cooldown) {
-    player.getCooldowns().addCooldown(item, cooldown);
+    player.getCooldowns().addCooldown(new ItemStack(item), cooldown);
   }
 
   public static Attribute getAttributeJump(Horse ahorse) {
@@ -464,8 +464,8 @@ public class EntityUtil {
       entity.setDeltaMovement(entity.getDeltaMovement().x, climbSpeed, entity.getDeltaMovement().z);
       entity.fallDistance = 0.0F;
     } //setting fall distance on clientside wont work
-    if (worldIn.isClientSide && entity.tickCount % TICKS_FALLDIST_SYNC == 0) {
-      PacketDistributor.sendToServer(new PacketPlayerFalldamage());
+    if (worldIn.isClientSide() && entity.tickCount % TICKS_FALLDIST_SYNC == 0) {
+      ClientPacketDistributor.sendToServer(new PacketPlayerFalldamage());
     }
   }
 
@@ -473,13 +473,11 @@ public class EntityUtil {
     if (player instanceof FakePlayer) {
       return;
     }
-    if (!player.canChangeDimensions(player.getCommandSenderWorld(), world)) {
-      return;
-    }
-    if (!world.isClientSide) {
+    // TODO 26.1 port: Entity#canChangeDimensions was removed with no direct replacement found yet; guard dropped for now.
+    if (!world.isClientSide()) {
       DimensionTransitionWrapper transit = new DimensionTransitionWrapper(world, loc);
       transit.applyPreTeleportEffects(player);
-      player.changeDimension(transit.buildTransition(player));
+      player.teleport(transit.buildTransition(player));
     }
   }
 }

@@ -1,10 +1,12 @@
 package com.lothrazar.library.util;
 
 import com.mojang.brigadier.context.CommandContext;
+import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -15,7 +17,7 @@ public class ChatUtil {
   }
 
   public static void addChatMessage(Player player, MutableComponent message) {
-    if (player.level().isClientSide) {
+    if (player.level().isClientSide()) {
       player.sendSystemMessage(message);
     }
   }
@@ -29,7 +31,7 @@ public class ChatUtil {
   }
 
   public static void addServerChatMessage(Player player, Component message) {
-    if (!player.level().isClientSide) {
+    if (!player.level().isClientSide()) {
       player.sendSystemMessage(message);
     }
   }
@@ -39,12 +41,15 @@ public class ChatUtil {
   }
 
   public static void sendStatusMessage(Player player, String message) {
-    player.displayClientMessage(ilang(message), true);
+    sendStatusMessage(player, ilang(message));
   }
 
   public static void sendStatusMessage(Player player, Component nameTextComponent) {
-    if (player.level().isClientSide) {
-      player.displayClientMessage(nameTextComponent, true);
+    if (player instanceof ServerPlayer serverPlayer) {
+      serverPlayer.sendSystemMessage(nameTextComponent, true);
+    }
+    else if (player.level().isClientSide()) {
+      Minecraft.getInstance().gui.setOverlayMessage(nameTextComponent, false);
     }
   }
 

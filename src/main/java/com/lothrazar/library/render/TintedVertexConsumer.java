@@ -1,6 +1,7 @@
 package com.lothrazar.library.render;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.util.ARGB;
 
 public class TintedVertexConsumer implements VertexConsumer {
 
@@ -27,6 +28,12 @@ public class TintedVertexConsumer implements VertexConsumer {
   }
 
   @Override
+  public VertexConsumer setColor(int color) {
+    delegate.setColor((int) (ARGB.red(color) * r), (int) (ARGB.green(color) * g), (int) (ARGB.blue(color) * b), ARGB.alpha(color));
+    return this;
+  }
+
+  @Override
   public VertexConsumer setUv(float u, float v) {
     delegate.setUv(u, v);
     return this;
@@ -47,6 +54,12 @@ public class TintedVertexConsumer implements VertexConsumer {
   @Override
   public VertexConsumer setNormal(float nx, float ny, float nz) {
     delegate.setNormal(nx, ny, nz);
+    return this;
+  }
+
+  @Override
+  public VertexConsumer setLineWidth(float width) {
+    delegate.setLineWidth(width);
     return this;
   }
 }

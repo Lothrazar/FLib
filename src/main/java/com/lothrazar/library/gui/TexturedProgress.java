@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import com.lothrazar.library.core.Const;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class TexturedProgress {
 
@@ -15,17 +16,17 @@ public class TexturedProgress {
   protected final int y;
   protected final int width;
   protected final int height;
-  protected final ResourceLocation texture;
+  protected final Identifier texture;
   public int guiLeft;
   public int guiTop;
   public int max = 1;
   protected boolean topDown = true;
 
-  public TexturedProgress(Font parent, int x, int y, ResourceLocation texture) {
+  public TexturedProgress(Font parent, int x, int y, Identifier texture) {
     this(parent, x, y, 14, 14, texture);
   }
 
-  public TexturedProgress(Font parent, int x, int y, int width, int height, ResourceLocation texture) {
+  public TexturedProgress(Font parent, int x, int y, int width, int height, Identifier texture) {
     this.font = parent;
     this.x = x;
     this.y = y;
@@ -39,26 +40,26 @@ public class TexturedProgress {
         && guiTop + y <= mouseY && mouseY <= guiTop + y + height;
   }
 
-  public void draw(GuiGraphics gg, float current) {
+  public void draw(GuiGraphicsExtractor gg, float current) {
     int relX;
     int relY;
     relX = guiLeft + x;
     relY = guiTop + y;
     if (this.topDown) {
-      gg.blit(texture, relX, relY, 0, 0, width, height, width, height * 2);
+      gg.blit(RenderPipelines.GUI_TEXTURED, texture, relX, relY, 0, 0, width, height, width, height * 2);
       int rHeight = height - (int) (height * Math.min(current / max, 1.0F));
-      gg.blit(texture, relX, relY, 0, height, width, rHeight, width, height * 2);
+      gg.blit(RenderPipelines.GUI_TEXTURED, texture, relX, relY, 0, height, width, rHeight, width, height * 2);
     }
     else { //Left-Right mode
-      gg.blit(texture, relX, relY, 0, height, width, height, width, height * 2);
+      gg.blit(RenderPipelines.GUI_TEXTURED, texture, relX, relY, 0, height, width, height, width, height * 2);
       int rWidth = (int) (width * Math.min(current / max, 1.0F));
       if (current != 0) {
-        gg.blit(texture, relX, relY, 0, 0, width - rWidth, height, width, height * 2);
+        gg.blit(RenderPipelines.GUI_TEXTURED, texture, relX, relY, 0, 0, width - rWidth, height, width, height * 2);
       }
     }
   }
 
-  public void renderHoveredToolTip(GuiGraphics gg, int mouseX, int mouseY, int curr) {
+  public void renderHoveredToolTip(GuiGraphicsExtractor gg, int mouseX, int mouseY, int curr) {
     if (this.isMouseover(mouseX, mouseY) && curr > 0) {
       String display = "";
       int seconds = curr / Const.TICKS_PER_SEC;
@@ -77,7 +78,7 @@ public class TexturedProgress {
       }
       List<Component> list = new ArrayList<>();
       list.add(Component.translatable(display));
-      gg.renderComponentTooltip(font, list, mouseX, mouseY);
+      gg.setComponentTooltipForNextFrame(font, list, mouseX, mouseY);
     }
   }
 

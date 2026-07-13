@@ -10,12 +10,13 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * Handles cross-dimension teleportation via the vanilla 1.21 DimensionTransition API.
- * ITeleporter (Forge) no longer exists — entity.changeDimension(DimensionTransition) is the replacement.
+ * Handles cross-dimension teleportation via the vanilla TeleportTransition API
+ * (renamed from DimensionTransition in 26.1). ITeleporter (Forge) no longer exists —
+ * entity.changeDimension(TeleportTransition) is the replacement.
  *
  * @see com/lothrazar/cyclic/world/
  */
@@ -41,23 +42,22 @@ public class DimensionTransitionWrapper {
   }
 
   /**
-   * Builds the DimensionTransition for use with entity.changeDimension().
-   * The PostDimensionTransition callback applies effects on the entity after arrival.
+   * Builds the TeleportTransition for use with entity.changeDimension().
+   * The PostTeleportTransition callback applies effects on the entity after arrival.
    */
-  public DimensionTransition buildTransition(Player player) {
+  public TeleportTransition buildTransition(Player player) {
     ServerLevel targetLevel = getTargetLevel();
     BlockPos safePos = moveToSafeCoords(targetLevel, target.getPos());
-    return new DimensionTransition(
+    return new TeleportTransition(
         targetLevel,
         new Vec3(safePos.getX() + 0.5, safePos.getY() + 0.5, safePos.getZ() + 0.5),
         Vec3.ZERO,
         player.getYRot(),
         player.getXRot(),
-        false,
         entity -> {
-          // PostDimensionTransition: runs on the entity after it arrives in the new dimension
+          // PostTeleportTransition: runs on the entity after it arrives in the new dimension
           if (entity instanceof LivingEntity living) {
-            living.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 200, 200, false, false));
+            living.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 200, 200, false, false));
             living.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 20, 20, false, false));
           }
           entity.fallDistance = 0;
@@ -70,14 +70,14 @@ public class DimensionTransitionWrapper {
    * Call this before changeDimension().
    */
   public void applyPreTeleportEffects(Player player) {
-    if (!player.isCreative() && !player.level().isClientSide) {
-      player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 200, 200, false, false));
+    if (!player.isCreative() && !player.level().isClientSide()) {
+      player.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 200, 200, false, false));
     }
     if (this.world != null) {
       this.world.playSound(null,
           target.getX() + 0.5D, target.getY() + 0.5D, target.getZ() + 0.5D,
           SoundEvents.PORTAL_TRAVEL, SoundSource.MASTER,
-          0.25F, this.world.random.nextFloat() * 0.4F + 0.8F);
+          0.25F, this.world.getRandom().nextFloat() * 0.4F + 0.8F);
     }
   }
 

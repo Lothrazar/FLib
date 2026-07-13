@@ -6,7 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
@@ -89,7 +89,7 @@ public class ItemStackUtil {
   }
 
   public static ItemStack findItem(String id) {
-    Item head = BuiltInRegistries.ITEM.getOptional(ResourceLocation.tryParse(id)).orElse(null);
+    Item head = BuiltInRegistries.ITEM.getOptional(Identifier.tryParse(id)).orElse(null);
     if (head != null) {
       return new ItemStack(head);
     }
@@ -139,19 +139,19 @@ public class ItemStackUtil {
   }
 
   public static void damageItemRandomly(LivingEntity player, ItemStack stack) {
-    if (player.level().random.nextDouble() < 0.001) {
+    if (player.level().getRandom().nextDouble() < 0.001) {
       damageItem(player, stack);
     }
   }
 
   public static void drop(Level world, BlockPos pos, Block drop) {
-    if (!world.isClientSide) {
+    if (!world.isClientSide()) {
       world.addFreshEntity(new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(drop.asItem())));
     }
   }
 
   public static void drop(Level world, BlockPos pos, ItemStack drop) {
-    if (!world.isClientSide) {
+    if (!world.isClientSide()) {
       world.addFreshEntity(new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), drop));
     }
   }
@@ -177,7 +177,7 @@ public class ItemStackUtil {
     if (stack.isEmpty()) {
       return;
     }
-    if (world.isClientSide == false) {
+    if (world.isClientSide() == false) {
       ItemEntity entityItem = new ItemEntity(world, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, stack);
       // do not spawn a second 'ghost' one onclient side
       world.addFreshEntity(entityItem);
@@ -220,6 +220,6 @@ public class ItemStackUtil {
    * @return
    */
   public static boolean isEdible(ItemStack s) {
-    return (s.getItem().getFoodProperties(s,null) != null);
+    return s.get(DataComponents.FOOD) != null;
   }
 }

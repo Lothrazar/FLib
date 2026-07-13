@@ -5,7 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -60,7 +60,7 @@ public class AutoSprintUtil {
 
   public static void setAutorunState(Player player, boolean value) {
     player.getPersistentData().putBoolean(NBT, value);
-    player.displayClientMessage(Component.translatable("autorun." + value), true);
+    Minecraft.getInstance().gui.setOverlayMessage(Component.translatable("autorun." + value), false);
     player.setSprinting(value);
   }
 
@@ -68,7 +68,7 @@ public class AutoSprintUtil {
     if (player == null || player.getPersistentData() == null) {
       return false;
     }
-    return player.getPersistentData().getBoolean(NBT);
+    return player.getPersistentData().getBooleanOr(NBT, false);
   }
 
   public static boolean doesKeypressHaltSprint(Player p) {

@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -101,7 +102,8 @@ public class EnchantUtil {
 
   public static ItemStack getFirstArmorStackWithEnchant(Holder<Enchantment> enchantment, LivingEntity entity) {
     if (entity == null) return ItemStack.EMPTY;
-    for (ItemStack armor : entity.getArmorSlots()) {
+    for (EquipmentSlot slot : EquipmentSlotGroup.ARMOR) {
+      ItemStack armor = entity.getItemBySlot(slot);
       if (!armor.isEmpty() && EnchantmentHelper.getTagEnchantmentLevel(enchantment, armor) > 0) {
         return armor;
       }

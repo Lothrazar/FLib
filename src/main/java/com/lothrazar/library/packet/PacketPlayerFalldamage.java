@@ -4,7 +4,7 @@ import com.lothrazar.library.FutureLibMod;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
@@ -16,7 +16,7 @@ public class PacketPlayerFalldamage extends PacketFlib implements CustomPacketPa
   public static final int TICKS_FALLDIST_SYNC = 22;
 
   public static final CustomPacketPayload.Type<PacketPlayerFalldamage> TYPE =
-      new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(FutureLibMod.MODID, "fall_damage"));
+      new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(FutureLibMod.MODID, "fall_damage"));
 
   //  public static final StreamCodec<FriendlyByteBuf, PacketPlayerFalldamage> STREAM_CODEC =
   //      StreamCodec.unit(new PacketPlayerFalldamage());

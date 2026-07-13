@@ -3,11 +3,12 @@ package com.lothrazar.library.render;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraft.world.level.material.Fluid;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.minecraft.client.resources.model.sprite.SpriteId;
+import net.minecraft.data.AtlasIds;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.material.FluidState;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 /**
@@ -28,21 +29,17 @@ public class FluidRenderMap<V> extends Object2ObjectOpenCustomHashMap<FluidStack
     super(FluidHashStrategy.INSTANCE);
   }
 
+  // 26.1 port: IClientFluidTypeExtensions#getStillTexture/getFlowingTexture were removed. Fluid
+  // sprites are now resolved through the fluid's baked FluidModel (same object the vanilla
+  // in-world FluidRenderer uses), fetched from Minecraft's ModelManager.
   public static TextureAtlasSprite getFluidTexture(FluidStack fluidStack, FluidFlow type) {
-    Fluid fluid = fluidStack.getFluid();
-    ResourceLocation spriteLocation;
-    IClientFluidTypeExtensions fluidAttributes = IClientFluidTypeExtensions.of(fluid);
-    if (type == FluidFlow.STILL) {
-      spriteLocation = fluidAttributes.getStillTexture(fluidStack);
-    }
-    else {
-      spriteLocation = fluidAttributes.getFlowingTexture(fluidStack);
-    }
-    return getSprite(spriteLocation);
+    FluidState fluidState = fluidStack.getFluid().defaultFluidState();
+    FluidModel model = Minecraft.getInstance().getModelManager().getFluidStateModelSet().get(fluidState);
+    return type == FluidFlow.STILL ? model.stillMaterial().sprite() : model.flowingMaterial().sprite();
   }
 
-  public static TextureAtlasSprite getSprite(ResourceLocation spriteLocation) {
-    return Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(spriteLocation);
+  public static TextureAtlasSprite getSprite(Identifier spriteLocation) {
+    return Minecraft.getInstance().getAtlasManager().get(new SpriteId(AtlasIds.BLOCKS, spriteLocation));
   }
 
   /**

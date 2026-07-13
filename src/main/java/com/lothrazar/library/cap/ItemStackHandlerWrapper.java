@@ -1,10 +1,10 @@
 package com.lothrazar.library.cap;
 
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemStackHandler;
@@ -18,7 +18,7 @@ import java.util.stream.Stream;
  *
  * @see com/lothrazar/cyclic/capabilities/
  */
-public class ItemStackHandlerWrapper implements IItemHandler, IItemHandlerModifiable, INBTSerializable<CompoundTag> {
+public class ItemStackHandlerWrapper implements IItemHandler, IItemHandlerModifiable, ValueIOSerializable {
 
   public static final String NBT_INPUT = "Input";
   public static final String NBT_OUTPUT = "Output";
@@ -94,17 +94,15 @@ public class ItemStackHandlerWrapper implements IItemHandler, IItemHandlerModifi
   }
 
   @Override
-  public CompoundTag serializeNBT(HolderLookup.Provider provider) {
-    CompoundTag cmp = new CompoundTag();
-    cmp.put(NBT_INPUT, input.serializeNBT(provider));
-    cmp.put(NBT_OUTPUT, output.serializeNBT(provider));
-    return cmp;
+  public void serialize(ValueOutput output0) {
+    input.serialize(output0.child(NBT_INPUT));
+    output.serialize(output0.child(NBT_OUTPUT));
   }
 
   @Override
-  public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
-    input.deserializeNBT(provider, nbt.getCompound(NBT_INPUT));
-    output.deserializeNBT(provider, nbt.getCompound(NBT_OUTPUT));
+  public void deserialize(ValueInput input0) {
+    input.deserialize(input0.childOrEmpty(NBT_INPUT));
+    output.deserialize(input0.childOrEmpty(NBT_OUTPUT));
   }
 
   @FunctionalInterface

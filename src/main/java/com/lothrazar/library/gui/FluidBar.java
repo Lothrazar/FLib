@@ -6,18 +6,18 @@ import java.util.List;
 import com.lothrazar.library.FutureLibMod;
 import com.lothrazar.library.render.FluidRenderMap;
 import com.lothrazar.library.render.FluidRenderMap.FluidFlow;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 public class FluidBar {
 
-  public static final ResourceLocation FLUID_WIDGET = ResourceLocation.fromNamespaceAndPath(FutureLibMod.MODID, "textures/gui/fluid.png");
+  public static final Identifier FLUID_WIDGET = Identifier.fromNamespaceAndPath(FutureLibMod.MODID, "textures/gui/fluid.png");
   public String emtpyTooltip = "0";
   private Font font;
   private int x;
@@ -55,9 +55,9 @@ public class FluidBar {
     this.width = width;
   }
 
-  public void draw(GuiGraphics gg, FluidStack fluid) {
+  public void draw(GuiGraphicsExtractor gg, FluidStack fluid) {
     final int u = 0, v = 0, x = guiLeft + getX(), y = guiTop + getY();
-    gg.blit(FLUID_WIDGET,
+    gg.blit(RenderPipelines.GUI_TEXTURED, FLUID_WIDGET,
         x, y, u, v,
         width, height,
         width, height);
@@ -70,22 +70,15 @@ public class FluidBar {
     float scale = amount / capacity;
     int fluidAmount = (int) (scale * height);
     TextureAtlasSprite sprite = FluidRenderMap.getFluidTexture(fluid, FluidFlow.STILL);
-    if (fluid.getFluid() == Fluids.WATER) {
-      //hack in the blue because water is grey and is filled in by the biome when in-world
-      RenderSystem.setShaderColor(0, 0, 1, 1);
-    }
+    //hack in the blue because water is grey and is filled in by the biome when in-world
+    //RenderSystem.setShaderColor no longer exists; blitSprite now takes the tint directly as an ARGB int
+    int tint = fluid.getFluid() == Fluids.WATER ? 0xFF0000FF : 0xFFFFFFFF;
     int xPosition = x + 1;
     int yPosition = y + 1;
     int maximum = height - 2;
     int desiredWidth = width - 2;
     int desiredHeight = fluidAmount - 2;
-    // the .getBlitOffset() no longer exists.
-    //good news we can drop vertexbuilder sprites and use gg blit this way
-    // RenderUtils.drawTiledSprite(gg, xPosition,yPosition,yOffset, width - 2, fluidAmount - 2, sprite);
-    gg.blit(xPosition, yPosition + (maximum - desiredHeight), 0, desiredWidth, desiredHeight, sprite);
-    if (fluid.getFluid() == Fluids.WATER) {
-      RenderSystem.setShaderColor(1, 1, 1, 1); //un-apply the water filter
-    }
+    gg.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, xPosition, yPosition + (maximum - desiredHeight), desiredWidth, desiredHeight, tint);
   }
 
   public boolean isMouseover(int mouseX, int mouseY) {
@@ -93,7 +86,7 @@ public class FluidBar {
         && guiTop + y <= mouseY && mouseY <= guiTop + y + height;
   }
 
-  public void renderHoveredToolTip(GuiGraphics ms, int mouseX, int mouseY, FluidStack current) {
+  public void renderHoveredToolTip(GuiGraphicsExtractor ms, int mouseX, int mouseY, FluidStack current) {
     if (this.isMouseover(mouseX, mouseY)) {
       this.renderTooltip(ms, mouseX, mouseY, current);
     }
@@ -111,13 +104,13 @@ public class FluidBar {
     return capacity;
   }
 
-  public void renderTooltip(GuiGraphics gg, int mouseX, int mouseY, FluidStack current) {
+  public void renderTooltip(GuiGraphicsExtractor gg, int mouseX, int mouseY, FluidStack current) {
     String tt = emtpyTooltip;
     if (current != null && !current.isEmpty()) {
       tt = current.getAmount() + "/" + getCapacity() + " " + current.getHoverName().getString(); // getDisplayName() -> getHoverName()
     }
     List<Component> list = new ArrayList<>();
     list.add(Component.translatable(tt));
-    gg.renderComponentTooltip(font, list, mouseX, mouseY);
+    gg.setComponentTooltipForNextFrame(font, list, mouseX, mouseY);
   }
 }

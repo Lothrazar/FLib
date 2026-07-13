@@ -3,7 +3,7 @@ package com.lothrazar.library.recipe.conditions;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.conditions.ICondition;
 
 /**
@@ -15,12 +15,12 @@ public class EntityExistsCondition implements ICondition {
 
   public static final MapCodec<EntityExistsCondition> CODEC = RecordCodecBuilder.mapCodec(instance ->
       instance.group(
-          ResourceLocation.CODEC.fieldOf("value").forGetter(c -> c.entityId)
+          Identifier.CODEC.fieldOf("value").forGetter(c -> c.entityId)
       ).apply(instance, EntityExistsCondition::new));
 
-  private final ResourceLocation entityId;
+  private final Identifier entityId;
 
-  public EntityExistsCondition(ResourceLocation entityId) {
+  public EntityExistsCondition(Identifier entityId) {
     this.entityId = entityId;
   }
 

@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LiquidBlock;
@@ -27,12 +28,12 @@ public class GenericFluidBlock extends LiquidBlock {
 
   @SuppressWarnings("deprecation")
   @Override
-  public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-    if (!level.isClientSide && !onInside.isEmpty() && entity instanceof LivingEntity ent) {
+  public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier, boolean isPrecise) {
+    if (!level.isClientSide() && !onInside.isEmpty() && entity instanceof LivingEntity ent) {
       for (Consumer<LivingEntity> effect : onInside) {
         effect.accept(ent);
       }
     }
-    super.entityInside(state, level, pos, entity);
+    super.entityInside(state, level, pos, entity, effectApplier, isPrecise);
   }
 }

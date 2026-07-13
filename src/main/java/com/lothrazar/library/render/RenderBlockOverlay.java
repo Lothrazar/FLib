@@ -7,42 +7,47 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.event.RenderHighlightEvent;
+import net.neoforged.neoforge.client.event.ExtractBlockOutlineRenderStateEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 
 /**
  * Copyright (c) 2015 Vorquel (modified by Lothrazar 2016-2023)
- * 
+ *
  * This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
- * 
+ *
  * Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
- * 
+ *
  * 1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product
  * documentation would be appreciated but is not required.
- * 
+ *
  * 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
- * 
+ *
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * 
+ * 26.1 port: RenderHighlightEvent was replaced by ExtractBlockOutlineRenderStateEvent, which no
+ * longer renders directly - instead you register a CustomBlockOutlineRenderer callback that runs
+ * later. Per the event's own docs, the ClientLevel/event must not be captured by the callback;
+ * only primitive data extracted in the handler (block pos, hit result, camera position) may be
+ * captured, which is why this now takes two steps: onExtractOutline() decides whether/what to
+ * draw, addCustomRenderer() actually draws it later.
  */
 public class RenderBlockOverlay {
 
-  private final ResourceLocation overlayLocation;
+  private final Identifier overlayLocation;
   private final String id;
   private Class<?> itemClass;
 
-  public RenderBlockOverlay(String id, ResourceLocation overlayLocationIn, Class<?> classIn) {
+  public RenderBlockOverlay(String id, Identifier overlayLocationIn, Class<?> classIn) {
     this.id = id;
     overlayLocation = overlayLocationIn;
     this.itemClass = classIn;
@@ -104,64 +109,61 @@ public class RenderBlockOverlay {
   }
 
   @SubscribeEvent
-  public void renderOverlay(RenderHighlightEvent.Block event) {
-    if (event.getTarget().getType() != HitResult.Type.BLOCK) {
+  public void onExtractOutline(ExtractBlockOutlineRenderStateEvent event) {
+    if (event.getHitResult().getType() != HitResult.Type.BLOCK) {
       return;
     }
     if (!shouldRender()) {
       return;
     }
-    BlockHitResult result = event.getTarget();
-    PoseStack poseStack = event.getPoseStack();
-    MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
-    Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-    BlockPos blockPos = new BlockPos(result.getBlockPos());
-    Vec3 hitVec = result.getLocation();
-    Direction indexd;
-    int[] look = new int[6];
     if (isBadBlock(event)) {
-      indexd = Direction.UP;
-      look = new int[] { cancel, cancel, cancel, cancel, cancel, cancel };
+      return;
     }
-    else {
-      indexd = PlayerClickBlockfaceUtil.getClickLocationDirection(result.getDirection(), hitVec, blockPos);
-      if (indexd == null) {
-        return;
-      }
-      indexd = indexd.getOpposite();
-      switch (indexd) {
-        case DOWN:
-          look = new int[] { arrow3, bullseye, arrow2, arrow2, cross, arrow3 };
-        break;
-        case UP:
-          look = new int[] { arrow1, cross, arrow4, arrow4, bullseye, arrow1 };
-        break;
-        case NORTH:
-          look = new int[] { arrow2, arrow3, bullseye, arrow3, arrow2, cross };
-        break;
-        case SOUTH:
-          look = new int[] { arrow4, arrow1, cross, arrow1, arrow4, bullseye };
-        break;
-        case WEST:
-          look = new int[] { bullseye, arrow2, arrow3, cross, arrow3, arrow2 };
-        break;
-        case EAST:
-          look = new int[] { cross, arrow4, arrow1, bullseye, arrow1, arrow4 };
-        break;
-        default:
-        break;
-      }
+    final BlockPos blockPos = event.getBlockPos();
+    final BlockHitResult result = event.getHitResult();
+    final Vec3 hitVec = result.getLocation();
+    final Vec3 cameraPos = event.getCamera().position();
+    Direction indexd = PlayerClickBlockfaceUtil.getClickLocationDirection(result.getDirection(), hitVec, blockPos);
+    if (indexd == null) {
+      return;
     }
-    poseStack.pushPose();
-    RenderType renderType = OverlayRenderType.overlayRenderer(id, overlayLocation);
-    VertexConsumer vertexConsumer = bufferSource.getBuffer(renderType);
-    poseStack.translate(-projectedView.x, -projectedView.y, -projectedView.z);
-    //      .log.info("{} ::  mPos {} ({}  {}  {}) ", mPos, indexd, v.x, v.y, v.z);
+    indexd = indexd.getOpposite();
+    final int[] look = lookupArrows(indexd);
+    event.addCustomRenderer((renderState, buffer, poseStack, translucentPass, levelRenderState) -> {
+      renderOverlay(buffer, poseStack, cameraPos, blockPos, hitVec, look);
+      return false;
+    });
+  }
+
+  private int[] lookupArrows(Direction indexd) {
+    switch (indexd) {
+      case DOWN:
+        return new int[] { arrow3, bullseye, arrow2, arrow2, cross, arrow3 };
+      case UP:
+        return new int[] { arrow1, cross, arrow4, arrow4, bullseye, arrow1 };
+      case NORTH:
+        return new int[] { arrow2, arrow3, bullseye, arrow3, arrow2, cross };
+      case SOUTH:
+        return new int[] { arrow4, arrow1, cross, arrow1, arrow4, bullseye };
+      case WEST:
+        return new int[] { bullseye, arrow2, arrow3, cross, arrow3, arrow2 };
+      case EAST:
+        return new int[] { cross, arrow4, arrow1, bullseye, arrow1, arrow4 };
+      default:
+        return new int[] { cancel, cancel, cancel, cancel, cancel, cancel };
+    }
+  }
+
+  private void renderOverlay(MultiBufferSource.BufferSource bufferSource, PoseStack poseStack, Vec3 cameraPos, BlockPos blockPos, Vec3 hitVec, int[] look) {
     double yDiff = hitVec.y - blockPos.getY();
     if (yDiff > PlayerClickBlockfaceUtil.HI && yDiff < PlayerClickBlockfaceUtil.LO) {
       //edge corner case
       return;
     }
+    poseStack.pushPose();
+    RenderType renderType = OverlayRenderType.overlayRenderer(id, overlayLocation);
+    VertexConsumer vertexConsumer = bufferSource.getBuffer(renderType);
+    poseStack.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
     poseStack.translate(blockPos.getX(), blockPos.getY(), blockPos.getZ());
     //P/N ONLY exist to prevent layer fighting/flashing, push it just outside ontop of the block, so 1 + this fract
     final float P = 1 / 256f, N = -1 / 256f;
@@ -204,11 +206,11 @@ public class RenderBlockOverlay {
 
   /**
    * Override this to exclude blocks by state/tile/replacable etc
-   * 
+   *
    * @param event
    * @return
    */
-  public boolean isBadBlock(RenderHighlightEvent.Block event) {
+  public boolean isBadBlock(ExtractBlockOutlineRenderStateEvent event) {
     return false;
     //    BlockPos pos = event.getTarget().getBlockPos();
     //    World world = event.getPlayer().world;

@@ -1,5 +1,5 @@
 package com.lothrazar.library.gui;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
-public record TileableTexture(ResourceLocation texture, int width, int height) {}
+public record TileableTexture(Identifier texture, int width, int height) {}

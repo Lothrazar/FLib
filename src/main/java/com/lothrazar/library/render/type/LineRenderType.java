@@ -1,33 +1,40 @@
 package com.lothrazar.library.render.type;
 
-import java.util.OptionalDouble;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat.Mode;
-import net.minecraft.client.renderer.RenderType;
+import com.lothrazar.library.FutureLibMod;
+import com.mojang.blaze3d.pipeline.DepthStencilState;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.platform.CompareOp;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.rendertype.LayeringTransform;
+import net.minecraft.client.renderer.rendertype.OutputTarget;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.resources.Identifier;
+import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 
 /**
  * Renders the cube outline of the block, just all the edges not the faces
  *
+ * 26.1 port: see LaserRenderType for the general RenderPipeline/RenderSetup migration notes.
+ * Line width (was a static LineStateShard) is now supplied per-vertex via VertexConsumer#setLineWidth.
  */
-public class LineRenderType extends RenderType {
+public class LineRenderType {
 
-  public LineRenderType(String nameIn, VertexFormat formatIn, Mode drawMode, int bufferSizeIn, boolean useDelegateIn, boolean needsSortingIn, Runnable setupTaskIn, Runnable clearTaskIn) {
-    super(nameIn, formatIn, drawMode, bufferSizeIn, useDelegateIn, needsSortingIn, setupTaskIn, clearTaskIn);
-  }
+  // Like RenderPipelines.LINES_SNIPPET, but with depth testing disabled so the outline is always visible.
+  private static final RenderPipeline TOMB_LINES_PIPELINE = RenderPipeline.builder(RenderPipelines.LINES_SNIPPET)
+      .withLocation(Identifier.fromNamespaceAndPath(FutureLibMod.MODID, "pipeline/line_tomb_lines"))
+      .withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, true))
+      .build();
 
   public static RenderType tombLinesType() {
-    return create("tomb_lines",
-        DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, Mode.LINES, 256, false, false,
-        RenderType.CompositeState.builder()
-            .setShaderState(RENDERTYPE_LINES_SHADER)
-            .setLineState(new LineStateShard(OptionalDouble.of(2.5D)))
-            .setLayeringState(VIEW_OFFSET_Z_LAYERING)
-            .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-            .setOutputState(ITEM_ENTITY_TARGET)
-            .setWriteMaskState(COLOR_DEPTH_WRITE)
-            .setCullState(NO_CULL)
-            .setDepthTestState(NO_DEPTH_TEST)
-            .createCompositeState(false));
+    return RenderType.create("flib:tomb_lines",
+        RenderSetup.builder(TOMB_LINES_PIPELINE)
+            .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
+            .setOutputTarget(OutputTarget.ITEM_ENTITY_TARGET)
+            .createRenderSetup());
+  }
+
+  public static void registerPipelines(RegisterRenderPipelinesEvent event) {
+    event.registerPipeline(TOMB_LINES_PIPELINE);
   }
 }

@@ -18,7 +18,7 @@ public class FluidHolder {
         .replaceable()
         .pushReaction(PushReaction.DESTROY)
         .sound(SoundType.EMPTY)
-        .noCollission()
+        .noCollision()
         .noOcclusion()
         .strength(100.0F)
         .noLootTable();

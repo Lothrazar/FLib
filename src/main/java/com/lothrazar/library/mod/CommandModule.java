@@ -75,18 +75,14 @@ public class CommandModule extends EventFlib {
     CommandDispatcher<CommandSourceStack> r = event.getDispatcher();
     r.register(LiteralArgumentBuilder.<CommandSourceStack> literal(FutureLibMod.MODID)
         .then(Commands.literal(SubCommands.HELP.toString())
-            .requires((p) -> {
-              return p.hasPermission(0); // everyone
-            })
+            .requires(Commands.hasPermission(Commands.LEVEL_ALL))
             .executes(x -> {
               return CommandModule.executeHelp(x);
             }))
         // cyclic gamemode @p 1
         //                /flib tpx minecraft:the_end 0 99 0 @p
         .then(Commands.literal(SubCommands.DEBUG.toString())
-            .requires((p) -> {
-              return p.hasPermission(PERM_ELEVATED);
-            })
+            .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
             .then(Commands.literal("itemheld")
                 .then(Commands.literal("nbt")
                     .executes(x -> {
@@ -104,9 +100,7 @@ public class CommandModule extends EventFlib {
                         })))))
         //
         .then(Commands.literal(SubCommands.TPX.toString())
-            .requires((p) -> {
-              return p.hasPermission(PERM_ELEVATED);
-            })
+            .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
             .then(Commands.argument("dim", DimensionArgument.dimension())
                 .then(Commands.argument("x", IntegerArgumentType.integer())
                     .then(Commands.argument("y", IntegerArgumentType.integer())
@@ -121,9 +115,7 @@ public class CommandModule extends EventFlib {
         // flib health random @p -2 2
         // flib health factor @p 0.8
         .then(Commands.literal(SubCommands.HEALTH.toString())
-            .requires((p) -> {
-              return p.hasPermission(PERM_ELEVATED);
-            })
+            .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
             .then(Commands.literal(FORK_SET)
                 .then(Commands.argument(ARG_PLAYER, EntityArgument.players())
                     .then(Commands.argument(ARG_VALUE, FloatArgumentType.floatArg(0, 100F))
@@ -154,9 +146,7 @@ public class CommandModule extends EventFlib {
         //   /flib hunger random @p -4 9
         //   /flib hunger factor @p 0.5
         .then(Commands.literal(SubCommands.HUNGER.toString())
-            .requires((p) -> {
-              return p.hasPermission(PERM_ELEVATED);
-            })
+            .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
             .then(Commands.literal(FORK_FACTOR)
                 .then(Commands.argument(ARG_PLAYER, EntityArgument.players())
                     .then(Commands.argument(ARG_VALUE, DoubleArgumentType.doubleArg(0, 10))
@@ -186,9 +176,7 @@ public class CommandModule extends EventFlib {
         // flib hearts random @p -2 2
         // flib hearts factor @p 0.8
         .then(Commands.literal(SubCommands.HEARTS.toString())
-            .requires((p) -> {
-              return p.hasPermission(PERM_ELEVATED);
-            })
+            .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
             .then(Commands.literal(FORK_SET)
                 .then(Commands.argument(ARG_PLAYER, EntityArgument.players())
                     .then(Commands.argument(ARG_VALUE, IntegerArgumentType.integer())
@@ -218,9 +206,7 @@ public class CommandModule extends EventFlib {
         //flib scoreboard add @p 5 <objective>
         //flib scoreboard test @p <objective>
         .then(Commands.literal(SubCommands.SCOREBOARD.toString())
-            .requires((p) -> {
-              return p.hasPermission(PERM_ELEVATED);
-            })
+            .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
             .then(Commands.literal(FORK_RANDOM)
                 .then(Commands.argument(ARG_TARGETS, ScoreHolderArgument.scoreHolders())
                     .then(Commands.argument(ARG_MIN, IntegerArgumentType.integer())
@@ -249,9 +235,7 @@ public class CommandModule extends EventFlib {
                         })))))
         // cyclic gamemode @p 1
         .then(Commands.literal(SubCommands.GAMEMODE.toString())
-            .requires((p) -> {
-              return p.hasPermission(PERM_ELEVATED);
-            })
+            .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
             .then(Commands.argument(ARG_PLAYER, EntityArgument.players())
                 .then(Commands.argument(ARG_VALUE, IntegerArgumentType.integer(0, 3))
                     .executes(x -> {
@@ -261,9 +245,7 @@ public class CommandModule extends EventFlib {
         // /cyclic attributes minecraft:reach_distance random @p 3 8
         // /cyclic attributes minecraft:reach_distance reset @p
         .then(Commands.literal(SubCommands.ATTRIBUTE.toString()) //same as hearts but subcommand again instead of just number
-            .requires((p) -> {
-              return p.hasPermission(PERM_ELEVATED);
-            })
+            .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
             .then(Commands.argument(ARG_ATTR, ResourceKeyArgument.key(Registries.ATTRIBUTE))
                 .then(Commands.literal(FORK_ADD)
                     .then(Commands.argument(ARG_PLAYER, EntityArgument.players())
@@ -468,7 +450,7 @@ public class CommandModule extends EventFlib {
   public static int executePrintTags(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
     ServerPlayer player = ctx.getSource().getPlayerOrException();
     ItemStack held = player.getMainHandItem();
-    for (TagKey<Item> tag : held.getTags().collect(Collectors.toList())) {
+    for (TagKey<Item> tag : held.typeHolder().tags().collect(Collectors.toList())) {
       ChatUtil.sendFeedback(ctx, tag.toString());
     }
     return 0;

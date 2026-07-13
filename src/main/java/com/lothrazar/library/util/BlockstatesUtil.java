@@ -19,9 +19,10 @@ public class BlockstatesUtil {
 
   public static Direction getFacingFromEntity(BlockPos clickedBlock, LivingEntity entity) {
     return Direction.getNearest(
-        (float) (entity.xOld - clickedBlock.getX()),
-        (float) (entity.yOld - clickedBlock.getY()),
-        (float) (entity.zOld - clickedBlock.getZ()));
+        Math.round((float) (entity.xOld - clickedBlock.getX())),
+        Math.round((float) (entity.yOld - clickedBlock.getY())),
+        Math.round((float) (entity.zOld - clickedBlock.getZ())),
+        Direction.NORTH);
   }
 
   public static Direction getFacingFromEntityHorizontal(BlockPos clickedBlock, LivingEntity entity) {

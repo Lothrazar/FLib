@@ -3,7 +3,7 @@ package com.lothrazar.library.util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -36,7 +36,7 @@ public class SoundUtil {
   }
 
   public static void playSound(Entity entityIn, SoundEvent soundIn, float volume, float pitch) {
-    if (entityIn != null && entityIn.level().isClientSide) {
+    if (entityIn != null && entityIn.level().isClientSide()) {
       entityIn.playSound(soundIn, volume, pitch);
     }
   }
@@ -70,7 +70,7 @@ public class SoundUtil {
   }
 
   public static void playSoundFromServerById(ServerLevel world, BlockPos pos, String sid) {
-    SoundEvent sound = BuiltInRegistries.SOUND_EVENT.getOptional(ResourceLocation.parse(sid)).orElse(null);
+    SoundEvent sound = BuiltInRegistries.SOUND_EVENT.getOptional(Identifier.parse(sid)).orElse(null);
     if (sound != null) {
       for (ServerPlayer sp : world.players()) {
         playSoundFromServer(sp, pos, sound, 1F, 1F);
@@ -80,8 +80,8 @@ public class SoundUtil {
 
   public static void playSoundById(Player player, String sid) {
     //do the thing
-    SoundEvent sound = BuiltInRegistries.SOUND_EVENT.getOptional(ResourceLocation.parse(sid)).orElse(null);
-    if (sound != null && player.level().isClientSide) {
+    SoundEvent sound = BuiltInRegistries.SOUND_EVENT.getOptional(Identifier.parse(sid)).orElse(null);
+    if (sound != null && player.level().isClientSide()) {
       SoundUtil.playSound(player, sound);
     }
   }

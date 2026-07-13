@@ -2,7 +2,7 @@ package com.lothrazar.library.cap.player;
 
 import com.lothrazar.library.FutureLibMod;
 import java.util.function.Supplier;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.capabilities.EntityCapability;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -29,6 +29,6 @@ public class PlayerCapProvider {
    */
   public static final EntityCapability<PlayerCapabilityStorage, Void> PLAYER_MANA_CAP =
       EntityCapability.createVoid(
-          ResourceLocation.fromNamespaceAndPath(FutureLibMod.MODID, "player_mana"),
+          Identifier.fromNamespaceAndPath(FutureLibMod.MODID, "player_mana"),
           PlayerCapabilityStorage.class);
 }

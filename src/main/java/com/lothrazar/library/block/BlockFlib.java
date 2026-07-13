@@ -6,6 +6,7 @@ import com.lothrazar.library.util.ItemStackUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -21,8 +22,10 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
+import net.minecraft.world.level.redstone.Orientation;
+import org.jspecify.annotations.Nullable;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -120,11 +123,13 @@ public class BlockFlib extends Block {
 
   @SuppressWarnings("deprecation")
   @Override
-  public BlockState updateShape(BlockState bs, Direction face, BlockState bsOp, LevelAccessor level, BlockPos pos, BlockPos posOther) {
+  protected BlockState updateShape(BlockState bs, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction directionToNeighbour,
+      BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
     if (me.facingAttachment) {
-      return !bs.canSurvive(level, pos) ? Blocks.AIR.defaultBlockState() : super.updateShape(bs, face, bsOp, level, pos, posOther);
+      return !bs.canSurvive(level, pos) ? Blocks.AIR.defaultBlockState()
+          : super.updateShape(bs, level, ticks, pos, directionToNeighbour, neighbourPos, neighbourState, random);
     }
-    return super.updateShape(bs, face, bsOp, level, pos, posOther);
+    return super.updateShape(bs, level, ticks, pos, directionToNeighbour, neighbourPos, neighbourState, random);
   }
 
   @Override
@@ -136,8 +141,8 @@ public class BlockFlib extends Block {
   }
 
   @Override
-  public void neighborChanged(BlockState state, Level level, BlockPos pos, Block blockIn, BlockPos posOther, boolean flagIn) {
-    if (me.litWhenPowered && !level.isClientSide) {
+  protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block blockIn, @Nullable Orientation orientation, boolean flagIn) {
+    if (me.litWhenPowered && !level.isClientSide()) {
       boolean flag = state.getValue(LIT);
       if (flag != level.hasNeighborSignal(pos)) {
         if (flag) {
@@ -168,10 +173,11 @@ public class BlockFlib extends Block {
   }
 
   public void onRightClickBlock(RightClickBlock event, BlockState state) {
+    DyeColor newColor = event.getItemStack().get(DataComponents.DYE);
     if (me.rotateColour &&
-        event.getItemStack().getItem() instanceof DyeItem newColor) {
+        event.getItemStack().getItem() instanceof DyeItem && newColor != null) {
       boolean doConnected = event.getEntity().isCrouching();
-      rotateDye(state, event.getLevel(), event.getPos(), event.getEntity(), event.getItemStack(), newColor.getDyeColor(), doConnected);
+      rotateDye(state, event.getLevel(), event.getPos(), event.getEntity(), event.getItemStack(), newColor, doConnected);
     }
   }
 
@@ -204,12 +210,15 @@ public class BlockFlib extends Block {
     }
   }
 
-  @Override
+  // TODO 26.1 port: Block#appendHoverText (used in 1.21.1 by BlockItem to add block-specific
+  // tooltip lines) was removed entirely - Item's tooltip hook now uses TooltipDisplay/Consumer<Component>
+  // instead of List<Component>, and Block no longer has a matching hook at all. This is no longer called
+  // automatically by the engine; needs re-wiring (e.g. from BlockItemFlib) if this tooltip text should
+  // still show up on the block's item form.
   @OnlyIn(Dist.CLIENT)
   public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
     if (me.tooltip) {
       me.tooltipApply(this, tooltip);
     }
-    super.appendHoverText(stack, context, tooltip, flagIn);
   }
 }

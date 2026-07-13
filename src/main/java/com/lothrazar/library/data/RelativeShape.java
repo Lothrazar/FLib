@@ -102,13 +102,13 @@ public class RelativeShape {
   }
 
   public static RelativeShape read(CompoundTag tag) {
-    if (tag == null || tag.getBoolean(RelativeShape.VALID_SHAPE) == false) {
+    if (tag == null || !tag.getBooleanOr(RelativeShape.VALID_SHAPE, false)) {
       return null;
     }
-    int count = tag.getInt("count");
+    int count = tag.getIntOr("count", 0);
     List<BlockPos> shapeList = new ArrayList<>();
     for (int i = 0; i < count; i++) {
-      shapeList.add(new BlockPos(tag.getInt("x" + i), tag.getInt("y" + i), tag.getInt("z" + i)));
+      shapeList.add(new BlockPos(tag.getIntOr("x" + i, 0), tag.getIntOr("y" + i, 0), tag.getIntOr("z" + i, 0)));
     }
     RelativeShape shape = new RelativeShape();
     shape.shape = shapeList;

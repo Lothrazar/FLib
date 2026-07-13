@@ -2,12 +2,12 @@ package com.lothrazar.library.util;
 
 import java.util.Optional;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.TamableAnimal;
-import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.animal.equine.AbstractHorse;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -27,13 +27,13 @@ public class PlayerUtil {
   }
 
   public static boolean isTamedByPlayer(AbstractHorse horse, Player dmgOwner) {
-    return horse.isTamed() && horse.getOwnerUUID() != null &&
-        horse.getOwnerUUID().equals(dmgOwner.getUUID());
+    return horse.isTamed() && horse.getOwner() != null &&
+        horse.getOwner().getUUID().equals(dmgOwner.getUUID());
   }
 
   public static boolean isTamedByPlayer(TamableAnimal horse, Player dmgOwner) {
-    return horse.isTame() && horse.getOwnerUUID() != null &&
-        horse.getOwnerUUID().equals(dmgOwner.getUUID());
+    return horse.isTame() && horse.getOwner() != null &&
+        horse.getOwner().getUUID().equals(dmgOwner.getUUID());
   }
 
   public static void clearAllExp(Player player) {
@@ -114,7 +114,7 @@ public class PlayerUtil {
   }
 
   public static Item getItemArmorSlot(Player player, EquipmentSlot slot) {
-    ItemStack inslot = player.getInventory().armor.get(slot.getIndex());
+    ItemStack inslot = player.getItemBySlot(slot);
     Item item = (inslot.isEmpty()) ? null : inslot.getItem();
     return item;
   }
@@ -130,10 +130,10 @@ public class PlayerUtil {
    * @return optional vec3 respawn position
    */
   public static Optional<Vec3> getPlayerHome(ServerPlayer player) {
-    if (player.getRespawnPosition() == null) { // TODO: is this redundant? player method has its own null check
+    if (player.getRespawnConfig() == null) { // TODO: is this redundant? player method has its own null check
       return Optional.empty();
     }
-    DimensionTransition dt = player.findRespawnPositionAndUseSpawnBlock(false, DimensionTransition.DO_NOTHING);
-    return Optional.of(dt.pos());
+    TeleportTransition dt = player.findRespawnPositionAndUseSpawnBlock(false, TeleportTransition.DO_NOTHING);
+    return Optional.of(dt.position());
   }
 }

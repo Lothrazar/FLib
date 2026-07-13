@@ -9,7 +9,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
@@ -19,7 +19,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 public class PacketRotateBlock extends PacketFlib implements CustomPacketPayload {
 
   public static final CustomPacketPayload.Type<PacketRotateBlock> TYPE =
-      new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(FutureLibMod.MODID, "rotate_block"));
+      new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(FutureLibMod.MODID, "rotate_block"));
 
   private static final StreamCodec<FriendlyByteBuf, Direction> DIRECTION_CODEC =
       StreamCodec.of((buf, dir) -> buf.writeEnum(dir), buf -> buf.readEnum(Direction.class));

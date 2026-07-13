@@ -47,9 +47,8 @@ public class BlockPosDim {
     this.setDimension(dimension);
     if (stackTag != null && stackTag.contains("display")) {
       //
-      CompoundTag displayTag = stackTag.getCompound("display");
-      if (displayTag != null && displayTag.contains("Name", 8)) {
-        String nameJson = displayTag.getString("Name");
+      CompoundTag displayTag = stackTag.getCompoundOrEmpty("display");
+      displayTag.getString("Name").ifPresent(nameJson -> {
         Component namec = ComponentSerialization.CODEC
             .parse(JsonOps.INSTANCE, JsonParser.parseString(nameJson))
             .result()
@@ -57,7 +56,7 @@ public class BlockPosDim {
         // TODO: is this a waste of overcomplication? should it just be name string?
 //        this.name = displayTag.getString("Name");
         this.name = namec.getString();
-      }
+      });
     }
   }
 

@@ -11,7 +11,7 @@ public class BrewingRecipeFlib extends BrewingRecipe {
   private ItemStack inputStack;
 
   public BrewingRecipeFlib(ItemStack inputStack, Ingredient ingredient, ItemStack output) {
-    super(Ingredient.of(inputStack), ingredient, output);
+    super(Ingredient.of(inputStack.getItem()), ingredient, output);
     this.inputStack = inputStack;
   }
 

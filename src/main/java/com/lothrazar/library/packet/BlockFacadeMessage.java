@@ -7,7 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.repository.Pack;
@@ -16,7 +16,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class BlockFacadeMessage extends PacketFlib implements CustomPacketPayload {
 
-  public static final Type<BlockFacadeMessage> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("flib", "block_facade_message"));
+  public static final Type<BlockFacadeMessage> TYPE = new Type<>(Identifier.fromNamespaceAndPath("flib", "block_facade_message"));
 
   public static final StreamCodec<RegistryFriendlyByteBuf, BlockFacadeMessage> STREAM_CODEC = StreamCodec.of(BlockFacadeMessage::encode, BlockFacadeMessage::decode);
 
@@ -66,7 +66,8 @@ public class BlockFacadeMessage extends PacketFlib implements CustomPacketPayloa
         serverWorld.markAndNotifyBlock(message.pos, serverWorld.getChunkAt(message.pos),
             bs, bs, 3, 1);
         serverWorld.sendBlockUpdated(message.pos, bs, bs, 3);
-        serverWorld.blockUpdated(message.pos, bs.getBlock());
+        // TODO 26.1 port: Level#blockUpdated was removed with no direct replacement found;
+        // dropped since markAndNotifyBlock + sendBlockUpdated above already cover notification.
       }
     });
     // ctx.setPacketHandled(true);

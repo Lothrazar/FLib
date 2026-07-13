@@ -36,15 +36,15 @@ public class ParticleUtil {
   private static final double RANDOM_VERT = 1.5;
 
   private static double getVertRandom(Level world, double rando) {
-    return world.random.nextDouble() * rando - 0.1;
+    return world.getRandom().nextDouble() * rando - 0.1;
   }
 
   private static double getHorizRandom(Level world, double rando) {
-    return (world.random.nextDouble() - 0.5D) * rando;
+    return (world.getRandom().nextDouble() - 0.5D) * rando;
   }
 
   public static void spawnParticle(Level world, ParticleOptions sparkle, BlockPos pos, int count) {
-    if (world.isClientSide) {
+    if (world.isClientSide()) {
       spawnParticle(world, sparkle, pos.getX() + .5F, pos.getY() + .5F, pos.getZ() + .5F, count);
     }
   }

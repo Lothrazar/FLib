@@ -1,7 +1,7 @@
 package com.lothrazar.library.util;
 
 import com.mojang.authlib.GameProfile;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -23,7 +23,7 @@ public class TagDataUtil {
 
     ItemStack skull = new ItemStack(Items.PLAYER_HEAD);
 
-    skull.set(DataComponents.PROFILE, new ResolvableProfile(new GameProfile(Util.NIL_UUID, displayNameString)));
+    skull.set(DataComponents.PROFILE, ResolvableProfile.createResolved(new GameProfile(Util.NIL_UUID, displayNameString)));
     return skull;
   }
 
@@ -58,7 +58,7 @@ public class TagDataUtil {
   }
 
   public static BlockPos getBlockPos(CompoundTag tag) {
-    return new BlockPos(tag.getInt("xpos"), tag.getInt("ypos"), tag.getInt("zpos"));
+    return new BlockPos(tag.getIntOr("xpos", 0), tag.getIntOr("ypos", 0), tag.getIntOr("zpos", 0));
   }
 
   public static void setItemStackNBTVal(ItemStack item, String prop, int value) {

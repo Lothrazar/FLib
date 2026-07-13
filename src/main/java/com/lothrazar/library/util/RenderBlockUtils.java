@@ -8,32 +8,37 @@ import org.joml.Matrix4f;
 import com.lothrazar.library.data.Model3D;
 import com.lothrazar.library.render.RenderResizableCuboid;
 import com.lothrazar.library.render.type.FakeBlockRenderTypes;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.QuadInstance;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.color.block.BlockColors;
+import net.minecraft.client.color.block.BlockTintSource;
 import net.minecraft.client.player.LocalPlayer;
-
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.BlockStateModelSet;
+import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.util.ARGB;
+import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.util.RandomSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.fluid.FluidTintSource;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 /**
@@ -92,25 +97,17 @@ public class RenderBlockUtils {
   /**
    * This block-rendering function from direwolf20 MIT open source project https://github.com/Direwolf20-MC/BuildingGadgets/blob/1.15/LICENSE.md
    */
-  public static void renderModelBrightnessColorQuads(PoseStack.Pose matrixEntry, VertexConsumer builder, float red, float green, float blue, float alpha, List<BakedQuad> quads,
-      int combinedLights, int combinedOverlay) {
-    for (BakedQuad bakedquad : quads) {
-      float r;
-      float g;
-      float b;
-      if (bakedquad.isTinted()) {
-        r = red * 1f;
-        g = green * 1f;
-        b = blue * 1f;
-      }
-      else {
-        r = 1f;
-        g = 1f;
-        b = 1f;
-      }
-      //      addVertexData 
-      boolean readExistingColor = false;
-      builder.putBulkData(matrixEntry, bakedquad, r, g, b, alpha, combinedLights, combinedOverlay, readExistingColor);
+  public static void renderModelBrightnessColorQuads(PoseStack.Pose matrixEntry, VertexConsumer builder, float red, float green, float blue, float alpha,
+      List<BakedQuad> quads, int combinedLights, int combinedOverlay) {
+    QuadInstance instance = new QuadInstance();
+    instance.setLightCoords(combinedLights);
+    instance.setOverlayCoords(combinedOverlay);
+    for (BakedQuad quad : quads) {
+      float r = quad.materialInfo().isTinted() ? red : 1f;
+      float g = quad.materialInfo().isTinted() ? green : 1f;
+      float b = quad.materialInfo().isTinted() ? blue : 1f;
+      instance.setColor(ARGB.color((int) (alpha * 255f), (int) (r * 255f), (int) (g * 255f), (int) (b * 255f)));
+      builder.putBakedQuad(matrixEntry, quad, instance);
     }
   }
 
@@ -144,9 +141,9 @@ public class RenderBlockUtils {
     if (glow >= 15) {
       return FULL_LIGHT;
     }
-    int blockLight = LightTexture.block(light);
-    int skyLight = LightTexture.sky(light);
-    return LightTexture.pack(Math.max(blockLight, glow), Math.max(skyLight, glow));
+    int blockLight = LightCoordsUtil.block(light);
+    int skyLight = LightCoordsUtil.sky(light);
+    return LightCoordsUtil.pack(Math.max(blockLight, glow), Math.max(skyLight, glow));
   }
 
   @Deprecated
@@ -157,12 +154,16 @@ public class RenderBlockUtils {
     return getColorARGB(fluidStack);
   }
 
+  // 26.1 port: IClientFluidTypeExtensions#getTintColor was removed. Fluid tint is now provided by
+  // the fluid's baked FluidModel's FluidTintSource (same model FluidRenderMap resolves sprites from).
   public static int getColorARGB(FluidStack fluidStack) {
     if (fluidStack.isEmpty()) {
       return -1;
     }
-    IClientFluidTypeExtensions fluidAttributes = IClientFluidTypeExtensions.of(fluidStack.getFluid());
-    return fluidAttributes.getTintColor(fluidStack);
+    FluidState fluidState = fluidStack.getFluid().defaultFluidState();
+    FluidModel model = Minecraft.getInstance().getModelManager().getFluidStateModelSet().get(fluidState);
+    FluidTintSource tintSource = model.fluidTintSource();
+    return tintSource == null ? -1 : tintSource.colorAsStack(fluidStack);
   }
 
   public static float getRed(int color) {
@@ -198,43 +199,49 @@ public class RenderBlockUtils {
    * 
    */
   public static void renderAsBlock(Level world, final BlockPos centerPos, final List<BlockPos> shape, PoseStack matrix, BlockState renderBlockState, float alpha, float scale) {
-
-    // GameRenderer::getPositionTexShader removed in 1.21.1; shader is managed by the RenderType
-    RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
-
+    if (renderBlockState.getRenderShape() != RenderShape.MODEL) {
+      return;
+    }
     Minecraft mc = Minecraft.getInstance();
     MultiBufferSource.BufferSource buffer = mc.renderBuffers().bufferSource();
     VertexConsumer builder = buffer.getBuffer(FakeBlockRenderTypes.FAKE_BLOCK);
-    BlockRenderDispatcher dispatcher = mc.getBlockRenderer();
+    BlockStateModelSet modelSet = mc.getModelManager().getBlockStateModelSet();
+    BlockStateModel model = modelSet.get(renderBlockState);
+    BlockAndTintGetter tintGetter = world instanceof BlockAndTintGetter batg ? batg : BlockAndTintGetter.EMPTY;
+    BlockTintSource tintSource = mc.getBlockColors().getTintSource(renderBlockState, 0);
+    RandomSource random = world.getRandom();
+    int combinedLights = 15728640;
+    int combinedOverlay = OverlayTexture.NO_OVERLAY;
+    List<BlockStateModelPart> parts = new ArrayList<>();
     matrix.pushPose();
     matrix.translate(-centerPos.getX(), -centerPos.getY(), -centerPos.getZ());
     for (BlockPos coordinate : shape) {
-
-      float x = coordinate.getX();
-      float y = coordinate.getY();
-      float z = coordinate.getZ();
+      if (coordinate == null) {
+        continue;
+      }
       matrix.pushPose();
-      matrix.translate(x, y, z);
-      //
+      matrix.translate(coordinate.getX(), coordinate.getY(), coordinate.getZ());
       //shrink it up
       matrix.translate(-0.0005f, -0.0005f, -0.0005f);
       matrix.scale(scale, scale, scale);
-      BakedModel ibakedmodel = dispatcher.getBlockModel(renderBlockState);
-      BlockColors blockColors = Minecraft.getInstance().getBlockColors();
-      int color = blockColors.getColor(renderBlockState, world, coordinate, 0);
-      float red = (color >> 16 & 255) / 255.0F;
-      float green = (color >> 8 & 255) / 255.0F;
-      float blue = (color & 255) / 255.0F;
-      if (renderBlockState.getRenderShape() == RenderShape.MODEL) {
-        int combinedLights = 15728640;
-        int combinedOverlay = 655360;
+      int tintColor = tintSource == null ? -1 : tintSource.colorInWorld(renderBlockState, tintGetter, coordinate);
+      float red = ARGB.red(tintColor) / 255.0F;
+      float green = ARGB.green(tintColor) / 255.0F;
+      float blue = ARGB.blue(tintColor) / 255.0F;
+      model.collectParts(tintGetter, coordinate, renderBlockState, random, parts);
+      for (BlockStateModelPart part : parts) {
         for (Direction direction : Direction.values()) {
-          RenderBlockUtils.renderModelBrightnessColorQuads(matrix.last(), builder, red, green, blue, alpha,
-              ibakedmodel.getQuads(renderBlockState, direction, world.random,
-                  ibakedmodel.getModelData(world, centerPos, renderBlockState, null), FakeBlockRenderTypes.FAKE_BLOCK), // EmptyModelData.INSTANCE 
-              combinedLights, combinedOverlay);
+          List<BakedQuad> quads = part.getQuads(direction);
+          if (!quads.isEmpty()) {
+            RenderBlockUtils.renderModelBrightnessColorQuads(matrix.last(), builder, red, green, blue, alpha, quads, combinedLights, combinedOverlay);
+          }
+        }
+        List<BakedQuad> unculledQuads = part.getQuads(null);
+        if (!unculledQuads.isEmpty()) {
+          RenderBlockUtils.renderModelBrightnessColorQuads(matrix.last(), builder, red, green, blue, alpha, unculledQuads, combinedLights, combinedOverlay);
         }
       }
+      parts.clear();
       matrix.popPose();
     }
     matrix.popPose();
@@ -281,7 +288,6 @@ public class RenderBlockUtils {
       matrix.popPose();
     }
     matrix.popPose();
-    RenderSystem.disableDepthTest();
     buffer.endBatch(FakeBlockRenderTypes.SOLID_COLOUR);
   }
 
@@ -295,7 +301,7 @@ public class RenderBlockUtils {
   @Deprecated
   public static void renderColourCubes(RenderLevelStageEvent evt, Map<BlockPos, Color> coords, float alpha) {
     PoseStack matrix = evt.getPoseStack();
-    Vec3 view = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+    Vec3 view = Minecraft.getInstance().gameRenderer.getMainCamera().position();
     float scale = 1.01F;
     renderColourCubes(matrix, view, coords, scale, alpha);
   }
@@ -325,7 +331,6 @@ public class RenderBlockUtils {
       matrix.popPose();
     }
     matrix.popPose();
-    RenderSystem.disableDepthTest();
     buffer.endBatch(FakeBlockRenderTypes.TRANSPARENT_COLOUR);
   }
 
@@ -337,7 +342,7 @@ public class RenderBlockUtils {
    * tile's world position so the TESR's vanilla translation gets undone instead.
    */
   public static void createBox(PoseStack poseStack, BlockPos pos) {
-    createBox(poseStack, pos, Minecraft.getInstance().gameRenderer.getMainCamera().getPosition());
+    createBox(poseStack, pos, Minecraft.getInstance().gameRenderer.getMainCamera().position());
   }
   public static void createBox(PoseStack poseStack, BlockPos pos, Vec3 poseOriginInWorld) {
     poseStack.pushPose();
@@ -357,7 +362,7 @@ public class RenderBlockUtils {
     //rainbow magic
     float[] color = getRandomColour();
     // distance-clamp far positions (use the real camera, not the pose-origin offset)
-    Vec3 camera = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+    Vec3 camera = Minecraft.getInstance().gameRenderer.getMainCamera().position();
     Vec3 vec = new Vec3(x, y, z).subtract(camera);
     if (vec.distanceTo(Vec3.ZERO) > 200d) { // could be 300
       vec = vec.normalize().scale(200d);
@@ -365,7 +370,6 @@ public class RenderBlockUtils {
       y += vec.y;
       z += vec.z;
     }
-    RenderSystem.disableDepthTest();
     VertexConsumer vertexConsumer = bufferSource.getBuffer(FakeBlockRenderTypes.TOMB_LINES);
     //Translate so the PoseStack's local origin maps to world origin. After this, addVertex
     //with absolute world coords (x, y, z) lands at the correct place.
@@ -391,7 +395,6 @@ public class RenderBlockUtils {
     line(vertexConsumer, pose, x + offset, y, z + offset, x + offset, y + offset, z + offset, r, g, b, 0f, 1f, 0f);
     line(vertexConsumer, pose, x, y, z + offset,         x, y + offset, z + offset,         r, g, b, 0f, 1f, 0f);
     bufferSource.endBatch(FakeBlockRenderTypes.TOMB_LINES);
-    RenderSystem.enableDepthTest();
   }
 
   private static void line(VertexConsumer vc, PoseStack.Pose pose,

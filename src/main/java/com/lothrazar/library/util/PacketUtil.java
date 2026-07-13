@@ -10,7 +10,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 public class PacketUtil {
 
   public static void sendToAllClients(Level world, PacketFlib packet) {
-    if (world.isClientSide || !(packet instanceof CustomPacketPayload payload)) {
+    if (world.isClientSide() || !(packet instanceof CustomPacketPayload payload)) {
       return;
     }
     for (Player player : world.players()) {

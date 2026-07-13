@@ -13,7 +13,7 @@ public class HarvestUtil {
       return CropBlock.AGE;
     }
     String age = CropBlock.AGE.getName();
-    //    ResourceLocation bid = ForgeRegistries.BLOCKS.getKey(blockState.getBlock());
+    //    Identifier bid = ForgeRegistries.BLOCKS.getKey(blockState.getBlock());
     for (Property<?> p : blockState.getProperties()) {
       if (p != null && p.getName() != null
           && p.getName().equalsIgnoreCase(age)

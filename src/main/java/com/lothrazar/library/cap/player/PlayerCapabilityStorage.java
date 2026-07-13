@@ -1,13 +1,13 @@
 package com.lothrazar.library.cap.player;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.nbt.CompoundTag;
-import net.neoforged.neoforge.attachment.IAttachmentHolder;
 
 public class PlayerCapabilityStorage {
 
-  public static final Codec<PlayerCapabilityStorage> CODEC = RecordCodecBuilder.create(instance ->
+  public static final MapCodec<PlayerCapabilityStorage> CODEC = RecordCodecBuilder.mapCodec(instance ->
       instance.group(Codec.INT.fieldOf("mana").forGetter(PlayerCapabilityStorage::getMana))
           .apply(instance, mana -> new PlayerCapabilityStorage(mana)));
 
@@ -47,7 +47,7 @@ public class PlayerCapabilityStorage {
   }
 
   public void read(CompoundTag compound) {
-    mana = compound.getInt("mana");
+    mana = compound.getIntOr("mana", 0);
   }
 
   @Override

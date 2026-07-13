@@ -1,15 +1,19 @@
 package com.lothrazar.library.item;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import com.lothrazar.library.item.ItemFlib.Settings;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.FuelValues;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -28,15 +32,17 @@ public class BlockItemFlib extends BlockItem {
 
   @Override
   @OnlyIn(Dist.CLIENT)
-  public void appendHoverText(ItemStack stack, Item.TooltipContext worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+  public void appendHoverText(ItemStack stack, Item.TooltipContext worldIn, TooltipDisplay display, Consumer<Component> tooltipAdder, TooltipFlag flagIn) {
     if (me.tooltip) {
+      List<Component> tooltip = new ArrayList<>();
       me.tooltipApply(this, tooltip);
+      tooltip.forEach(tooltipAdder);
     }
-    super.appendHoverText(stack, worldIn, tooltip, flagIn);
+    super.appendHoverText(stack, worldIn, display, tooltipAdder, flagIn);
   }
 
   @Override
-  public int getBurnTime(ItemStack itemStack, RecipeType<?> recipeType) {
+  public int getBurnTime(ItemStack itemStack, RecipeType<?> recipeType, FuelValues fuelValues) {
     return me.burnTime;
   }
 }

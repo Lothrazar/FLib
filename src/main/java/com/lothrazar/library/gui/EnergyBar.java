@@ -5,13 +5,14 @@ import java.util.List;
 
 import com.lothrazar.library.FutureLibMod;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class EnergyBar {
 
-  public static final ResourceLocation ENERGY_BAR = ResourceLocation.fromNamespaceAndPath(FutureLibMod.MODID, "textures/gui/energy_bar.png");
+  public static final Identifier ENERGY_BAR = Identifier.fromNamespaceAndPath(FutureLibMod.MODID, "textures/gui/energy_bar.png");
   private int x = 154;
   private int y = 8;
   public int capacity;
@@ -32,23 +33,23 @@ public class EnergyBar {
         && guiTop + y < mouseY && mouseY < guiTop + y + getHeight();
   }
 
-  public void draw(GuiGraphics gg, float energ) {
+  public void draw(GuiGraphicsExtractor gg, float energ) {
     if (!visible) {
       return;
     }
     int relX = guiLeft + x;
     int relY = guiTop + y;
-    gg.blit(ENERGY_BAR, relX, relY, 16, 0, width, getHeight(), 32, getHeight());
+    gg.blit(RenderPipelines.GUI_TEXTURED, ENERGY_BAR, relX, relY, 16, 0, width, getHeight(), 32, getHeight());
     final float pct = Math.min(energ / capacity, 1.0F);
-    gg.blit(ENERGY_BAR, relX, relY, 0, 0, width, getHeight() - (int) (getHeight() * pct), 32, getHeight());
+    gg.blit(RenderPipelines.GUI_TEXTURED, ENERGY_BAR, relX, relY, 0, 0, width, getHeight() - (int) (getHeight() * pct), 32, getHeight());
   }
 
-  public void renderHoveredToolTip(GuiGraphics ms, int mouseX, int mouseY, int energ) {
+  public void renderHoveredToolTip(GuiGraphicsExtractor ms, int mouseX, int mouseY, int energ) {
     if (visible && this.isMouseover(mouseX, mouseY)) {
       String tt = energ + "/" + this.capacity;
       List<Component> list = new ArrayList<>();
       list.add(Component.translatable(tt));
-      ms.renderComponentTooltip(font, list, mouseX, mouseY);
+      ms.setComponentTooltipForNextFrame(font, list, mouseX, mouseY);
     }
   }
 

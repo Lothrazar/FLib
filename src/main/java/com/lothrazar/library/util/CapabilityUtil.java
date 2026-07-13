@@ -9,6 +9,11 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 public class CapabilityUtil {
 
@@ -34,7 +39,8 @@ public class CapabilityUtil {
   }
 
   public static IEnergyStorage energy(ItemStack stack) {
-    return stack.getCapability(Capabilities.EnergyStorage.ITEM);
+    EnergyHandler handler = stack.getCapability(Capabilities.Energy.ITEM, ItemAccess.forStack(stack));
+    return handler == null ? null : IEnergyStorage.of(handler);
   }
 
   public static IEnergyStorage energy(Level level, BlockPos pos) {
@@ -46,7 +52,8 @@ public class CapabilityUtil {
     return handler == null ? 0 : handler.getEnergyStored();
   }
   public static IEnergyStorage energy(Level level, BlockPos pos, Direction dir) {
-    return  level.getCapability(Capabilities.EnergyStorage.BLOCK, pos, dir);
+    EnergyHandler handler = level.getCapability(Capabilities.Energy.BLOCK, pos, dir);
+    return handler == null ? null : IEnergyStorage.of(handler);
   }
 
   public static IFluidHandler fluid(Level level, BlockPos pos ) {
@@ -58,11 +65,13 @@ public class CapabilityUtil {
   }
 
   public static IFluidHandler fluid(ItemStack stack) {
-    return stack.getCapability(Capabilities.FluidHandler.ITEM);
+    ResourceHandler<FluidResource> handler = stack.getCapability(Capabilities.Fluid.ITEM, ItemAccess.forStack(stack));
+    return handler == null ? null : IFluidHandler.of(handler);
   }
 
   public static IFluidHandler fluid(Level level, BlockPos pos, Direction dir) {
-    return  level.getCapability(Capabilities.FluidHandler.BLOCK, pos, dir);
+    ResourceHandler<FluidResource> handler = level.getCapability(Capabilities.Fluid.BLOCK, pos, dir);
+    return handler == null ? null : IFluidHandler.of(handler);
   }
 
   public static IItemHandler item(Level level, BlockPos pos) {
@@ -70,10 +79,12 @@ public class CapabilityUtil {
   }
 
   public static IItemHandler item(Level level, BlockPos pos, Direction dir) {
-    return level.getCapability(Capabilities.ItemHandler.BLOCK, pos, dir);
+    ResourceHandler<ItemResource> handler = level.getCapability(Capabilities.Item.BLOCK, pos, dir);
+    return handler == null ? null : IItemHandler.of(handler);
   }
 
   public static IItemHandler item(ItemStack stack) {
-    return stack.getCapability(Capabilities.ItemHandler.ITEM);
+    ResourceHandler<ItemResource> handler = stack.getCapability(Capabilities.Item.ITEM, ItemAccess.forStack(stack));
+    return handler == null ? null : IItemHandler.of(handler);
   }
 }

@@ -43,17 +43,17 @@ public class BlockStatePosWrapper {
   }
 
   public void readFromNBT(CompoundTag tag, Level level) {
-    this.blockState = NbtUtils.readBlockState(level.holderLookup(Registries.BLOCK), tag.getCompound("block"));
-    this.blockPos = NbtUtils.readBlockPos(tag,"pos").orElse(null);
+    this.blockState = NbtUtils.readBlockState(level.holderLookup(Registries.BLOCK), tag.getCompoundOrEmpty("block"));
+    this.blockPos = tag.read("pos", BlockPos.CODEC).orElse(null);
     if (tag.contains("tileentity")) {
-      this.tileEntityTag = tag.getCompound("tileentity");
+      this.tileEntityTag = tag.getCompoundOrEmpty("tileentity");
     }
   }
 
   public void writeToNBT(CompoundTag tag) {
     CompoundTag encoded = NbtUtils.writeBlockState(this.blockState);
     tag.put("block", encoded);
-    tag.put("pos", NbtUtils.writeBlockPos(this.blockPos));
+    tag.store("pos", BlockPos.CODEC, this.blockPos);
     if (this.tileEntityTag != null) {
       tag.put("tileentity", this.tileEntityTag);
     }

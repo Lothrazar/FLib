@@ -3,7 +3,7 @@ package com.lothrazar.library.cap.item;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.material.Fluid;
@@ -13,7 +13,10 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 
 /**
  * IFluidHandlerItem that reads/writes a single fluid to an ItemStack's CustomData component.
- * In NeoForge 1.21+, register this via RegisterCapabilitiesEvent:
+ * TODO 26.1 port: the capability key moved to Capabilities.Fluid.ITEM, which now expects a
+ * ResourceHandler<FluidResource> (transactional) rather than IFluidHandlerItem directly - wrap
+ * with IFluidHandler.of(...) is the wrong direction here, so registration needs a fresh look.
+ * In NeoForge 1.21.x, this was registered via RegisterCapabilitiesEvent:
  *   event.registerItem(Capabilities.FluidHandler.ITEM,
  *       (stack, ctx) -> new FluidHandlerCapabilityStack(stack, capacity), myItem);
  */
@@ -46,9 +49,9 @@ public class FluidHandlerCapabilityStack implements IFluidHandlerItem {
     if (!tag.contains(FLUID_NBT_KEY)) {
       return FluidStack.EMPTY;
     }
-    CompoundTag fluidTag = tag.getCompound(FLUID_NBT_KEY);
-    ResourceLocation fluidId = ResourceLocation.tryParse(fluidTag.getString("id"));
-    int amount = fluidTag.getInt("amount");
+    CompoundTag fluidTag = tag.getCompoundOrEmpty(FLUID_NBT_KEY);
+    Identifier fluidId = Identifier.tryParse(fluidTag.getStringOr("id", ""));
+    int amount = fluidTag.getIntOr("amount", 0);
     if (fluidId == null) return FluidStack.EMPTY;
     Fluid fluid = BuiltInRegistries.FLUID.getOptional(fluidId).orElse(null);
     if (fluid == null || fluid == Fluids.EMPTY) return FluidStack.EMPTY;

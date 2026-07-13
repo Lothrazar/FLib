@@ -10,8 +10,8 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -78,7 +78,7 @@ public class RenderEntityToBlockLaser {
     long gameTime = player.level().getGameTime();
     double v = gameTime * speedModifier;
     float additiveThickness = (thickness * 3.5f) * calculateLaserFlickerModifier(gameTime);
-    Vec3 view = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+    Vec3 view = Minecraft.getInstance().gameRenderer.getMainCamera().position();
     MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
     PoseStack matrix = event.getPoseStack();
     matrix.pushPose();
@@ -119,7 +119,7 @@ public class RenderEntityToBlockLaser {
     float startYOffset = -.106f;
     float startZOffset = 0.60f;
     // Adjust for fov changing
-    startZOffset += (1 - player.getFieldOfViewModifier());
+    startZOffset += (1 - player.getFieldOfViewModifier(true, 1.0F));
     if (hand == InteractionHand.OFF_HAND) {
       startYOffset = -.120f;
       startXOffset = 0.25f;
@@ -136,7 +136,7 @@ public class RenderEntityToBlockLaser {
     vec3.mul(positionMatrix);
     Vector4f vec4 = new Vector4f(startXOffset, thickness + startYOffset, startZOffset, 1.0F);
     vec4.mul(positionMatrix);
-    final int light = LightTexture.FULL_BRIGHT;
+    final int light = LightCoordsUtil.FULL_BRIGHT;
     if (hand == InteractionHand.MAIN_HAND) {
       builder.addVertex(vec4.x(), vec4.y(), vec4.z()).setColor(r, g, b, alpha).setUv(0, (float) v1).setLight(light);
       builder.addVertex(vec3.x(), vec3.y(), vec3.z()).setColor(r, g, b, alpha).setUv(0, (float) v2).setLight(light);

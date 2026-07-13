@@ -25,7 +25,7 @@ public interface ITileFacade {
 
   default void loadFacade(CompoundTag compound) {
     if (compound.contains(NBT_FACADE)) {
-      this.setFacade(compound.getCompound(NBT_FACADE));
+      this.setFacade(compound.getCompoundOrEmpty(NBT_FACADE));
     }
   }
 

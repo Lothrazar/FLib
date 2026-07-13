@@ -1,70 +1,56 @@
 package com.lothrazar.library.particle;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SingleQuadParticle;
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.phys.Vec3;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.sprite.SpriteId;
+import net.minecraft.data.AtlasIds;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 /**
  * used by ParticleCasting
  *
+ * 26.1 port: SingleQuadParticle (the TextureSheetParticle replacement) now requires its
+ * TextureAtlasSprite at construction time instead of binding an arbitrary texture per-frame in
+ * render() - there's no more ParticleRenderType.CUSTOM escape hatch, every particle now goes
+ * through the atlas + Layer system. This means getTexture() is resolved through the particles
+ * atlas (assets/<ns>/textures/particle/... must be reachable via the particles sprite source,
+ * same as any vanilla particle texture) rather than bound directly, and subclasses must pass
+ * their texture identifier into the super constructor instead of only overriding getTexture().
+ *
  * @author lothr
  */
 @OnlyIn(Dist.CLIENT)
 public abstract class AbstractSingleQuadParticle extends SingleQuadParticle {
 
-  protected AbstractSingleQuadParticle(ClientLevel world, double x, double y, double z) {
-    super(world, x, y, z);
+  private final Identifier texture;
+  private final SingleQuadParticle.Layer layer;
+
+  protected AbstractSingleQuadParticle(ClientLevel world, double x, double y, double z, Identifier texture) {
+    super(world, x, y, z, spriteFor(texture));
+    this.texture = texture;
+    this.layer = SingleQuadParticle.Layer.bySprite(this.sprite);
   }
 
-  protected AbstractSingleQuadParticle(ClientLevel world, double x, double y, double z, double motionX, double motionY, double motionZ) {
-    super(world, x, y, z, motionX, motionY, motionZ);
+  protected AbstractSingleQuadParticle(ClientLevel world, double x, double y, double z, double motionX, double motionY, double motionZ, Identifier texture) {
+    super(world, x, y, z, motionX, motionY, motionZ, spriteFor(texture));
+    this.texture = texture;
+    this.layer = SingleQuadParticle.Layer.bySprite(this.sprite);
   }
 
-  public abstract ResourceLocation getTexture();
-
-  @Override
-  public void render(VertexConsumer buffer, Camera entityIn, float partialTicks) {
-    // For CUSTOM render type, we set up the texture/blend state then delegate to super.
-    // The VertexConsumer writes into the buffer provided by the particle engine.
-    RenderSystem.setShaderTexture(0, getTexture());
-    RenderSystem.depthMask(false);
-    RenderSystem.enableBlend();
-    RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-    super.render(buffer, entityIn, partialTicks);
-    RenderSystem.depthMask(true);
+  private static TextureAtlasSprite spriteFor(Identifier texture) {
+    return Minecraft.getInstance().getAtlasManager().get(new SpriteId(AtlasIds.PARTICLES, texture));
   }
 
-  @Override
-  protected float getU0() {
-    return 0f;
+  public Identifier getTexture() {
+    return texture;
   }
 
   @Override
-  protected float getU1() {
-    return 1f;
-  }
-
-  @Override
-  protected float getV0() {
-    return 0f;
-  }
-
-  @Override
-  protected float getV1() {
-    return 1f;
-  }
-
-  @Override
-  public ParticleRenderType getRenderType() {
-    return ParticleRenderType.CUSTOM;
+  protected SingleQuadParticle.Layer getLayer() {
+    return layer;
   }
 }

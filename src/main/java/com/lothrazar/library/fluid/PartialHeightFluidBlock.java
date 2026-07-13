@@ -35,7 +35,7 @@ public class PartialHeightFluidBlock extends GenericFluidBlock {
 
   @Override
   @Deprecated
-  public VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos) {
+  public VoxelShape getOcclusionShape(BlockState state) {
     return shapes[state.getValue(LEVEL).intValue()];
   }
 }
