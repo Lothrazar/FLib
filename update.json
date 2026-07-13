@@ -1,7 +1,8 @@
 {
   "homepage": "https://www.curseforge.com/minecraft/mc-mods/flib",
   "promos": {
-    "1.21.1-latest": "0.2.1"
+    "1.21.1-latest": "0.2.7",
+    "26.1.2-latest": "0.2.7"
   },
   "1.18.2": {
     "0.0.1": "First",
@@ -41,6 +42,7 @@
     "0.2.7": "Add BlockFacadeMessage packet and HAS_FACADE block state interfaces (supporting facades in cyclic, storagenetwork, etc)"
   },
   "26.1.2": {
+    "0.2.7": "Ported to 26.1.2"
 
   }
 }
