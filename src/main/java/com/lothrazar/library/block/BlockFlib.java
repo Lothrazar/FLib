@@ -33,8 +33,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 
 public class BlockFlib extends Block {
@@ -210,12 +208,10 @@ public class BlockFlib extends Block {
     }
   }
 
-  // TODO 26.1 port: Block#appendHoverText (used in 1.21.1 by BlockItem to add block-specific
-  // tooltip lines) was removed entirely - Item's tooltip hook now uses TooltipDisplay/Consumer<Component>
-  // instead of List<Component>, and Block no longer has a matching hook at all. This is no longer called
-  // automatically by the engine; needs re-wiring (e.g. from BlockItemFlib) if this tooltip text should
-  // still show up on the block's item form.
-  @OnlyIn(Dist.CLIENT)
+  /**
+   * 26.1 port: Block#appendHoverText no longer exists as an engine hook - the vanilla BlockItem no
+   * longer calls this automatically. Called explicitly from BlockItemFlib#appendHoverText instead.
+   */
   public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
     if (me.tooltip) {
       me.tooltipApply(this, tooltip);

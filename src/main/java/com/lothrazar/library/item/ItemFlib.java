@@ -22,8 +22,6 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public class ItemFlib extends Item {
 
@@ -73,7 +71,6 @@ public class ItemFlib extends Item {
   }
 
   @Override
-  @OnlyIn(Dist.CLIENT)
   public void appendHoverText(ItemStack stack, Item.TooltipContext worldIn, TooltipDisplay display, Consumer<Component> tooltipAdder, TooltipFlag flagIn) {
     if (me.tooltip) {
       List<Component> tooltip = new ArrayList<>();

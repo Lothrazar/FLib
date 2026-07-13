@@ -11,8 +11,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public class RenderUtil {
 
@@ -32,7 +30,6 @@ public class RenderUtil {
     poseStack.item(stack, width / 2, height / 2, 0);
   }
 
-  @OnlyIn(Dist.CLIENT)
   public static void createBox(MultiBufferSource.BufferSource bufferSource, PoseStack poseStack, float x, float y, float z, float offset) {
     long c = (System.currentTimeMillis() / 15L) % 360L;
     float[] color = RenderUtil.getHSBtoRGBF(c / 360f, 1f, 1f);

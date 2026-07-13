@@ -12,8 +12,6 @@ import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public class ParticleUtil {
 
@@ -69,7 +67,6 @@ public class ParticleUtil {
     }
   }
 
-  @OnlyIn(Dist.CLIENT)
   public static void spawnBlockParticles(SimpleParticleType partIn, Level worldIn, BlockPos pos, RandomSource rand) {
     double x = pos.getX() + rand.nextDouble();
     double y = pos.getY() + rand.nextDouble();

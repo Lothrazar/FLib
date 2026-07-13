@@ -7,8 +7,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.sprite.SpriteId;
 import net.minecraft.data.AtlasIds;
 import net.minecraft.resources.Identifier;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 /**
  * used by ParticleCasting
@@ -23,7 +21,6 @@ import net.neoforged.api.distmarker.OnlyIn;
  *
  * @author lothr
  */
-@OnlyIn(Dist.CLIENT)
 public abstract class AbstractSingleQuadParticle extends SingleQuadParticle {
 
   private final Identifier texture;
