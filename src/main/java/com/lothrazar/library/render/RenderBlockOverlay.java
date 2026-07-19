@@ -6,6 +6,7 @@ import com.lothrazar.library.util.PlayerClickBlockfaceUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
@@ -38,14 +39,26 @@ import net.neoforged.bus.api.SubscribeEvent;
  */
 public class RenderBlockOverlay {
 
+  public static final float DEFAULT_ALPHA = 0.375f;
+
   private final ResourceLocation overlayLocation;
   private final String id;
   private Class<?> itemClass;
+  private float alpha = DEFAULT_ALPHA;
 
   public RenderBlockOverlay(String id, ResourceLocation overlayLocationIn, Class<?> classIn) {
     this.id = id;
     overlayLocation = overlayLocationIn;
     this.itemClass = classIn;
+  }
+
+  /**
+   * Overrides the overlay's translucency (default {@link #DEFAULT_ALPHA}). Returns this instance
+   * for chaining, e.g. {@code new RenderBlockOverlay(id, loc, cls).setAlpha(0.7f)}.
+   */
+  public RenderBlockOverlay setAlpha(float alpha) {
+    this.alpha = alpha;
+    return this;
   }
 
   private final Vec3[] vs = new Vec3[8];
@@ -226,7 +239,8 @@ public class RenderBlockOverlay {
 
   private void addVertex(VertexConsumer buffer, Matrix4f matrix, double u, double v, int i) {
     buffer.addVertex(matrix, (float) vs[i].x, (float) vs[i].y, (float) vs[i].z)
-        .setColor(1.0f, 1.0f, 1.0f, 0.375f)
-        .setUv((float) u, (float) v);
+        .setColor(1.0f, 1.0f, 1.0f, alpha)
+        .setUv((float) u, (float) v)
+        .setLight(LightTexture.FULL_BRIGHT);
   }
 }

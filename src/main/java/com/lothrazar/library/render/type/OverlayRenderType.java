@@ -38,6 +38,7 @@ public class OverlayRenderType extends RenderType {
         .setShaderState(RENDERTYPE_TEXT_SHADER)// was POSITION_COLOR_TEX_SHADER
         .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
         .setOutputState(RenderStateShard.TRANSLUCENT_TARGET)
+        .setLightmapState(RenderStateShard.LIGHTMAP)
         .createCompositeState(true);
     return create(id, DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, true, false, state);
   }
