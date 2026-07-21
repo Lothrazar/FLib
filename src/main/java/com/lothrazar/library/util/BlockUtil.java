@@ -4,6 +4,9 @@ import com.lothrazar.library.FutureLibMod;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
@@ -20,9 +23,15 @@ import net.minecraft.world.level.block.state.properties.Property;
 
 public class BlockUtil {
 
+  /**
+   * As of MC 26.1.2, BlockBehaviour.Properties#setId(ResourceKey) must be called before a Block is constructed,
+   * or the Block constructor throws NullPointerException("Block id not set"). The id must match the ResourceLocation
+   * the block will be registered under.
+   */
   @SuppressWarnings("deprecation")
-  public static Block.Properties wrap(Block.Properties propIn, Block blockIn) {
+  public static Block.Properties wrap(Block.Properties propIn, Block blockIn, Identifier id) {
     return propIn
+        .setId(ResourceKey.create(Registries.BLOCK, id))
         .sound(blockIn.soundType)
         .strength(blockIn.defaultBlockState().destroySpeed); // TODO: maybe  blockIn.defaultDestroyTime()
 

@@ -1,4 +1,6 @@
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 
 plugins {
     id 'java-library'
@@ -290,6 +292,46 @@ tasks.register('publishCurseForge', TaskPublishCurseForge) {
   mainFile.addEnvironment('Client', 'Server')
   mainFile.changelog     = changelog
   mainFile.changelogType = 'markdown'
+}
+
+tasks.register('syncExampleConfigs') {
+  group = 'documentation'
+  description = 'Copies generated example config files from run/config/ into examples/.'
+
+  def modId    = project.mod_id
+  def taskName = project.name
+  def srcDir   = layout.projectDirectory.dir('run/config').asFile
+  def destDir  = layout.projectDirectory.dir('examples').asFile
+
+  doLast {
+    if (!srcDir.exists()) {
+      logger.lifecycle("[${taskName}] run/config/ not found - nothing to sync.")
+      return
+    }
+
+    def found = [
+      "${modId}.json",
+      "${modId}.toml",
+      "${modId}-common.toml",
+      "${modId}-client.toml",
+      "${modId}-server.toml"
+    ].collect { new File(srcDir, it) }.findAll { it.exists() }
+
+    if (found.isEmpty()) {
+      logger.lifecycle("[${taskName}] No matching config files in run/config/ for '${modId}'.")
+      return
+    }
+
+    destDir.mkdirs()
+    found.each { src ->
+      Files.copy(
+        src.toPath(),
+        new File(destDir, src.name).toPath(),
+        StandardCopyOption.REPLACE_EXISTING
+      )
+      logger.lifecycle("[${taskName}] Synced: ${src.name} -> examples/")
+    }
+  }
 }
 
 tasks.withType(JavaCompile).configureEach {

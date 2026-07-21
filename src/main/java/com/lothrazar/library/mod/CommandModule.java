@@ -466,7 +466,7 @@ public class CommandModule extends EventFlib {
     //}
     ChatUtil.sendFeedback(x, "https://www.curseforge.com/minecraft/mc-mods/flib");
     ChatUtil.sendFeedback(x, "https://github.com/lothrazar/flib/issues");
-    ChatUtil.sendFeedback(x, ChatUtil.lang("command.flib.help.config") + ":  config/flib.toml ");
+    ChatUtil.sendFeedback(x, ChatUtil.lang("command.flib.help.config") + ":  config/flib-common.toml ");
     return 0;
   }
 }
