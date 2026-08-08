@@ -53,8 +53,20 @@ public class FakePlayerUtil {
   }
 
   public static WeakReference<FakePlayer> initFakePlayer(ServerLevel ws, String blockName) {
+    return initFakePlayer(ws, blockName, null);
+  }
+
+  /**
+   * @param ownerId if non-null, the fake player's GameProfile uses this UUID instead of the
+   *        shared anonymous ID. This lets claim/protection mods that trust a real player's UUID
+   *        recognize the fake player as that owner. Caution: since this UUID is shared with a
+   *        real player, vanilla advancement criteria triggered by the fake player's actions
+   *        (killing mobs, etc.) will be credited to that real player's advancement progress -
+   *        callers should treat this as opt-in, not a default.
+   */
+  public static WeakReference<FakePlayer> initFakePlayer(ServerLevel ws, String blockName, UUID ownerId) {
     final String name = "fake_player." + blockName;
-    final GameProfile breakerProfile = new GameProfile(ID, name);
+    final GameProfile breakerProfile = new GameProfile(ownerId != null ? ownerId : ID, name);
     WeakReference<FakePlayer> fakePlayer = new WeakReference<FakePlayer>(FakePlayerFactory.get(ws, breakerProfile));
     if (fakePlayer == null || fakePlayer.get() == null) {
       fakePlayer = null;
