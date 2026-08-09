@@ -1,8 +1,8 @@
 {
   "homepage": "https://www.curseforge.com/minecraft/mc-mods/flib",
   "promos": {
-    "1.21.1-latest": "0.2.8",
-    "26.1.2-latest": "0.2.8"
+    "1.21.1-latest": "0.2.9",
+    "26.1.2-latest": "0.2.9"
   },
   "1.18.2": {
     "0.0.1": "First",
@@ -41,10 +41,12 @@
     "0.2.6": "FacadeUtil::renderBlockState now uses the matching RenderType instead of treating the facade as solid",
     "0.2.7": "Add BlockFacadeMessage packet and HAS_FACADE block state interfaces (supporting facades in cyclic, storagenetwork, etc)"
     ,"0.2.8": "Fix missing UV2 lightmap in RenderBlockOverlay addVertex, allow setAlpha override, and update lightmap"
+  ,"0.2.9": "initFakePlayer util now optionally takes a players gameprofile ID"
   },
   "26.1.2": {
     "0.2.7": "Ported to 26.1.2"   ,
     "0.2.8": "Fix missing UV2 lightmap in RenderBlockOverlay addVertex, allow setAlpha override, and update lightmap"
+    ,"0.2.9": "initFakePlayer util now optionally takes a players gameprofile ID"
 
   }
 }
