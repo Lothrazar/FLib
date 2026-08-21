@@ -460,13 +460,29 @@ public class EntityUtil {
     if (entity.isCrouching()) {
       entity.setDeltaMovement(entity.getDeltaMovement().x, 0.0, entity.getDeltaMovement().z);
     }
-    else if (entity.zza > 0.0F && entity.getDeltaMovement().y < climbSpeed) {
+    else if (isMovingForward(entity) && entity.getDeltaMovement().y < climbSpeed) {
       entity.setDeltaMovement(entity.getDeltaMovement().x, climbSpeed, entity.getDeltaMovement().z);
       entity.fallDistance = 0.0F;
     } //setting fall distance on clientside wont work
     if (worldIn.isClientSide() && entity.tickCount % TICKS_FALLDIST_SYNC == 0) {
       ClientPacketDistributor.sendToServer(new PacketPlayerFalldamage());
     }
+  }
+
+  /**
+   * 26.1: for a real ServerPlayer, entity.zza is no longer populated server-side - it's only fed by
+   * the AI-driven travel() simulation mobs use, while a real player's authoritative movement comes
+   * from position/input packets instead. Confirmed via debug logging: zza stayed 0.0 the entire time
+   * server-side even while horizontalCollision was true and the client was actively holding forward.
+   * ServerPlayer#getLastClientInput() is the real synced replacement (from ServerboundPlayerInputPacket).
+   * Client-side (LocalPlayer) still populates zza directly from local input, so only the ServerPlayer
+   * branch needs the substitute; mobs keep using zza since they have no client input to sync.
+   */
+  private static boolean isMovingForward(LivingEntity entity) {
+    if (entity instanceof ServerPlayer serverPlayer) {
+      return serverPlayer.getLastClientInput().forward();
+    }
+    return entity.zza > 0.0F;
   }
 
   public static void dimensionTeleport(ServerPlayer player, ServerLevel world, BlockPosDim loc) {
