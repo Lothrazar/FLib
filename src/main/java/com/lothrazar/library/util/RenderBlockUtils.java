@@ -397,6 +397,8 @@ public class RenderBlockUtils {
     bufferSource.endBatch(FakeBlockRenderTypes.TOMB_LINES);
   }
 
+  private static final float LINE_WIDTH = 2.5F;
+
   private static void line(VertexConsumer vc, PoseStack.Pose pose,
       float x1, float y1, float z1, float x2, float y2, float z2,
       float r, float g, float b, float nx, float ny, float nz) {
@@ -404,8 +406,11 @@ public class RenderBlockUtils {
     //the pose matrix AND the normal goes through the normal matrix — matches vanilla's
     //LevelRenderer.renderLineBox pattern. Bare setNormal(float, float, float) writes the raw
     //model-space normal which the lines shader misinterprets, collapsing widening to ~0.
-    vc.addVertex(pose, x1, y1, z1).setColor(r, g, b, 1.0F).setNormal(pose, nx, ny, nz);
-    vc.addVertex(pose, x2, y2, z2).setColor(r, g, b, 1.0F).setNormal(pose, nx, ny, nz);
+    //setLineWidth is also required now that line width is a per-vertex attribute rather than a
+    //static LineStateShard — omitting it throws "Missing elements in vertex: LineWidth" (see the
+    //already-fixed sibling RenderUtil.addEdge for the same pattern).
+    vc.addVertex(pose, x1, y1, z1).setColor(r, g, b, 1.0F).setNormal(pose, nx, ny, nz).setLineWidth(LINE_WIDTH);
+    vc.addVertex(pose, x2, y2, z2).setColor(r, g, b, 1.0F).setNormal(pose, nx, ny, nz).setLineWidth(LINE_WIDTH);
   }
 
   public static float[] getRandomColour() {
