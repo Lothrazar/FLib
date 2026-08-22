@@ -11,7 +11,6 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.LayeringTransform;
-import net.minecraft.client.renderer.rendertype.OutputTarget;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -71,15 +70,21 @@ public class FakeBlockRenderTypes {
       .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS)
       .withColorTargetState(new ColorTargetState(BlendFunction.ADDITIVE))
       .withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, true))
+      // Unlike this file's other pipelines (BEAM/FAKE_BLOCK/LASER all disable culling), this one
+      // never set an explicit cull state. renderCube()'s 6 hand-authored quad faces are only
+      // correctly wound for some of the 6 faces, so with default backface culling active, half the
+      // cube gets culled depending on view angle - showing as disconnected slabs instead of one
+      // solid box. Disabling culling here is the low-risk fix instead of re-winding every face.
+      .withCull(false)
       .build();
 
   /**
    * used by EventRender -> RenderWorldLastEvent by most held items that pick locations, such as cyclic:location_data
+   * 26.1 port note: do NOT use setOutputTarget(ITEM_ENTITY_TARGET)
    */
   public static final RenderType TRANSPARENT_COLOUR = RenderType.create("flib:transparentcolour",
       RenderSetup.builder(SOLID_COLOUR_PIPELINE)
           .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
-          .setOutputTarget(OutputTarget.ITEM_ENTITY_TARGET)
           .createRenderSetup());
 
   /**
@@ -88,7 +93,6 @@ public class FakeBlockRenderTypes {
   public static final RenderType SOLID_COLOUR = RenderType.create("flib:solidcolour",
       RenderSetup.builder(SOLID_COLOUR_PIPELINE)
           .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
-          .setOutputTarget(OutputTarget.ITEM_ENTITY_TARGET)
           .createRenderSetup());
 
   // Like RenderPipelines.LINES_SNIPPET, but with depth testing disabled so the outline is always visible.
@@ -103,7 +107,6 @@ public class FakeBlockRenderTypes {
   public static final RenderType TOMB_LINES = RenderType.create("flib:tomb_lines",
       RenderSetup.builder(NO_DEPTH_LINES_PIPELINE)
           .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
-          .setOutputTarget(OutputTarget.ITEM_ENTITY_TARGET)
           .createRenderSetup());
 
   public static void registerPipelines(RegisterRenderPipelinesEvent event) {

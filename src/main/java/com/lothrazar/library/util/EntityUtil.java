@@ -478,7 +478,7 @@ public class EntityUtil {
    * Client-side (LocalPlayer) still populates zza directly from local input, so only the ServerPlayer
    * branch needs the substitute; mobs keep using zza since they have no client input to sync.
    */
-  private static boolean isMovingForward(LivingEntity entity) {
+  public static boolean isMovingForward(LivingEntity entity) {
     if (entity instanceof ServerPlayer serverPlayer) {
       return serverPlayer.getLastClientInput().forward();
     }

@@ -2,7 +2,7 @@
   "homepage": "https://www.curseforge.com/minecraft/mc-mods/flib",
   "promos": {
     "1.21.1-latest": "0.2.9",
-    "26.1.2-latest": "0.2.9"
+    "26.1.2-latest": "0.2.10"
   },
   "1.18.2": {
     "0.0.1": "First",
@@ -47,6 +47,7 @@
     "0.2.7": "Ported to 26.1.2"   ,
     "0.2.8": "Fix missing UV2 lightmap in RenderBlockOverlay addVertex, allow setAlpha override, and update lightmap"
     ,"0.2.9": "initFakePlayer util now optionally takes a players gameprofile ID"
+    ,"0.2.10": "Fix fakeblock render types.  add EntityUtil:isMovingForward().  Fix RenderBlockUtils line width "
 
   }
 }

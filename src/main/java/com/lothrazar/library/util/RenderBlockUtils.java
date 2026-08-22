@@ -317,8 +317,13 @@ public class RenderBlockUtils {
     final Minecraft mc = Minecraft.getInstance();
     MultiBufferSource.BufferSource buffer = mc.renderBuffers().bufferSource();
     matrix.pushPose();
-    //RenderLevelStageEvent pose has the camera ROTATION but not the camera TRANSLATION applied
-    //(in 1.21 same as 1.20). Subtract the camera so addVertex with world coords lands correctly.
+    // 26.1: confirmed by testing that neither this event's PoseStack nor the GPU's
+    // ModelViewMat (DynamicTransforms UBO) supply the camera's view transform for this custom
+    // pipeline - removing the camera-subtract entirely (passing world-absolute coords with no
+    // adjustment) rendered nothing at all, since the vertices land nowhere near the projection
+    // matrix's expected range. So we build the camera transform ourselves: rotate first (ends up
+    // applied AFTER translation to each vertex, i.e. rotate(world - camera)), then translate.
+    matrix.mulPose(Minecraft.getInstance().gameRenderer.getMainCamera().getViewRotationMatrix(new Matrix4f()));
     matrix.translate(-view.x(), -view.y(), -view.z());
     VertexConsumer builder = buffer.getBuffer(FakeBlockRenderTypes.TRANSPARENT_COLOUR);
     for (BlockPos posCurr : coords.keySet()) {
@@ -335,11 +340,15 @@ public class RenderBlockUtils {
   }
 
   /**
-   * 2-arg overload for use from {@link RenderLevelStageEvent} (e.g. OutlineRenderer). The pose
-   * has the camera ROTATION but not the camera TRANSLATION applied, so pass the camera position
-   * so the inner translate subtracts it and addVertex with absolute world coords lands at
-   * (world - camera) in eye space. For TESR callers use the 3-arg form below and pass the
-   * tile's world position so the TESR's vanilla translation gets undone instead.
+   * 2-arg overload for use from {@link RenderLevelStageEvent} (e.g. OutlineRenderer). Confirmed by
+   * debug logging (2026-08-21): that event's PoseStack is neither camera-rotated nor
+   * camera-translated - it's effectively identity - AND the GPU-side ModelViewMat (from the
+   * DynamicTransforms UBO the shaders read) isn't supplying the camera transform for this custom
+   * pipeline either: passing Vec3.ZERO (raw world coords, no camera adjustment at all) rendered
+   * nothing, because the vertices land nowhere near the projection matrix's expected range. So
+   * NEITHER layer applies the camera's view transform automatically here - we have to build it
+   * ourselves: subtract the camera position AND apply the camera's own rotation matrix (see the
+   * mulPose(camera.getViewRotationMatrix(...)) call in the 6-arg overload below).
    */
   public static void createBox(PoseStack poseStack, BlockPos pos) {
     createBox(poseStack, pos, Minecraft.getInstance().gameRenderer.getMainCamera().position());
@@ -353,10 +362,9 @@ public class RenderBlockUtils {
 
 
   /**
-   * @param poseOriginInWorld where the PoseStack's local origin lives in world space.
-   *   - For RenderLevelStageEvent in 1.21: PoseStack is camera-relative — pass Vec3.ZERO.
-   *   - For TESRs (BlockEntityRenderer): PoseStack origin is at the tile — pass the tile's pos.
-   *   We subtract this from the pose so subsequent draws can use absolute world coords.
+   * @param poseOriginInWorld camera world position to subtract, so subsequent draws can use
+   *   absolute world coords for x/y/z. For TESRs (BlockEntityRenderer): PoseStack origin is at
+   *   the tile - pass the tile's pos instead so the TESR's vanilla translation gets undone.
    */
   public static void createBox(MultiBufferSource.BufferSource bufferSource, Vec3 poseOriginInWorld, PoseStack poseStack, float x, float y, float z, float offset) {
     //rainbow magic
@@ -371,8 +379,13 @@ public class RenderBlockUtils {
       z += vec.z;
     }
     VertexConsumer vertexConsumer = bufferSource.getBuffer(FakeBlockRenderTypes.TOMB_LINES);
-    //Translate so the PoseStack's local origin maps to world origin. After this, addVertex
-    //with absolute world coords (x, y, z) lands at the correct place.
+    // 26.1: confirmed by testing that neither this event's PoseStack nor the GPU's
+    // ModelViewMat (DynamicTransforms UBO) supply the camera's view transform for this custom
+    // pipeline - so we build it ourselves: rotate first (so it ends up applied AFTER translation
+    // to each vertex, i.e. rotate(world - camera)), then translate. Call order matters: PoseStack
+    // composes each new op onto the right of the current matrix, so the vertex "sees" the
+    // rightmost/last-called op first.
+    poseStack.mulPose(Minecraft.getInstance().gameRenderer.getMainCamera().getViewRotationMatrix(new Matrix4f()));
     poseStack.translate(-poseOriginInWorld.x, -poseOriginInWorld.y, -poseOriginInWorld.z);
     PoseStack.Pose pose = poseStack.last();
     float r = color[0], g = color[1], b = color[2];
