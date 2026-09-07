@@ -82,6 +82,14 @@ public class RenderEntityToBlockLaser {
     MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
     PoseStack matrix = event.getPoseStack();
     matrix.pushPose();
+    // 26.1: RenderLevelStageEvent's PoseStack supplies neither camera rotation nor translation, and
+    // the GPU's ModelViewMat (DynamicTransforms UBO) doesn't fill that in for this custom pipeline
+    // either (see RenderBlockUtils.createBox/renderColourCubes for the same finding, 2026-08-21) -
+    // without this the laser rendered nothing at all, since raw world-relative coordinates land
+    // nowhere near the projection matrix's expected range. Must be applied before the translate:
+    // PoseStack composes each new op onto the right of the current matrix, so the last-called op
+    // acts on the vertex first.
+    matrix.mulPose(Minecraft.getInstance().gameRenderer.getMainCamera().getViewRotationMatrix(new Matrix4f()));
     matrix.translate(-view.x(), -view.y(), -view.z());
     matrix.translate(from.x, from.y, from.z);
     matrix.mulPose(Axis.YP.rotationDegrees(Mth.lerp(ticks, -player.getYRot(), -player.yRotO)));

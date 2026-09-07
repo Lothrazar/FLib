@@ -48,6 +48,6 @@
     "0.2.8": "Fix missing UV2 lightmap in RenderBlockOverlay addVertex, allow setAlpha override, and update lightmap"
     ,"0.2.9": "initFakePlayer util now optionally takes a players gameprofile ID"
     ,"0.2.10": "Fix fakeblock render types.  add EntityUtil:isMovingForward().  Fix RenderBlockUtils line width "
-
+    ,"0.2.11": "Fix RenderLevelStageEvent's mulPose, used by RenderEntityToBlockLaser "
   }
 }
